@@ -1,0 +1,15 @@
+{
+ "bluray": 10,
+ "bluray_1080p": 16,
+ "default_quality": "high",
+ "default_quality_1080p": "high",
+ "high": 7,
+ "high_1080p": 12,
+ "low": 0,
+ "low_1080p": 2,
+ "middle": 3,
+ "middle_1080p": 7,
+ "no_speed_test": true,
+ "speed_test_expire": 43200,
+ "speed_url": "https://g.fp.ps.netease.com/cg-image/file/6aa8b00a0e473a632fa69e4fdbNrA1BY07"
+}

@@ -1,0 +1,265 @@
+{
+ "popups": [
+  {
+   "background_mobile": "https://g.fp.ps.netease.com/cg-image/file/6ae869ff82f20e9f2f74bf987jaooyEi07",
+   "background_pc": "https://g.fp.ps.netease.com/cg-image/file/6ae8681bc34e0600503dfa6f4muaKRA307",
+   "banner_type": [],
+   "card_mobile": "",
+   "card_pc": "",
+   "channel_names": {},
+   "coupon_order": "",
+   "create_time": 1793456169,
+   "exclude_channels": [],
+   "game_behavior_tags": [],
+   "game_code": "",
+   "game_name": "",
+   "game_type": "mobile",
+   "include_channels": [],
+   "is_limit_channel_and_version": true,
+   "link": "cloudgaming://showpay?paytype=pc&tab=gamecard&rechargeid=6ae34e7860bbb03f93a0a20a",
+   "live_room_tags": [],
+   "open_content": "",
+   "open_type": "",
+   "pay_tags": [],
+   "people_list_id": [],
+   "platforms": [
+    "web-pc",
+    "web-mobile",
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "android-tv-platform",
+    "pc-native-platform",
+    "android-mobile-pc",
+    "harmonyos-h5-platform"
+   ],
+   "popup_id": "6ae5f829f553921626a59571",
+   "popup_type": "sec_kill_activity",
+   "rank": 152,
+   "recommendation": "",
+   "remark": "影之刃零充值",
+   "show_game_behavior_tags": [],
+   "show_live_room_tags": [],
+   "show_pay_tags": [],
+   "show_user_tags": [],
+   "show_user_type_tags": [
+    "所有"
+   ],
+   "update_time": 1793877861,
+   "user_login_type": "all",
+   "user_mobile_type": "all",
+   "user_pc_type": "all",
+   "user_play_type": "all",
+   "user_reg_time_type": "all",
+   "user_tags": [],
+   "user_type_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "valid": true,
+   "valid_begin_time": 1793376000,
+   "valid_end_time": 1794153600
+  },
+  {
+   "background_mobile": "https://g.fp.ps.netease.com/cg-image/file/6aeaa023f7f29329d9d3ec03FuPtypCv07",
+   "background_pc": "https://g.fp.ps.netease.com/cg-image/file/6aeaa01d9fb8246f80e1c6b0Zp2C3tF607",
+   "banner_type": [],
+   "card_mobile": "",
+   "card_pc": "",
+   "channel_names": {},
+   "coupon_order": "",
+   "create_time": 1793761339,
+   "exclude_channels": [],
+   "game_behavior_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "game_code": "",
+   "game_name": "",
+   "game_type": "mobile",
+   "include_channels": [],
+   "is_limit_channel_and_version": true,
+   "link": "cloudgaming://startgame?game_code=yssy",
+   "live_room_tags": [],
+   "open_content": "",
+   "open_type": "",
+   "pay_tags": [],
+   "people_list_id": [],
+   "platforms": [
+    "web-pc",
+    "web-mobile",
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform"
+   ],
+   "popup_id": "6aeaa03bc2f84bd0b1d397b6",
+   "popup_type": "sec_kill_activity",
+   "rank": 302,
+   "recommendation": "",
+   "remark": "原神7.2",
+   "show_game_behavior_tags": [
+    "所有"
+   ],
+   "show_live_room_tags": [],
+   "show_pay_tags": [],
+   "show_user_tags": [],
+   "show_user_type_tags": [
+    "所有"
+   ],
+   "update_time": 1793877861,
+   "user_login_type": "all",
+   "user_mobile_type": "all",
+   "user_pc_type": "all",
+   "user_play_type": "all",
+   "user_reg_time_type": "all",
+   "user_tags": [],
+   "user_type_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "valid": true,
+   "valid_begin_time": 1793721600,
+   "valid_end_time": 1794326400
+  },
+  {
+   "background_mobile": "https://g.fp.ps.netease.com/cg-image/file/6aeaa45ac702e6d821ed0bedH4VqHiGI07",
+   "background_pc": "https://g.fp.ps.netease.com/cg-image/file/6aeaa454d7563749836d299bb4maraSg07",
+   "banner_type": [],
+   "card_mobile": "",
+   "card_pc": "",
+   "channel_names": {},
+   "coupon_order": "",
+   "create_time": 1793762493,
+   "exclude_channels": [],
+   "game_behavior_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "game_code": "",
+   "game_name": "",
+   "game_type": "mobile",
+   "include_channels": [],
+   "is_limit_channel_and_version": true,
+   "link": "cloudgaming://startgame?game_code=dwrg",
+   "live_room_tags": [],
+   "open_content": "",
+   "open_type": "",
+   "pay_tags": [],
+   "people_list_id": [],
+   "platforms": [
+    "web-pc",
+    "web-mobile",
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "harmonyos-h5-platform"
+   ],
+   "popup_id": "6aeaa4bdfb271eef6af28e45",
+   "popup_type": "sec_kill_activity",
+   "rank": 330,
+   "recommendation": "",
+   "remark": "第五",
+   "show_game_behavior_tags": [
+    "所有"
+   ],
+   "show_live_room_tags": [],
+   "show_pay_tags": [],
+   "show_user_tags": [],
+   "show_user_type_tags": [
+    "所有"
+   ],
+   "update_time": 1793877861,
+   "user_login_type": "all",
+   "user_mobile_type": "all",
+   "user_pc_type": "all",
+   "user_play_type": "all",
+   "user_reg_time_type": "all",
+   "user_tags": [],
+   "user_type_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "valid": true,
+   "valid_begin_time": 1793844000,
+   "valid_end_time": 1794153600
+  },
+  {
+   "background_mobile": "https://g.fp.ps.netease.com/cg-image/file/6aec7eb7d6729ac419fc476eEMGo20XK07",
+   "background_pc": "https://g.fp.ps.netease.com/cg-image/file/6aec7edd3382e02efaabe410qWms17p807",
+   "banner_type": [],
+   "card_mobile": "",
+   "card_pc": "",
+   "channel_names": {},
+   "coupon_order": "",
+   "create_time": 1793883844,
+   "exclude_channels": [],
+   "game_behavior_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "game_code": "",
+   "game_name": "",
+   "game_type": "mobile",
+   "include_channels": [],
+   "is_limit_channel_and_version": true,
+   "link": "cloudgaming://showactivity?url=https%3A%2F%2Fcloudgame.webapp.163.com%2Freservation%2F%3Fid%3D6aa79147407f0abca8c6dbb2&action=auto&width=100%&height=100%&transparent=true&token=true&login=true",
+   "live_room_tags": [],
+   "open_content": "",
+   "open_type": "",
+   "pay_tags": [],
+   "people_list_id": [],
+   "platforms": [
+    "web-pc",
+    "web-mobile",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "android-mobile-platform",
+    "pc-native-platform",
+    "harmonyos-h5-platform"
+   ],
+   "popup_id": "6aec7ec4110d910e56160faf",
+   "popup_type": "sec_kill_activity",
+   "rank": 332,
+   "recommendation": "",
+   "remark": "因缘精灵预约",
+   "show_game_behavior_tags": [
+    "所有"
+   ],
+   "show_live_room_tags": [],
+   "show_pay_tags": [],
+   "show_user_tags": [],
+   "show_user_type_tags": [
+    "所有"
+   ],
+   "update_time": 1793883893,
+   "user_login_type": "all",
+   "user_mobile_type": "all",
+   "user_pc_type": "all",
+   "user_play_type": "all",
+   "user_reg_time_type": "all",
+   "user_tags": [],
+   "user_type_tags": [
+    {
+     "must_match": false,
+     "tag": "all"
+    }
+   ],
+   "valid": true,
+   "valid_begin_time": 1793808000,
+   "valid_end_time": 1794499200
+  }
+ ],
+ "total": 4
+}

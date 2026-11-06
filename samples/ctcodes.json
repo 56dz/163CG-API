@@ -1,0 +1,114 @@
+[
+ {
+  "_id": "5dcb7ad77078fb73b13e604d",
+  "code": "86",
+  "create_time": 1570937943,
+  "name": "中国",
+  "update_time": 1570937943
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e604a",
+  "code": "886",
+  "create_time": 1573616343,
+  "name": "中国台湾",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e604b",
+  "code": "852",
+  "create_time": 1573616343,
+  "name": "中国香港",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e604c",
+  "code": "853",
+  "create_time": 1573616343,
+  "name": "中国澳门",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e604e",
+  "code": "65",
+  "create_time": 1573616343,
+  "name": "新加坡",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e604f",
+  "code": "60",
+  "create_time": 1573616343,
+  "name": "马来西亚",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6050",
+  "code": "66",
+  "create_time": 1573616343,
+  "name": "泰国",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6051",
+  "code": "81",
+  "create_time": 1573616343,
+  "name": "日本",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6052",
+  "code": "82",
+  "create_time": 1573616343,
+  "name": "韩国",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6053",
+  "code": "44",
+  "create_time": 1573616343,
+  "name": "英国",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6054",
+  "code": "1",
+  "create_time": 1573616343,
+  "name": "美国",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6055",
+  "code": "33",
+  "create_time": 1573616343,
+  "name": "法国",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6056",
+  "code": "61",
+  "create_time": 1573616343,
+  "name": "澳大利亚",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6057",
+  "code": "1",
+  "create_time": 1573616343,
+  "name": "加拿大",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "5dcb7ad77078fb73b13e6058",
+  "code": "39",
+  "create_time": 1573616343,
+  "name": "意大利",
+  "update_time": 1573616343
+ },
+ {
+  "_id": "62da1c2a887389b00d827721",
+  "code": "64",
+  "create_time": 1657683543,
+  "name": "新西兰",
+  "update_time": 1657683543
+ }
+]

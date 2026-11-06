@@ -1,0 +1,334 @@
+{
+ "account_protection": false,
+ "ali_bitrate_region": {},
+ "apps": [],
+ "archive_protection": false,
+ "auto_gray_dau": 2,
+ "auto_gray_days": 14,
+ "auto_gray_switch": false,
+ "bg": "",
+ "can_hang_up": false,
+ "carousels": [],
+ "channel_name": "官方服",
+ "channels": [
+  {
+   "channel_name": "官方服",
+   "game_code": "wow_cn_high",
+   "game_icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d2e3e7587ca8a605ecc5CxH8MW607",
+   "game_logo": "",
+   "tags": [
+    "暴雪",
+    "暴雪国服",
+    "UU屏蔽",
+    "pchigh",
+    "魔兽",
+    "4k"
+   ]
+  }
+ ],
+ "cloud_mobile": false,
+ "cloud_pc_guide_config": {
+  "people_list_ids": [],
+  "popup_limit": 0
+ },
+ "coin_only": false,
+ "coin_only_enable_free_time_interval": false,
+ "coins_consume_per_minute": 4,
+ "controls": [],
+ "cover": "",
+ "cpa_scheduling_configs": [],
+ "cpa_scheduling_daily_max_users": 0,
+ "cpa_scheduling_regions": [],
+ "cpa_scheduling_switch": false,
+ "cpu": 1.0,
+ "create_time": 1722564399,
+ "daily_free_time": 0,
+ "debug": false,
+ "description": [],
+ "download_from_cache": false,
+ "download_time": 60,
+ "enable_game_audio": false,
+ "enable_game_video": false,
+ "enable_resolution_config": true,
+ "enable_send_clipboard": true,
+ "entry_platforms": [
+  "web-mobile",
+  "ios-mobile-platform",
+  "android-mobile-platform",
+  "ios-native-platform"
+ ],
+ "forbidden_regions": [],
+ "forbidden_regions_switch": false,
+ "force_realname": false,
+ "fps_default": "30",
+ "fps_supports": [
+  "30",
+  "60"
+ ],
+ "free": false,
+ "free_effect_people_list_ids": [],
+ "free_platforms": [],
+ "free_shield_people_list_ids": [],
+ "game_code": "wow_cn_high",
+ "game_id": "66ac3f2fab63e0af88922d52",
+ "game_open_action": "this_game",
+ "game_type": "pc",
+ "hang_up_platforms": [],
+ "hmy_cpu": 1.0,
+ "hp_regions": [
+  "pchngzty_baremetal",
+  "pchdxzty_x",
+  "pchblfty_x",
+  "pchdxzty_c",
+  "pchngztyb_d",
+  "pchdzjty_d",
+  "pchdycry_d",
+  "pchnry_d",
+  "pchbtjry_d"
+ ],
+ "hsz_auto_bitrate": true,
+ "icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d2e3e7587ca8a605ecc5CxH8MW607",
+ "install_time": 60,
+ "is_in_white": false,
+ "is_limit_time": false,
+ "is_micro_game": false,
+ "is_multi_proxy": false,
+ "jump_link_h5_swtich": true,
+ "keystore_md5": "",
+ "limit_time_exhausted_buttons": [],
+ "limit_time_seconds": 10,
+ "limit_type": "total",
+ "limit_user_enter_rate": 0,
+ "live_can_control": false,
+ "live_control_num": 1,
+ "lock_region": false,
+ "logo": "",
+ "main": true,
+ "maintain_time_switch": false,
+ "manual_archive": false,
+ "material_type": "web",
+ "max_limit_time_seconds": 0,
+ "max_playing_num": 0,
+ "ms_info_params": {},
+ "multi_proxy_source_game_code": "",
+ "name": "魔兽世界（无限/正式服/怀旧服/时光服）-高配",
+ "need_login_under_reservation": false,
+ "need_realname": false,
+ "netease_game": false,
+ "netease_game_code": "",
+ "no_input_detect": false,
+ "no_op_duration1": 480,
+ "no_op_duration2": 120,
+ "not_support_pc_vip_recharge": false,
+ "online_time": 1722571308,
+ "only_in_search_results": false,
+ "ori_coins_consume_per_minute": 9,
+ "package": "",
+ "params": {
+  "invisible_in_cities": "3101,3301",
+  "invisible_in_countries": "USA,US",
+  "invisible_in_provinces": "31",
+  "live_room_can_open": false,
+  "resource_ids": [
+   "691c1775f3bcc8d30b76d18c",
+   "691c16baad080793851be7b3",
+   "691c1691bd946aca71fd1363",
+   "6aebf215aac637e91de565f7"
+  ],
+  "startgame_slogan": "每小时低至1.7元"
+ },
+ "partial_region_online": true,
+ "pc_daily_max_free_time_limit": 0,
+ "pcu_limit": 0,
+ "pcu_limit_switch": false,
+ "platforms": [],
+ "preboot_delay": 10,
+ "predownload_bandwidth": 0,
+ "predownload_bandwidth_run_page": 0,
+ "predownload_channels": [],
+ "predownload_network_type": 0,
+ "predownload_switch": false,
+ "predownload_time": 0,
+ "rank": 142,
+ "real_coin_only": false,
+ "recommend_banner_icon": "",
+ "recommend_banner_intro": "",
+ "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d2e3e7587ca8a605ecc5CxH8MW607",
+ "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d3552d37d6d4267dd1ccaDxDwLe07",
+ "recommend_tags": [],
+ "recording_download_limit": 0,
+ "regions_online": [
+  "pchblfty_x",
+  "pcxncdry_d",
+  "pchdycyd_d",
+  "pchngzty_d",
+  "pchdxzty_d",
+  "pchbzhty_d",
+  "pchngztyb_d",
+  "pchnry_d",
+  "pchbtjry_d",
+  "pchdycry_d",
+  "pcxncdty_b",
+  "pcxncdty_d"
+ ],
+ "remain_limit_time_buttons": [],
+ "reservation_base_num": 0,
+ "reservation_status": "none",
+ "reservation_success_msg": {},
+ "reservation_url": "",
+ "reservation_url_mobile": "",
+ "resolution_configs": [
+  {
+   "fps_default": "30",
+   "fps_supports": [
+    "30",
+    "60",
+    "90",
+    "120"
+   ],
+   "index": 0,
+   "platform": "android-mobile-platform",
+   "resolution_default": "1080p",
+   "resolution_supports": [
+    "auto",
+    "720p",
+    "900p",
+    "1080p",
+    "2k",
+    "4k"
+   ]
+  },
+  {
+   "fps_default": "60",
+   "fps_supports": [
+    "30",
+    "60",
+    "90",
+    "120"
+   ],
+   "index": 1,
+   "platform": "ios-native-platform",
+   "resolution_default": "1080p",
+   "resolution_supports": [
+    "auto",
+    "720p",
+    "900p",
+    "1080p",
+    "2k",
+    "4k"
+   ]
+  },
+  {
+   "fps_default": "60",
+   "fps_supports": [
+    "30",
+    "60",
+    "90",
+    "120"
+   ],
+   "index": 2,
+   "platform": "web-pc",
+   "resolution_default": "auto",
+   "resolution_supports": [
+    "720p",
+    "900p",
+    "1080p",
+    "2k",
+    "auto",
+    "4k"
+   ]
+  },
+  {
+   "fps_default": "60",
+   "fps_supports": [
+    "30",
+    "60",
+    "90",
+    "120"
+   ],
+   "index": 3,
+   "platform": "pc-native-platform",
+   "resolution_default": "auto",
+   "resolution_supports": [
+    "720p",
+    "900p",
+    "1080p",
+    "2k",
+    "4k",
+    "auto"
+   ]
+  },
+  {
+   "fps_default": "60",
+   "fps_supports": [
+    "30",
+    "60",
+    "90",
+    "120"
+   ],
+   "index": 4,
+   "platform": "ios-mobile-platform",
+   "resolution_default": "1080p",
+   "resolution_supports": [
+    "720p",
+    "900p",
+    "1080p",
+    "2k",
+    "4k"
+   ]
+  }
+ ],
+ "resolution_default": "900p",
+ "resolution_supports": [
+  "auto",
+  "720p",
+  "900p",
+  "1080p"
+ ],
+ "runningbg": "",
+ "runtimes": [],
+ "scenes": [
+  "main",
+  "cj"
+ ],
+ "scheduling_params": {},
+ "screen": "horizontal",
+ "shield_ips": [
+  {
+   "cities": "3101,3301",
+   "countries": "USA,US",
+   "detail_page": false,
+   "effect": "invisible",
+   "provinces": "31",
+   "scenes": [
+    "recommend",
+    "games",
+    "search",
+    "history"
+   ]
+  }
+ ],
+ "skip_detail_page": false,
+ "sort_hp_region": true,
+ "source_url": "",
+ "special_tags": [],
+ "status": "normal",
+ "status_change_histories": [],
+ "summary": "魔兽世界：无限 11月5日正式上线",
+ "support_physical_gamepad": false,
+ "support_recording": false,
+ "support_remote_control": false,
+ "tag_code": "wow",
+ "tags": [
+  "暴雪",
+  "暴雪国服",
+  "UU屏蔽",
+  "pchigh",
+  "魔兽",
+  "4k"
+ ],
+ "underage_limit": false,
+ "update_time": 1793800728,
+ "updating_info": {},
+ "wl_bitrate_region": {}
+}

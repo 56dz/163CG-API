@@ -1,0 +1,10 @@
+{
+ "bluray": 18,
+ "default_quality": "high",
+ "high": 12,
+ "low": 0,
+ "middle": 9,
+ "no_speed_test": true,
+ "speed_test_expire": 43200,
+ "speed_url": "https://g.fp.ps.netease.com/cg-image/file/6aa8b00a0e473a632fa69e4fdbNrA1BY07"
+}

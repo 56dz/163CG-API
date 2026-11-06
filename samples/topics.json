@@ -1,0 +1,242 @@
+{
+ "topics": [
+  {
+   "create_time": 1589354632,
+   "game_type": "mobile",
+   "name": "热门手游",
+   "name_en": "tj",
+   "platforms": [
+    "android-mobile-platform",
+    "harmonyos-h5-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc"
+   ],
+   "rank": 2,
+   "special_tags": [],
+   "tags": [
+    "hot",
+    "tj"
+   ],
+   "topic_id": "5ebba088fc2a0cccd13a401d",
+   "update_time": 1767091191,
+   "valid": true
+  },
+  {
+   "create_time": 1655901554,
+   "game_type": "mobile",
+   "name": "手游高配",
+   "name_en": "gp",
+   "platforms": [
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 3,
+   "special_tags": [],
+   "tags": [
+    "gp"
+   ],
+   "topic_id": "62b30d72df8697bb6f9e47f6",
+   "update_time": 1716778815,
+   "valid": true
+  },
+  {
+   "create_time": 1589354759,
+   "game_type": "mobile",
+   "name": "近期上新",
+   "name_en": "new",
+   "platforms": [
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 4,
+   "special_tags": [],
+   "tags": [
+    "new"
+   ],
+   "topic_id": "5ebba107684e25c046195c49",
+   "update_time": 1655901629,
+   "valid": true
+  },
+  {
+   "create_time": 1585838462,
+   "game_type": "mobile",
+   "name": "网易全家桶",
+   "name_en": "Netease",
+   "platforms": [
+    "android-mobile-platform",
+    "android-tv-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 6,
+   "special_tags": [],
+   "tags": [
+    "netease"
+   ],
+   "topic_id": "5e85f97e50475f8e2855bbde",
+   "update_time": 1712053561,
+   "valid": true
+  },
+  {
+   "create_time": 1612920698,
+   "game_type": "pc",
+   "name": "💥4K/120fps体验升级",
+   "name_en": "",
+   "platforms": [
+    "android-mobile-pc",
+    "android-mobile-platform",
+    "android-tv-platform",
+    "harmonyos-h5-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc"
+   ],
+   "rank": 9,
+   "special_tags": [],
+   "tags": [
+    "4k"
+   ],
+   "topic_id": "6023377af99ca0a7e070714c",
+   "update_time": 1762398826,
+   "valid": true
+  },
+  {
+   "create_time": 1591150883,
+   "game_type": "mobile",
+   "name": "新游预约",
+   "name_en": "",
+   "platforms": [
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 11,
+   "special_tags": [],
+   "tags": [
+    "yy"
+   ],
+   "topic_id": "5ed709236e91f0d7717a5d20",
+   "update_time": 1668139370,
+   "valid": true
+  },
+  {
+   "create_time": 1589332187,
+   "game_type": "mobile",
+   "name": "二次元",
+   "name_en": "acg",
+   "platforms": [
+    "android-mobile-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 12,
+   "special_tags": [],
+   "tags": [
+    "二次元"
+   ],
+   "topic_id": "5ebb48db06660dbd7b82b25a",
+   "update_time": 1712053577,
+   "valid": true
+  },
+  {
+   "create_time": 1645669965,
+   "game_type": "pc",
+   "name": "热门端游",
+   "name_en": "",
+   "platforms": [
+    "android-mobile-pc",
+    "android-mobile-platform",
+    "harmonyos-h5-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc"
+   ],
+   "rank": 16,
+   "special_tags": [],
+   "tags": [
+    "pchigh"
+   ],
+   "topic_id": "6216ee4d0eb711b895e1b2bd",
+   "update_time": 1767099838,
+   "valid": true
+  },
+  {
+   "create_time": 1600943152,
+   "game_type": "mobile",
+   "name": "角色扮演",
+   "name_en": "Role-Playing",
+   "platforms": [
+    "android-mobile-platform",
+    "android-tv-platform",
+    "ios-mobile-platform",
+    "pc-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 17,
+   "special_tags": [],
+   "tags": [
+    "角色扮演",
+    "arpg",
+    "RPG",
+    "rpg"
+   ],
+   "topic_id": "5f6c743052c8422eb6ef0565",
+   "update_time": 1668139380,
+   "valid": true
+  },
+  {
+   "create_time": 1605769139,
+   "game_type": "mobile",
+   "name": "模拟经营",
+   "name_en": "",
+   "platforms": [
+    "android-mobile-platform",
+    "android-tv-platform",
+    "ios-mobile-platform",
+    "ios-native-platform",
+    "web-mobile",
+    "web-pc",
+    "harmonyos-h5-platform"
+   ],
+   "rank": 18,
+   "special_tags": [],
+   "tags": [
+    "mn",
+    "jy"
+   ],
+   "topic_id": "5fb617b342c2521c96a70c9f",
+   "update_time": 1712053777,
+   "valid": true
+  }
+ ],
+ "total": 17
+}

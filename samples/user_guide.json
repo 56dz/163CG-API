@@ -1,0 +1,52 @@
+{
+ "items": [
+  {
+   "_id": "62c649dd7027cd487427bd47",
+   "create_time": 1657162205,
+   "desc": "每周观赛参赛领时长，现金红包等你赢",
+   "guide_type": "type_live_tab",
+   "image_url": "https://g.fp.ps.netease.com/cg-image/file/62c29cb2499f999fd6307b0cJju53duF04",
+   "operator": "张庆瑞",
+   "rank": 15,
+   "title": "赏金赛事",
+   "update_time": 1657787231,
+   "valid": true
+  },
+  {
+   "_id": "62c64a18cc352626e973bf31",
+   "create_time": 1657162264,
+   "desc": "大佬帮扶教学，进房帮过，群内答疑",
+   "guide_type": "type_live_tab",
+   "image_url": "https://g.fp.ps.netease.com/cg-image/file/62c29cbb7a809670ea3fd3e3qsEvRQGB04",
+   "operator": "张庆瑞",
+   "rank": 16,
+   "title": "官方帮帮团",
+   "update_time": 1657787231,
+   "valid": true
+  },
+  {
+   "_id": "62c64a2cac56bddead9ddd34",
+   "create_time": 1657162284,
+   "desc": "长草期没事做？官方整活、巨星活动、趣味话题等你来！",
+   "guide_type": "type_live_tab",
+   "image_url": "https://g.fp.ps.netease.com/cg-image/file/62c29cc9b611a95a8b90a2f7v5mOsOVu04",
+   "operator": "张庆瑞",
+   "rank": 17,
+   "title": "游戏精彩整活",
+   "update_time": 1657787232,
+   "valid": true
+  },
+  {
+   "_id": "62c64a4ac384db8a1a6ae364",
+   "create_time": 1657162314,
+   "desc": "进入详情页，攻略爆料尽在「资讯」中",
+   "guide_type": "type_live_tab",
+   "image_url": "https://g.fp.ps.netease.com/cg-image/file/62c29cd24efdc931a6edf5c0spU29s9a04",
+   "operator": "张庆瑞",
+   "rank": 18,
+   "title": "游戏一手资讯",
+   "update_time": 1657787234,
+   "valid": true
+  }
+ ]
+}

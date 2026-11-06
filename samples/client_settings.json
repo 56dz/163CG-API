@@ -1,0 +1,20 @@
+{
+ "_id": "5d6351a1e19dfc26604b4fe3",
+ "activity_award_lottery_url": "https://cloudgame.webapp.163.com/liverank",
+ "activity_landing_url": "https://cloudgame.webapp.163.com/newer.html",
+ "create_time": 1566790049,
+ "enter_live_in_queue": true,
+ "free_time": 1800,
+ "mobile_queue_remind_msg": "《原神》手游使用高配云服务器，<br>手游会员每日限制《原神》手游的游玩时长。<br>敬请留意。",
+ "mobile_vip_buy_remind": false,
+ "new_user_free_days": 3,
+ "pc_free_time": 2700,
+ "pc_price": "1.80",
+ "pc_queue_remind_msg": "当前端游排队人数较多，充值云币也需要等待较长时间进入游戏，我们正紧急扩容中，敬请见谅。",
+ "pc_vip_buy_remind": false,
+ "private_chat_switch": true,
+ "unlock_cloud_pc_high_yuan": 0,
+ "update_time": 1566790049,
+ "vip_recharge_tips": "限时特惠",
+ "vip_recharge_tips_first": "限时特惠"
+}

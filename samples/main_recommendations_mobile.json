@@ -1,0 +1,4330 @@
+[
+ {
+  "create_time": 1608192998,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61cae875f186327cd84249b855UrMTjp03"
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "wow_cn_high",
+     "game_detail_tags": [
+      "暴雪",
+      "rpg",
+      "多人"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d2e3e7587ca8a605ecc5CxH8MW607",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "魔兽世界（无限/正式服/怀旧服/时光服）-高配",
+     "publisher": "",
+     "recommend_banner_icon": "",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d2e3e7587ca8a605ecc5CxH8MW607",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/691c1d3552d37d6d4267dd1ccaDxDwLe07",
+     "recommend_tags": [],
+     "simple_introduction": "经典多人在线角色扮演",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "魔兽世界：无限 11月5日正式上线",
+     "tag_code": "wow",
+     "tags": [
+      "暴雪",
+      "rpg",
+      "多人"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "wow_cn_high",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "wow",
+     "name": "魔兽世界（无限/正式服/怀旧服/时光服）-高配",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "wow"
+    },
+    "main_recommendation_info_id": "6aebee57110d910e5612dad7",
+    "rank": 2865
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 2160,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/647d49a8271e679d70e4361ci2ZGhAoO04",
+       "width": 3840
+      },
+      {
+       "carousel_type": 3,
+       "height": 2160,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/647d49b0b611a934ee36fba3JU1BTVE204",
+       "width": 3840
+      },
+      {
+       "carousel_type": 3,
+       "height": 2160,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/647d49b464eea689cfcfff4a47UIBZz204",
+       "width": 3840
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "灵游坊",
+     "free": false,
+     "game_code": "yzr0",
+     "game_detail_tags": [
+      "开放世界",
+      "rpg"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/647d48ca442e290e8225371deqr25CiZ04",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "https://g.fp.ps.netease.com/cg-image/file/696b0eb757a72864960e3be7iHffCd4407",
+     "jump_link": "https://cloudgame.webapp.163.com/yw/?id=6ae2be635fa7d4259e7f298b",
+     "jump_link_text": "点击参与",
+     "jump_text": "现已开售，云玩免费赢取游戏CDK",
+     "name": "影之刃零（steam高配）-每日抽送游戏cdk&云币",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/693bb85411a823e90d4e2625dGZOrxSO07",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/647d48ca442e290e8225371deqr25CiZ04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/647d48cd64eea6afbc0a1f45fgcqKVrQ04",
+     "recommend_tags": [],
+     "simple_introduction": "《影之刃零》是一款由灵游坊开发中的次世代第三人称动作冒险RPG游戏。",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "游戏现已正式上线，免费赢取游戏CDK",
+     "tag_code": "yzr0",
+     "tags": [
+      "开放世界",
+      "rpg"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "yzr0",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "yzr0",
+     "name": "影之刃零（steam高配）-每日抽送游戏cdk&云币",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "yzr0"
+    },
+    "main_recommendation_info_id": "629ef21d10c3dab8bb955242",
+    "rank": 3191
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "free": false,
+     "game_code": "yzr0_high_mg",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/647d48ca442e290e8225371deqr25CiZ04",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "https://g.fp.ps.netease.com/cg-image/file/696b0eb757a72864960e3be7iHffCd4407",
+     "jump_link": "https://cg.163.com/actshare.html?action=cloudgaming%3A%2F%2Fshowpay%3Fpaytype%3Dpc%26tab%3Dgamecard%26rechargeid%3D6ae34e7860bbb03f93a0a20a",
+     "jump_link_text": "点击参与",
+     "jump_text": "领券享冰点价购买《影之刃零》咪咕版游戏CDK+端游会员",
+     "name": "影之刃零（咪咕高配）领券冰点购",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/693bb85411a823e90d4e2625dGZOrxSO07",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/647d48ca442e290e8225371deqr25CiZ04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/647d48cd64eea6afbc0a1f45fgcqKVrQ04",
+     "recommend_tags": [],
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "超值CDK限量发售中！",
+     "tag_code": "yzr0_high_mg"
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "yzr0_high_mg",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "yzr0",
+     "name": "影之刃零（咪咕高配）领券冰点购",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "yzr0_high_mg"
+    },
+    "main_recommendation_info_id": "6ae4973b77d9521612b1a201",
+    "rank": 3198
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 381,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66571c0d340ca07dcbe501fbG2wd5SXU05",
+       "width": 675
+      },
+      {
+       "carousel_type": 3,
+       "height": 381,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66571c142e8955a3199657a3Sx5I81Hb05",
+       "width": 675
+      },
+      {
+       "carousel_type": 3,
+       "height": 381,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/664325a6511f93a197f5a84279GgXStj05",
+       "width": 675
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 900,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "cloud_pc_high",
+     "game_detail_tags": [
+      "steam",
+      "epic",
+      "origin "
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/690da1613e5f0a7190fc0a24Ycko0AzO06",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "高配云电脑-魔兽世界无限上线",
+     "publisher": "",
+     "recommend_banner_icon": "",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/690da1613e5f0a7190fc0a24Ycko0AzO06",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/690c6cea1078cf15f02a1f0exW8ySASs06",
+     "recommend_tags": [
+      "超高配置",
+      "极速下载"
+     ],
+     "simple_introduction": "专属高配云电脑，定制你的游戏库",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "高配个人专属云电脑，极速下载",
+     "tag_code": "cloud_pc",
+     "tags": [
+      "steam",
+      "epic",
+      "origin "
+     ],
+     "vendor": "网易云游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 900,
+     "free": false,
+     "game_code": "cloud_pc_high",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "",
+     "name": "高配云电脑-魔兽世界无限上线",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "cloud_pc"
+    },
+    "main_recommendation_info_id": "6aebeed4ff7445d3d2910c12",
+    "rank": 3258
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 43200,
+     "description": [],
+     "free": true,
+     "game_code": "xttc_cpa",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6ad88e5100c3e3cf0c4731d7c3pE81gm07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "星途天城-限免12h",
+     "recommend_banner_icon": "",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6ad88e5100c3e3cf0c4731d7c3pE81gm07",
+     "recommend_tags": [],
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "《星途天城》以19世纪工业幻想为基底，融合蒸汽朋克、神秘学与神话元素，构建出一个多文明并存的幻想大陆",
+     "tag_code": "xttc_cpa"
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 43200,
+     "free": true,
+     "game_code": "xttc_cpa",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "",
+     "name": "星途天城-限免12h",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "xttc_cpa"
+    },
+    "main_recommendation_info_id": "6a5f2d3951125007a72d48ac",
+    "rank": 3286
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "5fdb13e6617a03c034eee5db",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "ios-mobile-platform",
+   "android-mobile-platform",
+   "ios-native-platform",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 12,
+  "recommendation_mode": "model1",
+  "recommendation_tags": [],
+  "tab_ids": [],
+  "title": "必玩榜",
+  "update_time": 1789557008,
+  "valid": true
+ },
+ {
+  "create_time": 1608193055,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603ead988de2fb2c4ff43b5k7XvrU1705",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603ead92dceca5cd0cc94a0L7WlTKPF05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603eada786eaf034e91f06bCoXsNiIf05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603eada9fc96e6e3532ec7bc32P6GYl05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603eadae94479ab52917f4996CedLN505",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603eadac63984a2282b9b77lI2HDHcb05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603eadaeea6a0593d7c07c8KihH9USK05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6603eadb7bdcf2058916ba10Bvr0jiUD05",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "上海积咪网络科技有限公司",
+     "free": false,
+     "game_code": "lsxyly",
+     "game_detail_tags": [
+      "绝赞立绘",
+      "近期热门预约",
+      "开放世界",
+      "萌宠"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6603eaa8e065b4af5fab60a1YuzmRYoi05",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "蓝色星原：旅谣",
+     "publisher": "蛮啾网络",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6aebf345b692980f27a146ecJSbhh9G207",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6603eaa8e065b4af5fab60a1YuzmRYoi05",
+     "recommend_tags": [
+      "角色扮演",
+      "收集"
+     ],
+     "simple_introduction": "予你的，138亿年的星光",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "予你的，138亿年的星光",
+     "tag_code": "lsxyly",
+     "tags": [
+      "绝赞立绘",
+      "近期热门预约",
+      "开放世界",
+      "萌宠"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "lsxyly",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "main_game_code": "lsxyly",
+     "name": "蓝色星原：旅谣",
+     "need_login_under_reservation": true,
+     "reservation_count": 7507,
+     "reservation_status": "under-reservation",
+     "reservation_url": "",
+     "reservation_url_mobile": "",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "lsxyly"
+    },
+    "main_recommendation_info_id": "693bb86f465f03417554348a",
+    "rank": 2957
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/64e6e67b7f543e1dc21aac03EJ2TY4y205"
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e5b41c440752affa307ed1X0fNPiJw05",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e5b615a73fe78f28f1d769lzslwdNc05",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e5b62b502971bc04a33661RfOUQbSg05",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e5b631bea050d852b8fa5dPTWx9X9D05",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e6e7316fb6b989dfe1bd12yqTNgpJI05",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e6e7387082fcbe93da55cdCWLNMeEI05",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64e6e73f6dda2055a203aa8cyHBrDJm805",
+       "width": 1920
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "网易",
+     "free": false,
+     "game_code": "dhwxd",
+     "game_detail_tags": [],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6ae3086e8f9b4053d40f7e9ekjRCtLiz07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "https://cloudgame.webapp.163.com/reservation/?id=64e5c85c0c6465bbf4e22ee8",
+     "jump_link_text": "立即预约",
+     "jump_text": "今日首爆！预约送季卡！",
+     "name": "无限大-01月15日 首发",
+     "publisher": "网易",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/64e5b41c440752affa307ed1X0fNPiJw05",
+     "recommend_banner_intro": "都市探索玩法新作，二次元开放世界RPG",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6ae3086e8f9b4053d40f7e9ekjRCtLiz07",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6ae3086e8f9b4053d40f7e9ekjRCtLiz07",
+     "recommend_tags": [
+      "二次元",
+      "网易",
+      "大世界"
+     ],
+     "simple_introduction": "都市探索玩法新作，二次元开放世界RPG",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "27年1月15日全球上线",
+     "tag_code": "dhwxd",
+     "tags": [],
+     "vendor": "wyi",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "dhwxd",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "main_game_code": "dhwxd",
+     "name": "无限大-01月15日 首发",
+     "need_login_under_reservation": true,
+     "reservation_count": 137496,
+     "reservation_status": "under-reservation",
+     "reservation_url": "",
+     "reservation_url_mobile": "",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "dhwxd"
+    },
+    "main_recommendation_info_id": "642e8dc096466cc0f5d865e2",
+    "rank": 3020
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "1",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "daily_free_time": 0,
+     "description": [],
+     "free": false,
+     "game_code": "xbgd",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/69006a18c623b3b585674c417eLp4ejm06",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "星布谷地",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6917054358fc4ca1ec08d83bmv14gkLk07",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/69006a2a24b71bb14f01dc53Nw6k4UNE06",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/69006a18c623b3b585674c417eLp4ejm06",
+     "recommend_tags": [],
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "",
+     "tag_code": "xbgd"
+    },
+    "link_game": {
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "xbgd",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "main_game_code": "xbgd",
+     "name": "星布谷地",
+     "need_login_under_reservation": true,
+     "reservation_count": 22035,
+     "reservation_status": "under-reservation",
+     "reservation_url": "",
+     "reservation_url_mobile": "",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "xbgd"
+    },
+    "main_recommendation_info_id": "691704189954f0c744db1395",
+    "rank": 3126
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "https://g.fp.ps.netease.com/cg-image/file/671b73c5eed28c55b5dc4635f0poxWlr05",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68b18e28acbaf6b6a0de636bP2txG6Hb06",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68b18f58bea11b1e86295c76C7gW0vcF06",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68b18f5cdada963506d6ee96h2i08Z8g06",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68b18f60fdb25b56bb0eb1edUeU7iOdc06",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68b18f6302ccf780b71b62e8EGBTN10Z06",
+       "width": 1080
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "米哈游®",
+     "free": false,
+     "game_code": "bhyyjl",
+     "game_detail_tags": [
+      "绝赞立绘",
+      "近期热门预约",
+      "抓宠",
+      "自走棋",
+      "养成"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6ab24e0e6268b05c50b76e40RjeoK5sc07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "崩坏：因缘精灵",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/68b18e28acbaf6b6a0de636bP2txG6Hb06",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6ab24e0e6268b05c50b76e40RjeoK5sc07",
+     "recommend_tags": [],
+     "simple_introduction": "精灵养成冒险策略游戏",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "《崩坏：因缘精灵》是一款米哈游「崩坏」IP下的全新精灵养成冒险策略游戏",
+     "tag_code": "bhyyjl",
+     "tags": [
+      "绝赞立绘",
+      "近期热门预约",
+      "抓宠",
+      "自走棋",
+      "养成"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "bhyyjl",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "main_game_code": "bhyyjl",
+     "name": "崩坏：因缘精灵",
+     "need_login_under_reservation": true,
+     "reservation_count": 159364,
+     "reservation_status": "under-reservation",
+     "reservation_url": "",
+     "reservation_url_mobile": "",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "bhyyjl"
+    },
+    "main_recommendation_info_id": "647056988faeeb90ef75727a",
+    "rank": 3254
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "5fdb141f26d1313636211e28",
+  "main_recommendation_type": "mobile_home",
+  "more": false,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "ios-native-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 21,
+  "recommendation_mode": "model2",
+  "recommendation_tags": [],
+  "tab_ids": [
+   "66051b810d5fa1f0204c294f"
+  ],
+  "title": "超期待新游",
+  "update_time": 1782881907,
+  "user_type_tags": [],
+  "valid": true
+ },
+ {
+  "create_time": 1678937923,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "https://g.fp.ps.netease.com/cg-image/file/6630a46926f8fc499c63830ayUCpCz0X05",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/6ae403152d06160d36467bd8r8UukMX907"
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ac70d6b42bb8db65cf1d61cK6b8oqAg07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a90fe52b89c1d4ca4ca9f20G2gcTaiI07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a90fe552b6c73986de20e0dchu0tiQu07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a90fe5ad142ee6942bfc33adQ3ZfK3C07",
+       "width": 1920
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "叠纸游戏",
+     "free": false,
+     "game_code": "wxnnsy",
+     "game_detail_tags": [
+      "开放世界",
+      "多人联机",
+      "家园",
+      "换装"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6aa21500caf2275b1e33dabfdgSIygbA07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "无限暖暖（官服）",
+     "publisher": "叠纸游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6ab4938c3503dbb384ae279dDw3lFXqy07",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6aa21500caf2275b1e33dabfdgSIygbA07",
+     "recommend_tags": [],
+     "simple_introduction": "2.11版本「时光缝合的扉页」开启！",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "《无限暖暖》2.11版本「时光缝合的扉页」开启",
+     "tag_code": "wxnnsy",
+     "tags": [
+      "开放世界",
+      "多人联机",
+      "家园",
+      "换装"
+     ],
+     "vendor": "叠纸游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "wxnnsy",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "wxnnsy",
+     "name": "无限暖暖（官服）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "wxnnsy"
+    },
+    "main_recommendation_info_id": "6630a4ab4b8211491507e805",
+    "rank": 2169
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "https://g.fp.ps.netease.com/cg-image/file/64366bcd2b1fce16b0cc3199M4hIaJCR04",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6865f15574c74b30497bad50LOBkjESy06",
+       "width": 608
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6865f15759b4de7e961b4ebcbZ5u4BeV06",
+       "width": 608
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6865f168d8a5fd173d5566923rbhYivM06",
+       "width": 608
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6865f16e576459ebe4c0f55bh78i5eRP06",
+       "width": 608
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6865f1725ccbbbb8f46c74313MotGO7L06",
+       "width": 608
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 300,
+     "description": [],
+     "developer": "叠纸游戏",
+     "free": false,
+     "game_code": "lysk",
+     "game_detail_tags": [
+      "剧情",
+      "动作",
+      "3D",
+      "养成",
+      "角色扮演"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/643653423f043c0cbd81c903NvrNvR8x04",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "https://g.fp.ps.netease.com/cg-image/file/64a7d52414e565e605bea2f5QwGwNQsq05",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "恋与深空（官服）",
+     "publisher": "叠纸游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6790b929b2816f508de159fcr8WxCqTL06",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/643653423f043c0cbd81c903NvrNvR8x04",
+     "recommend_tags": [
+      "剧情",
+      "动作",
+      "3D",
+      "养成"
+     ],
+     "simple_introduction": "次世代3D动作手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "6.0版本「万籁俱起」",
+     "tag_code": "lysk",
+     "tags": [
+      "剧情",
+      "动作",
+      "3D",
+      "养成",
+      "角色扮演"
+     ],
+     "vendor": "叠纸游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 300,
+     "free": false,
+     "game_code": "lysk",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "lysk",
+     "name": "恋与深空（官服）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "lysk"
+    },
+    "main_recommendation_info_id": "64366bce6d92fe8eb2faea77",
+    "rank": 2170
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "https://g.fp.ps.netease.com/cg-image/file/6a20f00bf5b5156a0b45a6bbGLIo28vU07",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/692e9083debe27260ec983c54wlAgKsN07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/692e9087a580b79e4d58d90eaTJcZisl07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/692e908bd3141aa822a7fecfuZ2504e607",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/692e908eae4eaa42bb8b1f37hjwpGbYR07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/692e9092f8a08df59bc76e5eyIKtf8uJ07",
+       "width": 1920
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "description": [],
+     "developer": "不眠夜工作室",
+     "free": false,
+     "game_code": "dhpp",
+     "game_detail_tags": [
+      "角色扮演",
+      "女性向",
+      "二次元"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/69202b87756cfedb4350916aArFsZSTo07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "夜幕之下（官服）",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/68108e75662d7d52ed82afdaxVi93Gbe06",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/69202b87756cfedb4350916aArFsZSTo07",
+     "recommend_tags": [
+      "角色扮演",
+      "女性向",
+      "二次元"
+     ],
+     "simple_introduction": "角色扮演剧情策略游戏",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "6月5日公测开启",
+     "tag_code": "dhpp",
+     "tags": [
+      "角色扮演",
+      "女性向",
+      "二次元"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "free": false,
+     "game_code": "dhpp",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "dhpp",
+     "name": "夜幕之下（官服）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "dhpp"
+    },
+    "main_recommendation_info_id": "645a1df609aa8d2c89e8fe81",
+    "rank": 2171
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "https://g.fp.ps.netease.com/cg-image/file/66b5b2dd20d0b1cf2421b616rFT0hEOv05",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e1580dcb9c5c333055274dCYiZZbpJ05",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e1580d6d43ab395e837deaXzCGqKxF05",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e1580e22657876184bfa3efm69A3ar05",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e1580ed417de1e16419817pIESfi7w05",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e1580e2da417197a94e1edIY3I7T5T05",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e158108a755e72d96f86a8YgySaSF405",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e1581006becc76ca29bf9e8RYgtGmS05",
+       "width": 720
+      },
+      {
+       "carousel_type": 3,
+       "height": 1280,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e15810752aa7924b23d3c44soEaqgp05",
+       "width": 720
+      }
+     ],
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "广州灵犀互动娱乐有限公司",
+     "free": false,
+     "game_code": "ry",
+     "game_detail_tags": [
+      "绝赞立绘",
+      "剧情",
+      "角色扮演",
+      "养成",
+      "卡牌"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6698ef7265e70b709db445321jzOrJbD05",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "https://g.fp.ps.netease.com/cg-image/file/66f3cbb233350592f866e39eo3ZkrCzD05",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "一周年系列活动开启！限时送月卡抽黄金",
+     "name": "如鸢（官服）",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6863bb2bab37bef7a3b4e326Yo0P4A0q06",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6698ef7265e70b709db445321jzOrJbD05",
+     "recommend_tags": [],
+     "simple_introduction": "沉浸式剧情卡牌手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "沉浸式剧情卡牌手游",
+     "tag_code": "ry",
+     "tags": [
+      "绝赞立绘",
+      "剧情",
+      "角色扮演",
+      "养成",
+      "卡牌"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "ry",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "ry",
+     "name": "如鸢（官服）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "ry"
+    },
+    "main_recommendation_info_id": "66b5d5521aaec0cd315e6680",
+    "rank": 2201
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "https://g.fp.ps.netease.com/cg-image/file/6492a8a19749af54954bac23jaYTFQWF04",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6492a976c0562338a678b96dIKp8ZcGk04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6492a976fe037299df16fde40zqY0c1904",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6492a977b6bd05e0176465d0u4K3gm3C04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6492a97735140c0a4dd8812frZevCRkt04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6492a977bb5851bf18673610SKqhfStS04",
+       "width": 1080
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "sjzw",
+     "game_detail_tags": [
+      "无限流",
+      "剧情",
+      "恋爱",
+      "女性向"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/65a6374a5bfa8222db4a657dmLLms0MK05",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "世界之外",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/68bf961b2304f2170c946cfft1iJZ3j806",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/65a6374a5bfa8222db4a657dmLLms0MK05",
+     "recommend_tags": [
+      "无限流",
+      "恋爱",
+      "剧情"
+     ],
+     "simple_introduction": "无限流言情手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "“世界无限，此爱不变”",
+     "tag_code": "sjzw",
+     "tags": [
+      "无限流",
+      "剧情",
+      "恋爱",
+      "女性向"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "sjzw",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "sjzw",
+     "name": "世界之外",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "sjzw"
+    },
+    "main_recommendation_info_id": "6497daf762aec3472f1d40f7",
+    "rank": 2202
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "64128f439fa42bddaf87687c",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "ios-native-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 35,
+  "recommendation_mode": "model2",
+  "recommendation_tags": [],
+  "shown_game_behavior_tags": [],
+  "shown_user_type_tags": [],
+  "tab_ids": [],
+  "title": "女性向专题",
+  "update_time": 1765534817,
+  "user_type_tags": [],
+  "valid": true
+ },
+ {
+  "create_time": 1609404752,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab9d9bdcc957abeb690a75a0R3ygyaJ07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab9d9c1be7e49215250fc08oijBmgzS07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab9d9c439f975264c1042a4EF8tCNbF07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab9d9c61e063cbccb68f86fyfo6Ud1i07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab9d9c9ba62af29698296afP8saUDVf07",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "米哈游®",
+     "free": false,
+     "game_code": "bhxqtd",
+     "game_detail_tags": [
+      "RPG",
+      "二次元",
+      "策略",
+      "回合制"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6a1d3d4c256bb2fa806cee84u5S4IUPh07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "崩坏：星穹铁道-4.6版本",
+     "publisher": "米哈游®",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/63e21fdd3f043c42a04efc54Qaezs6Ua04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/658b8d5118ea987ba60f034cawMIqKAs05",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6a1d3d4c256bb2fa806cee84u5S4IUPh07",
+     "recommend_tags": [
+      "冒险",
+      "策略",
+      "高画质"
+     ],
+     "simple_introduction": "米哈游银河冒险策略游戏，愿此行，终抵群星",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "全新4.5版本「挥掷千星的筹码」现已推出！",
+     "tag_code": "bhxqtd",
+     "tags": [
+      "RPG",
+      "二次元",
+      "策略",
+      "回合制"
+     ],
+     "vendor": "miHoYo",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "bhxqtd",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "bhxqtd",
+     "name": "崩坏：星穹铁道-4.6版本",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "bhxqtd"
+    },
+    "main_recommendation_info_id": "5fed93001da8ea7df117e824",
+    "rank": 172
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ad82f356aa14dec21e208c4k77FE4oo07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ad82f38a9cc61ac382fb31esAikjA6807",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ad82f3b2ae7a31ac426e61f1vbOVBsh07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ad82f3d935b958c0d2bf6eboK2eiZlZ07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ad82f40cddc68be707bb89fsfRfjWp607",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "米哈游®",
+     "free": false,
+     "game_code": "jql",
+     "game_detail_tags": [
+      "动作",
+      "ARPG"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6aa0c571142dafd78c54b1363WBZLNSg07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "绝区零-3.3版本",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/65646aa1d352ac46c5abb2c979XJOGai05",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6aa0c571142dafd78c54b1363WBZLNSg07",
+     "recommend_tags": [
+      "动作",
+      "即时战斗",
+      "末日"
+     ],
+     "simple_introduction": "米哈游全新都市动作冒险游戏。",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "全新3.3版本「重返天空的旅程」现已推出！",
+     "tag_code": "jql",
+     "tags": [
+      "动作",
+      "ARPG"
+     ],
+     "vendor": "miHoYo",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "jql",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "jql",
+     "name": "绝区零-3.3版本",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "jql"
+    },
+    "main_recommendation_info_id": "6375d666ae2844d461376f7d",
+    "rank": 173
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab4be5d21c3bbec104260a5sWtjjdE207",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab4be62b985bab14d68ee587Pyi8qF207",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab4be66fa6fbc0b716a7a1bUs92xNLI07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab4be691403c2b4ee142d4dqEATN1HB07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6ab4be6d690d64a63f5737e94BOfVa6o07",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [
+      {
+       "con": "米哈游",
+       "title": "发行商："
+      },
+      {
+       "con": "《崩坏3》是一款角色扮演类3D动作手游，教科书式的全视角卡通渲染、蜜汁沉浸的关卡剧情、熟练可调戏的看板萌妹、无限可能的分支连招，以及不科学的超强打击感！作为天朝原创IP大作，更有中日人气声优献声哟！与女武神并肩作战，一起抵抗「崩坏」吧！",
+       "title": "游戏简介："
+      },
+      {
+       "con": "游戏的故事延续了《崩坏学园2》的主线剧情，讲述了在不远的未来，神秘的灾害“崩坏”侵蚀了世界，被崩坏感染的人类，变成了没有思维，只懂破坏的“死士”，它们和从崩坏中诞生的巨大怪物“崩坏兽”，一同对这个世界造成了巨大的威胁。唯一可以抵抗崩坏的，只有一些拥有“崩坏抗体”的少女，只有由她们组成的“女武神”部队。勇敢的少女们穿上冰冷的机甲，拿起沉重的武器，与崩坏战斗着。为世界上所有的美好而战，在被崩坏侵蚀的世界中，由勇敢的少女组成的女武神部队，为守护世界而展开了战斗。玩家可扮演炽翎、白夜执事、第六夜想曲、月下初拥、极地战刃、空之律者、原罪猎人等女武神，去保护这个世界。",
+       "title": "游戏背景："
+      }
+     ],
+     "developer": "",
+     "free": false,
+     "game_code": "bh3",
+     "game_detail_tags": [
+      "动作",
+      "美少女",
+      "养成",
+      "ARPG"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6930eae31ab344b3d6d9634dPVDYrD4f07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "崩坏3",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6426e5e5052dfe28a0b743c0VO32DQpV04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6492a86ea675d9f5f2d5aae7oUmPzzlr04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6930eae31ab344b3d6d9634dPVDYrD4f07",
+     "recommend_tags": [
+      "二次元",
+      "动作"
+     ],
+     "simple_introduction": "全新8.9版本「羽落万生」现已推出，新角色补给首次十连五折！",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "米哈游科幻冒险动作游戏",
+     "tag_code": "bh3",
+     "tags": [
+      "动作",
+      "美少女",
+      "养成",
+      "ARPG"
+     ],
+     "vendor": "miHoYo",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "bh3",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "bh3",
+     "name": "崩坏3",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "bh3"
+    },
+    "main_recommendation_info_id": "6375d6a9476f28a1c77e0f79",
+    "rank": 1379
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 1242,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aa259534ab7c26a2532c325OuqYVopT07",
+       "width": 2208
+      },
+      {
+       "carousel_type": 3,
+       "height": 1242,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aa2595609d9f85419a806e0LOTVv8KG07",
+       "width": 2208
+      },
+      {
+       "carousel_type": 3,
+       "height": 1242,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aa25959d53f9adcb7f9731aEAz1Cp8d07",
+       "width": 2208
+      },
+      {
+       "carousel_type": 3,
+       "height": 1242,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aa2595d961723445d6ccccfHjU2ENAj07",
+       "width": 2208
+      },
+      {
+       "carousel_type": 3,
+       "height": 1242,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aa25960c7ec05cb8d523a0fsBJyLOyL07",
+       "width": 2208
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [
+      {
+       "con": "网易游戏",
+       "title": "发行商："
+      }
+     ],
+     "developer": "网易游戏",
+     "free": false,
+     "game_code": "yys",
+     "game_detail_tags": [
+      "卡牌",
+      "养成",
+      "回合制",
+      "和风"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6aa258e8b29c8d7d0bb860f2aUORXQBi07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "阴阳师-十周年登陆10连10金",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/63510d9b1d344978ec2d87afHcJy3as104",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/62b581c6969f895be5315e8a9MVuFyD604",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6aa258e8b29c8d7d0bb860f2aUORXQBi07",
+     "recommend_tags": [
+      "二次元",
+      "卡牌"
+     ],
+     "simple_introduction": "全新版本「永恒之章·拾光永恒」9月9日开启！\n● 重磅新式神登录即领：十周年重磅新式神SSR石长姬降临平安京，9月9日维护后-10月6日23:59的庆典活动期间登录即可领取！\n● 免费100抽登录即得：“十连十金”「拾光金眷」活动于9月2日维护后-10月6日23:59开启。全服集结进度提升可解锁最多100次免费召唤，且100次内必定触发十连十金！\n● 十载焕新礼：全新庭院皮肤「狐栖归处」登录免费领取！更有焕新幕间、主题、点触、名染外观。\n● 十周年纪念服：新区「永远的平安京」9月9日维护后正式开启！​减负体验新升级，开荒肝度大幅下降，成就奖励快速获取！​离线挂机领收益，御魂、觉醒副本5倍速刷，经验/金币妖怪奖励翻倍，助力轻松获取资源！",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "十周年十全十美回馈礼：登录领​全新​SSR石长姬，10连抽10金！",
+     "tag_code": "yys",
+     "tags": [
+      "卡牌",
+      "养成",
+      "回合制",
+      "和风"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "yys",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "yys",
+     "name": "阴阳师-十周年登陆10连10金",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "yys"
+    },
+    "main_recommendation_info_id": "5fed931b10f253591e126be5",
+    "rank": 1380
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6abc7d6234ebe5768579eeccLoRZSKMq07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6abc7d6b970f7f3afccaa0f6jMbvhFYw07",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6abc7d710d1339dcc1a7b055LBN9gpxQ07",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6abc7d79924051e9aeeb30222mHhMoVW07",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6abc7d816a3845db43e1b0abdiOPN6jo07",
+       "width": 1080
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "库洛游戏",
+     "free": false,
+     "game_code": "mcklyx",
+     "game_detail_tags": [
+      "开放世界",
+      "动作",
+      "冒险",
+      "策略"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6984029c5f72b753818b172cgzmIKmFA07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "鸣潮-3.7版本",
+     "publisher": "库洛游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/63e22206e034996851c9819cvdfKlCEq04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6984029c5f72b753818b172cgzmIKmFA07",
+     "recommend_tags": [
+      "二次元",
+      "动作"
+     ],
+     "simple_introduction": "《鸣潮》3.7版本 「 镜锁妄世，心照红尘」",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "玄方终章来临 新角色「心」登场",
+     "tag_code": "mcklyx",
+     "tags": [
+      "开放世界",
+      "动作",
+      "冒险",
+      "策略"
+     ],
+     "vendor": "库洛游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "mcklyx",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "mcklyx",
+     "name": "鸣潮-3.7版本",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "mcklyx"
+    },
+    "main_recommendation_info_id": "6375d6f993d76c11b8b664dd",
+    "rank": 1381
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "5fed9150b058c1b9837bff85",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 77,
+  "recommendation_mode": "model3",
+  "recommendation_tags": [],
+  "tab_ids": [],
+  "title": "二次元专题",
+  "update_time": 1765534798,
+  "user_type_tags": [],
+  "valid": true
+ },
+ {
+  "create_time": 1608193065,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61b2c8b6520b2d321129ddccSgQK2e9o03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e70d995192c10033751KsHRYHiL04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e7157166d159e21a47atDQNOmTP04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e71779f24965b24b4e9Qildasqb04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d9a81f7509014075b70uZ8SjksH04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d9a442e294e1fb269310qBSCR1i04",
+       "width": 1080
+      }
+     ],
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "mcsy",
+     "game_detail_tags": [
+      "沙盒",
+      "开放世界",
+      "像素",
+      "创造"
+     ],
+     "game_download_info": null,
+     "game_open_action": "cloud_mobile",
+     "game_open_action_game_code": "mobile",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/60965a5d2786fd9864be453abkSwrdMW03",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "我的世界（云手机版）",
+     "publisher": "网易游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/5fe433b67f9d2a117a46d93c2GMgQ7XT02",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/60965a5d2786fd9864be453abkSwrdMW03",
+     "recommend_tags": [
+      "沙盒",
+      "益智"
+     ],
+     "simple_introduction": "世界在你手中",
+     "skip_detail_page": true,
+     "status": "normal",
+     "summary": "搬砖节福利来袭",
+     "tag_code": "wdsjzxb",
+     "tags": [
+      "沙盒",
+      "开放世界",
+      "像素",
+      "创造"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "mcsy",
+     "game_download_info": null,
+     "game_open_action": "cloud_mobile",
+     "game_open_action_game_code": "mobile",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "mcsy",
+     "name": "我的世界（云手机版）",
+     "skip_detail_page": true,
+     "status": "normal",
+     "tag_code": "wdsjzxb"
+    },
+    "main_recommendation_info_id": "5fdb1764abea4312e1737d41",
+    "rank": 58
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 480,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/657bbb2cdabaa22176d3b2bcsjmPxMzG05",
+       "width": 800
+      },
+      {
+       "carousel_type": 3,
+       "height": 480,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/657bbb2cc1d4917cdc933582Ot6m16Mo05",
+       "width": 800
+      },
+      {
+       "carousel_type": 3,
+       "height": 480,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/657bbb2cbca30eee12b30999mKiRBGYd05",
+       "width": 800
+      },
+      {
+       "carousel_type": 3,
+       "height": 480,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/657bbb2c43263f250484db01b958ErYh05",
+       "width": 800
+      },
+      {
+       "carousel_type": 3,
+       "height": 480,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/657bbb2d2233c4f94670814e8qK6wkJP05",
+       "width": 800
+      }
+     ],
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "网易游戏",
+     "free": false,
+     "game_code": "dzpd",
+     "game_detail_tags": [
+      "竞技",
+      "可爱",
+      "休闲竞技",
+      "休闲"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6571314094434e82802560c3UvjVs4i205",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "蛋仔派对",
+     "publisher": "网易游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/601faee75e60275a805ec2dd98SK6jGX03",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6540e9a24dc2f50f71c4c46eTIEwjwVB05",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6571314094434e82802560c3UvjVs4i205",
+     "recommend_tags": [
+      "竞技",
+      "可爱"
+     ],
+     "simple_introduction": "闯关派对，开黑必备！跳跃翻滚，撞到开花！",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "6.27三周年庆 流浪蛋仔岛",
+     "tag_code": "dzpd",
+     "tags": [
+      "竞技",
+      "可爱",
+      "休闲竞技",
+      "休闲"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "dzpd",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "dzpd",
+     "name": "蛋仔派对",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "dzpd"
+    },
+    "main_recommendation_info_id": "5fdb173eab4f9d2851bf57c4",
+    "rank": 59
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/66e3e6ffa8a84cbab0eee784d2RfE06B05"
+      },
+      {
+       "carousel_type": 3,
+       "height": 1350,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68f736e843484d92808631284DevVgSw06",
+       "width": 2400
+      },
+      {
+       "carousel_type": 3,
+       "height": 1350,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68f736ebfd86669790d45ff2DwG5tfRV06",
+       "width": 2400
+      },
+      {
+       "carousel_type": 3,
+       "height": 1565,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68f736eeaedfd6a0d49ecaadW6aCEP3206",
+       "width": 2400
+      },
+      {
+       "carousel_type": 3,
+       "height": 1351,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68f736f14fa1df7ad5480c29z8qaA0IR06",
+       "width": 2400
+      },
+      {
+       "carousel_type": 3,
+       "height": 1351,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/68f736f5ee90cc329ada415cIMAPVxC006",
+       "width": 2400
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "网易游戏",
+     "free": false,
+     "game_code": "dwrg",
+     "game_detail_tags": [
+      "刺激",
+      "合作",
+      "组队",
+      "PVP"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/601f6abd2786fd27c2e4a18aug2CQRkl03",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "https://g.fp.ps.netease.com/cg-image/file/6512d7dba89ca57832f6593f2bauDEbj05",
+     "jump_link": "https://cloudgame.webapp.163.com/yw/?id=69801c406f1581890a486413",
+     "jump_link_text": "点击参与>>>",
+     "jump_text": "春节活动云玩上线，抽精美游戏周边",
+     "name": "第五人格（官服）",
+     "publisher": "网易游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/626bb9a83521f6897fa7997fhQbgWWtt04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6350abcd3edd58554929ed5d67p7DuW804",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/601f6abd2786fd27c2e4a18aug2CQRkl03",
+     "recommend_tags": [
+      "逃生",
+      "联机"
+     ],
+     "simple_introduction": "网易非对称性对抗竞技手游-昨日之笼主线剧情预约开启",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "网易首款非对称性对抗竞技手游",
+     "tag_code": "dwrg",
+     "tags": [
+      "刺激",
+      "合作",
+      "组队",
+      "PVP"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "dwrg",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "dwrg",
+     "name": "第五人格（官服）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "dwrg"
+    },
+    "main_recommendation_info_id": "5fdb1745c611ef70c55b6974",
+    "rank": 60
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61a5f986052dfe7833e06512laBr2Rbg03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9cddf9cdb17d8e9f838d003jau04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9dddf9cd08c4335227PxKAjGEO04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9d3521f6455cb406d2EPdeu4Aa04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9e3b6d3194c99b3718bt3sKAuy04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9e3f043c64e91fce46iRiXIpEu04",
+       "width": 1080
+      }
+     ],
+     "daily_free_time": 43200,
+     "description": [
+      {
+       "con": "网易游戏",
+       "title": "发行商："
+      },
+      {
+       "con": "深入疑局，踏遍千山，感知八千里江湖百态。打破固化的角色设定，无规则下的人性释放。丰富玩法，自由成长，奇遇秘闻，轻功战斗。千面江湖，情感羁绊，载酒人生，《一梦江湖》致力为每位玩家提供一个独属于他的武侠世界。",
+       "title": "游戏简介："
+      },
+      {
+       "con": "",
+       "title": "游戏背景："
+      }
+     ],
+     "developer": "",
+     "free": false,
+     "game_code": "clx",
+     "game_detail_tags": [
+      "武侠",
+      "古风",
+      "角色扮演"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6a758bb7bf23f4036a183431rMY2Vrzb07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "一梦江湖",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/626bbbb3370860860f8e3971YmkiHuvQ04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/62eb76d37a80965c0ebc357deUMghCCk04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6a758bb7bf23f4036a183431rMY2Vrzb07",
+     "recommend_tags": [
+      "MMORPG",
+      "武侠"
+     ],
+     "simple_introduction": "极具沉浸感的真实江湖",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "暑期重磅资料片「落归白」现已开启！新门派「落白」震撼登场",
+     "tag_code": "clx",
+     "tags": [
+      "武侠",
+      "古风",
+      "角色扮演"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 43200,
+     "free": false,
+     "game_code": "clx",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "clx",
+     "name": "一梦江湖",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "clx"
+    },
+    "main_recommendation_info_id": "5fdb1735b5c945cd13d1a1e3",
+    "rank": 62
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61a5f8a3779f2428b312a21e7BwUOSvS03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101da7779f24b0b0e4125datit7H1B04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101da77f559b458105f969w9IlCb0x04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101da7969f8993eddf6418wHDlQQaZ04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101da7e0349993b563c47e0iZHGX2l04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101da73b12f846dfb23bd4jDaPdiKG04",
+       "width": 1080
+      }
+     ],
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "hyxd",
+     "game_detail_tags": [
+      "枪战",
+      "多人对战",
+      "射击",
+      "第三人称"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/601f6c138b74270b7a6247d8WWm2G2li03",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "荒野行动",
+     "publisher": "网易游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/635b95b93fc7c94a2372f30ckfh9try904",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/601f6c138b74270b7a6247d8WWm2G2li03",
+     "recommend_tags": [
+      "吃鸡",
+      "射击",
+      "竞技"
+     ],
+     "simple_introduction": "感恩4周年 全员齐出金",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "荒野集结，骑士变身！",
+     "tag_code": "hyxd",
+     "tags": [
+      "枪战",
+      "多人对战",
+      "射击",
+      "第三人称"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "hyxd",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "hyxd",
+     "name": "荒野行动",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "hyxd"
+    },
+    "main_recommendation_info_id": "5fdb175c8859dc40aa3dfab3",
+    "rank": 64
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "5fdb1429abea4312e17181bc",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 80,
+  "recommendation_mode": "model3",
+  "recommendation_tags": [],
+  "tab_ids": [],
+  "title": "网易玩家聚集地",
+  "update_time": 1765534797,
+  "user_type_tags": [],
+  "valid": true
+ },
+ {
+  "create_time": 1620800065,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66ab3ec9fc782b19fea8ccf7dHYfg6I205",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66ab3ecabcbe3560180f3c69v2vi91Ir05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66ab3eca88c6804217464cceCouuLvrI05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66ab3ecb855c0bd6db327ca5fb33V2xa05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66ab3ecccf3eb3de91dc1e8b3DVSfeoe05",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66ab3ecc65a380854040d483fWWAh7ud05",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "亦心工作室",
+     "free": false,
+     "game_code": "hysxzy_mumu",
+     "game_detail_tags": [
+      "养成",
+      "收集",
+      "剧情",
+      "策略"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/65e1874e59a4abfbd029d526rOfJasCK05",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "花亦山心之月",
+     "publisher": "北京朝夕光年信息技术有限公司",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6439352c883c770c10972bc7qG75pyKI04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/662f0fc72a194a3c4b4070f1H7M0iZgO05",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/65e1874e59a4abfbd029d526rOfJasCK05",
+     "recommend_tags": [
+      "养成",
+      "收集",
+      "卡牌"
+     ],
+     "simple_introduction": "国风权谋群像养成手游-此间天下，与君共谋",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "「盛月扶云」四周年版本开启",
+     "tag_code": "hysxzy",
+     "tags": [
+      "养成",
+      "收集",
+      "剧情",
+      "策略"
+     ],
+     "vendor": "朝夕光年",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "hysxzy_mumu",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "hysxzy",
+     "name": "花亦山心之月",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "hysxzy"
+    },
+    "main_recommendation_info_id": "6375dc19f1f19b9039c3080d",
+    "rank": 1819
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/62344b6b91df68595c565a19S2HP7elk04",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/62344b671d34496a5cd22783LudxwMc104",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/62344b71345c372eef6ee092bo4pOdmj04",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/62344b95779f2435d4f7cfb5kVymBizg04",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/62344b99a86d7890cceba2355XGGf33l04",
+       "width": 1280
+      }
+     ],
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "wbqj_mumu",
+     "game_detail_tags": [
+      "女性向",
+      "剧情",
+      "角色扮演"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/62344a6e2942866b5fa92eecahPKZ8jq04",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "我本千金",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6368fb306d30e95c26675e50zkPMzqvG04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/64d99d294dd7bdf134d69e37jcttUeFe05",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/62344a6e2942866b5fa92eecahPKZ8jq04",
+     "recommend_tags": [
+      "剧情",
+      "换装"
+     ],
+     "simple_introduction": "一个不走寻常路的都市欢脱甜宠手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "畅爽一夏！",
+     "tag_code": "wbqj",
+     "tags": [
+      "女性向",
+      "剧情",
+      "角色扮演"
+     ],
+     "vendor": "爱的番茄",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "wbqj_mumu",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "",
+     "name": "我本千金",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "wbqj"
+    },
+    "main_recommendation_info_id": "6375dbb4df7b87e9a7510127",
+    "rank": 1821
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6437790b969f898e173030a5LJKYt9Ye04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6437790bbb514294f14f8a263OKd0ce804",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6437790b3fc7c90b5bdb0418T6x6o8Ck04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6437790cb7b9d5659fdf320053Su4X1004",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6437790c294286a750acbb7eohFpK8Mo04",
+       "width": 1080
+      }
+     ],
+     "daily_free_time": 1800,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "yslzm",
+     "game_detail_tags": [
+      "捏脸",
+      "收集",
+      "养成",
+      "高自由度",
+      "3D",
+      "换装",
+      "模拟",
+      "模拟经营",
+      "角色扮演",
+      "女性向"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/64bfcd8b6bc9120403fd91512wQTVH0Y05",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "以闪亮之名",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/698d4c8a9a65ac9f211081102VmSDw9c07",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/64bfcd8b6bc9120403fd91512wQTVH0Y05",
+     "recommend_tags": [
+      "女性向",
+      "角色扮演"
+     ],
+     "simple_introduction": "我和千万女生的高光秀场",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "全新3.8版本·寅魄渡世限时开启",
+     "tag_code": "yslzm",
+     "tags": [
+      "捏脸",
+      "收集",
+      "养成",
+      "高自由度",
+      "3D",
+      "换装",
+      "模拟",
+      "模拟经营",
+      "角色扮演",
+      "女性向"
+     ],
+     "vendor": "祖龙游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 1800,
+     "free": false,
+     "game_code": "yslzm",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "yslzm",
+     "name": "以闪亮之名",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "yslzm"
+    },
+    "main_recommendation_info_id": "641d94c96c6e66a3ce422540",
+    "rank": 1822
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/69bb5c10bffa636ae77bdc36oyu5AOs507",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/698abc619ebb3753c8b14b684HfH0i5O07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/698abc64e8441bce75a6aea2O3hfTVC507",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/698abc672a8c1e1e77d4a57cUiQ57Yqv07",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/698abc6bf825889d03cd72abUiYBpDr607",
+       "width": 1920
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "wdsjb",
+     "game_detail_tags": [
+      "恋爱",
+      "女性向",
+      "推理",
+      "米哈游"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/68a5374e095da8ad41406c0buM7uiVHk06",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "https://cloudgame.webapp.163.com/pt/?id=650959321fc75bbbb837628d",
+     "jump_link_text": "去抽奖",
+     "jump_text": "五周年特别活动开启",
+     "name": "未定事件簿",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6424fef884beef5ee2f910863Wjhf7DB04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/63075fb63f043c2eef141d913tORHB4E04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/68a5374e095da8ad41406c0buM7uiVHk06",
+     "recommend_tags": [],
+     "simple_introduction": "米哈游律政恋爱推理手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "全新5.7版本开放",
+     "tag_code": "wdsjb",
+     "tags": [
+      "恋爱",
+      "女性向",
+      "推理",
+      "米哈游"
+     ],
+     "vendor": "miHoYo",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "wdsjb",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "wdsjb",
+     "name": "未定事件簿",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "wdsjb"
+    },
+    "main_recommendation_info_id": "6375dc0d5d14c9a735ad00ea",
+    "rank": 1826
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61a8ae965108e243b60206e7cpoEuvdV03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e2ae12631594411669a20dtAoLhPFV05",
+       "width": 1915
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e2ae13804475acc32d89730MzsYZw405",
+       "width": 1915
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e2ae142f0ab54c07cc78fcXOIOXvss05",
+       "width": 1915
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e2ae15b38a701ebae0b62dAxyWSPWD05",
+       "width": 1915
+      },
+      {
+       "carousel_type": 3,
+       "height": 1080,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/66e2ae168eb22b1fe98f91a8Um1dQ4G805",
+       "width": 1915
+      }
+     ],
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "网易游戏",
+     "free": false,
+     "game_code": "skzdhlr",
+     "game_detail_tags": [
+      "乙女",
+      "剧情",
+      "恋爱",
+      "养成"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/5f8edfe25e602701f37ddb4dh2X34iih02",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "时空中的绘旅人",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/642501ed294286ba5c76976bUtaaVxEP04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6359fdd0b611a91d154fdad09MNfiuXi04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/5f8edfe25e602701f37ddb4dh2X34iih02",
+     "recommend_tags": [
+      "养成",
+      "恋爱",
+      "女性向"
+     ],
+     "simple_introduction": "一款“多时空恋爱冒险”的手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "全新活动「代号：归零」正式开启！",
+     "tag_code": "skzdhlr",
+     "tags": [
+      "乙女",
+      "剧情",
+      "恋爱",
+      "养成"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "skzdhlr",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "skzdhlr",
+     "name": "时空中的绘旅人",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "skzdhlr"
+    },
+    "main_recommendation_info_id": "6375dce85fb8c28a385eb398",
+    "rank": 1827
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "609b72416965a2b3c3428df9",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "ios-native-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 99,
+  "recommendation_mode": "model3",
+  "recommendation_tags": [],
+  "tab_ids": [],
+  "title": "养成游戏",
+  "update_time": 1765534792,
+  "user_type_tags": [],
+  "valid": true
+ },
+ {
+  "create_time": 1609299711,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/67cea1a8aad4789cbe56d4e779ZWXPIW06"
+      },
+      {
+       "carousel_type": 3,
+       "height": 500,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63ef4727c86d8a731a883402do83rwLk04",
+       "width": 942
+      },
+      {
+       "carousel_type": 3,
+       "height": 500,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63ef473191df6806ffaaae7cRHmwwjMe04",
+       "width": 942
+      },
+      {
+       "carousel_type": 3,
+       "height": 500,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63ef4734534b9f545a1ef5a63wthcV9M04",
+       "width": 942
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 300,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "mc",
+     "game_detail_tags": [
+      "沙盒",
+      "像素",
+      "网易系"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/5e901f4ea7f252e27ab1a8ddzU0DM13r02",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "我的世界-基岩互通&经典版",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/5fdb129e96dee47ba693e6deS8G7Y9ml02",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/5e901f4ea7f252e27ab1a8ddzU0DM13r02",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/5fd9cb2202c9a17f20940a76j1HI0SV902",
+     "recommend_tags": [
+      "沙盒",
+      "模拟",
+      "益智"
+     ],
+     "simple_introduction": "像素冒险沙盒游戏",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "基岩互通版上线，双端互通，一键联机",
+     "tag_code": "mc",
+     "tags": [
+      "沙盒",
+      "像素",
+      "网易系"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 300,
+     "free": false,
+     "game_code": "mc",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "mc",
+     "name": "我的世界-基岩互通&经典版",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "mc"
+    },
+    "main_recommendation_info_id": "5febf768c6cb68845d7709ed",
+    "rank": 106
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61d5468e0c02f70f5b4c9291vsc566Sg03"
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "description": [
+      {
+       "con": "网易游戏",
+       "title": "发行商"
+      },
+      {
+       "con": "《星战前夜：晨曦》（《EVE Online》）是冰岛Crowd Control Productions公司开发的一款PC端网游，该作2006年进入中国，由网易游戏代理运营。",
+       "title": "游戏介绍"
+      },
+      {
+       "con": "    游戏以宏大的太空为背景，高度融合硬科幻元素，为玩家展现了一个自由的虚拟宇宙沙盒世界。玩家驾驶各式宇宙飞船在成千上万的恒星系与未知虫洞空间中穿梭。在游戏的沙盒宇宙中能进行各式活动，包括采矿、工业制造 、科学研究 、金融贸易、探索考古以及PVP/PVE战斗等。 玩家可从事的活动类型随着相关技能的学习而递增，即使玩家没有上线，游戏中技能的学习也随时都在进行。",
+       "title": ""
+      },
+      {
+       "con": "    《EVE Online》揽获包括GDC在内的众多世界游戏大奖，曾在欧美最著名游戏网站“MMORPG”中多次获得“世界最佳游戏”称号，其精妙绝伦的制作素质还使它被纽约现代艺术博物馆等知名展馆收录。 ",
+       "title": ""
+      }
+     ],
+     "developer": "",
+     "free": false,
+     "game_code": "eve",
+     "game_detail_tags": [
+      "RPG",
+      "沙盒"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/5ea66e047f9d2ae267f1f346X2gVl3Fp02",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "星战前夜：晨曦（EVE端游高配）",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/5fdb12ba143cfa9fb5e92fderi4EX4LY02",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/5ea66e047f9d2ae267f1f346X2gVl3Fp02",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/5fd9cb1469b21a1e16bacb6ekeGbY0YB02",
+     "recommend_tags": [
+      "沙盒",
+      "科幻"
+     ],
+     "simple_introduction": "开启你的EVE宇宙之旅",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "星战沙盒顶尖力作",
+     "tag_code": "eve",
+     "tags": [
+      "RPG",
+      "沙盒"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "free": false,
+     "game_code": "eve",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "eve",
+     "name": "星战前夜：晨曦（EVE端游高配）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "eve"
+    },
+    "main_recommendation_info_id": "5febf737ee69c605951b763b",
+    "rank": 110
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61d540f34efdc92f40d0e28e6JBhUyPX03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 1018,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63ef40515a2098458b3ec3eejsizOQrY04",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1018,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63ef4054442e2961daeac8d9yevT4Dsa04",
+       "width": 1920
+      },
+      {
+       "carousel_type": 3,
+       "height": 1018,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63ef4057cd022607fd105b801KmrR0tF04",
+       "width": 1920
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "nshpc",
+     "game_detail_tags": [
+      "RPG",
+      "多人",
+      "武侠",
+      "网易系"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/5eb2dfcf8b74275bb9aa35f3LrimKPUd02",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "逆水寒PC",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/609e28f896dee43aa9fc9be4NksizxgS03",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/5eb2dfcf8b74275bb9aa35f3LrimKPUd02",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/5fd9caeb143cfa36eb1ae8feWN5R0z9z02",
+     "recommend_tags": [
+      "江湖",
+      "武侠"
+     ],
+     "simple_introduction": "会呼吸的江湖",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "",
+     "tag_code": "nshpc",
+     "tags": [
+      "RPG",
+      "多人",
+      "武侠",
+      "网易系"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "nshpc",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "nshpc",
+     "name": "逆水寒PC",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "nshpc"
+    },
+    "main_recommendation_info_id": "5febf73d861ddee76279f1fe",
+    "rank": 115
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61d68e34840f3e0a3c92c5c5CmIbjGWs03"
+      }
+     ],
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "GujianOL",
+     "game_detail_tags": [
+      "RPG",
+      "即时战斗",
+      "武侠"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/5f5b30212786fd29a2602765gsYKvqCm02",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "古剑奇谭OL",
+     "publisher": "",
+     "recommend_banner_icon": "",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/5f5b30212786fd29a2602765gsYKvqCm02",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/61dd3f61969f891f7aafb3807A7pXYGe03",
+     "recommend_tags": [
+      "3D",
+      "仙侠",
+      "RPG"
+     ],
+     "simple_introduction": "次世代国风仙侠网游！",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "",
+     "tag_code": "GujianOL",
+     "tags": [
+      "RPG",
+      "即时战斗",
+      "武侠"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "GujianOL",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "GujianOL",
+     "name": "古剑奇谭OL",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "GujianOL"
+    },
+    "main_recommendation_info_id": "5febf763f55fe483f3b72993",
+    "rank": 118
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "banner": "2",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61d54f26052dfe03859f523eiBmDTEaP03"
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "dtwspc",
+     "game_detail_tags": [
+      "RPG",
+      "多人",
+      "网易系"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6238336bb7a48409f7639f85uYMZ4d4904",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "大唐无双PC",
+     "publisher": "",
+     "recommend_banner_icon": "",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6238336bb7a48409f7639f85uYMZ4d4904",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6238339f642493474ee351eaD1188zA504",
+     "recommend_tags": [
+      "2.5D",
+      "武侠",
+      "RPG"
+     ],
+     "simple_introduction": "荡平天下事，挥剑指长安",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "",
+     "tag_code": "dtwspc",
+     "tags": [
+      "RPG",
+      "多人",
+      "网易系"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "free": false,
+     "game_code": "dtwspc",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "dtwspc",
+     "name": "大唐无双PC",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "dtwspc"
+    },
+    "main_recommendation_info_id": "5febf779cbd8a794e46344b1",
+    "rank": 119
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "5febf6ffe1ef3d97e953f0b7",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "ios-native-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 101,
+  "recommendation_mode": "model4",
+  "recommendation_tags": [],
+  "tab_ids": [],
+  "title": "端游大作免费玩",
+  "update_time": 1765534790,
+  "user_type_tags": [],
+  "valid": true
+ },
+ {
+  "create_time": 1609846842,
+  "creative_workshops": [],
+  "delay": 1,
+  "excluded_recommendation_tags": [],
+  "game_behavior_tags": [],
+  "games": [
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61b2c8b6520b2d321129ddccSgQK2e9o03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e70d995192c10033751KsHRYHiL04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e7157166d159e21a47atDQNOmTP04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e71779f24965b24b4e9Qildasqb04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d9a81f7509014075b70uZ8SjksH04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d9a442e294e1fb269310qBSCR1i04",
+       "width": 1080
+      }
+     ],
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "wdsjzxb",
+     "game_detail_tags": [
+      "沙盒",
+      "开放世界",
+      "像素",
+      "创造"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6937d3ce193e49858683c835gJ21ifeI07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "我的世界（在线版）",
+     "publisher": "网易游戏",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/625eaeec3b12f84a52b4be75WvSZPFYl04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/5e901f4ea7f252e27ab1a8ddzU0DM13r02",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6937d3ce193e49858683c835gJ21ifeI07",
+     "recommend_tags": [
+      "沙盒",
+      "益智",
+      "休闲"
+     ],
+     "simple_introduction": "世界在你手中",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "全新庄园经营主题玩法",
+     "tag_code": "wdsjzxb",
+     "tags": [
+      "沙盒",
+      "开放世界",
+      "像素",
+      "创造"
+     ],
+     "vendor": "",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "wdsjzxb",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "wdsjzxb",
+     "name": "我的世界（在线版）",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "wdsjzxb"
+    },
+    "main_recommendation_info_id": "5ff45074bf83f0791ef5afd1",
+    "rank": 199
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 2,
+       "video_url": "https://g.fp.ps.netease.com/cg-image/file/61a5f986052dfe7833e06512laBr2Rbg03"
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9cddf9cdb17d8e9f838d003jau04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9dddf9cd08c4335227PxKAjGEO04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9d3521f6455cb406d2EPdeu4Aa04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9e3b6d3194c99b3718bt3sKAuy04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/63e31e9e3f043c64e91fce46iRiXIpEu04",
+       "width": 1080
+      }
+     ],
+     "daily_free_time": 43200,
+     "description": [
+      {
+       "con": "网易游戏",
+       "title": "发行商："
+      },
+      {
+       "con": "深入疑局，踏遍千山，感知八千里江湖百态。打破固化的角色设定，无规则下的人性释放。丰富玩法，自由成长，奇遇秘闻，轻功战斗。千面江湖，情感羁绊，载酒人生，《一梦江湖》致力为每位玩家提供一个独属于他的武侠世界。",
+       "title": "游戏简介："
+      },
+      {
+       "con": "",
+       "title": "游戏背景："
+      }
+     ],
+     "developer": "",
+     "free": false,
+     "game_code": "clx",
+     "game_detail_tags": [
+      "武侠",
+      "古风",
+      "角色扮演"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6a758bb7bf23f4036a183431rMY2Vrzb07",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "一梦江湖",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/626bbbb3370860860f8e3971YmkiHuvQ04",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/62eb76d37a80965c0ebc357deUMghCCk04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6a758bb7bf23f4036a183431rMY2Vrzb07",
+     "recommend_tags": [
+      "MMORPG",
+      "武侠"
+     ],
+     "simple_introduction": "极具沉浸感的真实江湖",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "暑期重磅资料片「落归白」现已开启！新门派「落白」震撼登场",
+     "tag_code": "clx",
+     "tags": [
+      "武侠",
+      "古风",
+      "角色扮演"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "daily_free_time": 43200,
+     "free": false,
+     "game_code": "clx",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "clx",
+     "name": "一梦江湖",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "clx"
+    },
+    "main_recommendation_info_id": "5ff4507bbf83f0791ef5b460",
+    "rank": 200
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d59883c773d2d56436eDfHOXJAw04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d5a2011ec20899a5f6fKNT2GoU404",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d5abb514272bad177e6w4E8itDb04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d5a642493ae97b43b09GaU4zt2T04",
+       "width": 1080
+      },
+      {
+       "carousel_type": 3,
+       "height": 608,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/64101d5b8cdf030e2d94b4a8bc6vZuFm04",
+       "width": 1080
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 7200,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "mrzh",
+     "game_detail_tags": [
+      "生存",
+      "开放世界",
+      "建造",
+      "经营"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/63f823103b750073a70f592bZdVgXgzm04",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "明日之后",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/626bb96c294286ac73d0fe26FlocUFx404",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6267dbb14940ea1f3bb94298vY7zbShH04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/63aa6d83ddf9cd742294747bP3UCikKS04",
+     "recommend_tags": [
+      "废土",
+      "生存",
+      "模拟经营"
+     ],
+     "simple_introduction": "末世下的人类生存手游",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "云玩必得回归礼包！欢迎回家",
+     "tag_code": "mrzh",
+     "tags": [
+      "生存",
+      "开放世界",
+      "建造",
+      "经营"
+     ],
+     "vendor": "网易游戏",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 7200,
+     "free": false,
+     "game_code": "mrzh",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "mrzh",
+     "name": "明日之后",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "mrzh"
+    },
+    "main_recommendation_info_id": "5ff45064bf83f0791ef5a6a4",
+    "rank": 201
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aea9f4fcb247b89497132f4epEthH6q07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a7bd84e070ae9b29f23ade9m2JkShLb07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a7bd850304229a431806693yGb28ls007",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a7bd85352200f19e39627c3ZMla7Kw707",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aea9f5b2e578f6611493579yfB35MJK07",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "yssy",
+     "game_detail_tags": [
+      "开放世界",
+      "二次元",
+      "角色扮演",
+      "养成"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/6aea9f470aa1b7bf228f4830syBZiub407",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "原神-7.2版本",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/6426e4fe8cdf03858a5da50efmGQ9Ia204",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/6492a85c713ee35c9a5bcdedNMgk3w0F04",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/6aea9f470aa1b7bf228f4830syBZiub407",
+     "recommend_tags": [
+      "二次元",
+      "开放世界"
+     ],
+     "simple_introduction": "米哈游开放世界冒险RPG",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "《原神》全新7.2版本「坏灭肇始之时」上线！",
+     "tag_code": "yssy",
+     "tags": [
+      "开放世界",
+      "二次元",
+      "角色扮演",
+      "养成"
+     ],
+     "vendor": "miHoYo",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 0,
+     "free": false,
+     "game_code": "yssy",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "mobile",
+     "is_limit_time": false,
+     "main_game_code": "yssy",
+     "name": "原神-7.2版本",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "yssy"
+    },
+    "main_recommendation_info_id": "5ff4506950e12410edbc6baf",
+    "rank": 202
+   },
+   {
+    "activity_sub_title": "",
+    "activity_title": "",
+    "activity_url": "",
+    "btn_text": "",
+    "card_type": "game",
+    "display_game": {
+     "carousels": [
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aea9f4fcb247b89497132f4epEthH6q07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a7bd84e070ae9b29f23ade9m2JkShLb07",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a7bd850304229a431806693yGb28ls007",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6a7bd85352200f19e39627c3ZMla7Kw707",
+       "width": 1280
+      },
+      {
+       "carousel_type": 3,
+       "height": 720,
+       "screenshot": "https://g.fp.ps.netease.com/cg-image/file/6aea9f5b2e578f6611493579yfB35MJK07",
+       "width": 1280
+      }
+     ],
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "description": [],
+     "developer": "",
+     "free": false,
+     "game_code": "ys",
+     "game_detail_tags": [
+      "开放世界",
+      "二次元",
+      "角色扮演",
+      "养成"
+     ],
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "icon": "https://g.fp.ps.netease.com/cg-image/file/66ce863b20b99c8d855281d9Jx0bM8ql05",
+     "is_limit_time": false,
+     "is_reserved": false,
+     "jump_icon": "",
+     "jump_link": "",
+     "jump_link_text": "",
+     "jump_text": "",
+     "name": "原神PC-至冬开放",
+     "publisher": "",
+     "recommend_banner_icon": "https://g.fp.ps.netease.com/cg-image/file/61cc25b6cd02269893fbfcf5WFozSVQq03",
+     "recommend_banner_intro": "",
+     "recommend_large_icon": "https://g.fp.ps.netease.com/cg-image/file/66ce863b20b99c8d855281d9Jx0bM8ql05",
+     "recommend_small_icon": "https://g.fp.ps.netease.com/cg-image/file/66ce8730301ffdfeb4c4f2b54LiUWkti05",
+     "recommend_tags": [
+      "二次元",
+      "角色扮演"
+     ],
+     "simple_introduction": "米哈游开放世界冒险RPG",
+     "skip_detail_page": false,
+     "status": "normal",
+     "summary": "",
+     "tag_code": "yssy",
+     "tags": [
+      "开放世界",
+      "二次元",
+      "角色扮演",
+      "养成"
+     ],
+     "vendor": "miHoYo",
+     "welfare": ""
+    },
+    "link_game": {
+     "cloud_pc_guide_config": {
+      "people_list_ids": [],
+      "people_list_names": [],
+      "people_lists": {},
+      "popup_limit": 0
+     },
+     "daily_free_time": 1800,
+     "free": false,
+     "game_code": "ys",
+     "game_download_info": null,
+     "game_open_action": "this_game",
+     "game_type": "pc",
+     "is_limit_time": false,
+     "main_game_code": "ys",
+     "name": "原神PC-至冬开放",
+     "skip_detail_page": false,
+     "status": "normal",
+     "tag_code": "yssy"
+    },
+    "main_recommendation_info_id": "61cc245183640ba6c2c64746",
+    "rank": 1376
+   }
+  ],
+  "include_channels": [],
+  "main_recommendation_id": "5ff4503a86f73da50024e852",
+  "main_recommendation_type": "mobile_home",
+  "more": true,
+  "pc_jump_tab": "mobile_game",
+  "people_list_ids": [],
+  "platforms": [
+   "web-mobile",
+   "android-mobile-platform",
+   "ios-mobile-platform",
+   "android-mobile-pc",
+   "harmonyos-h5-platform"
+  ],
+  "rank": 107,
+  "recommendation_mode": "model11",
+  "recommendation_tags": [],
+  "tab_ids": [],
+  "title": "开放世界，自由探索",
+  "update_time": 1765534788,
+  "user_type_tags": [],
+  "valid": true
+ }
+]

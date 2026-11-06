@@ -2,7 +2,7 @@
 
 > 目标站点：`https://cg.163.com/`（移动端 H5 / 触摸版）  
 > 逆向方式：静态拆包（3 个 JS bundle）+ Playwright 真机仿真抓包 + 直接 HTTP 复现  
-> 接口总数：**259** 条（自动抽取），真实样本 **34** 份，实测用例 **37** 条  
+> 接口总数：**272** 条（自动抽取），真实样本 **34** 份，实测用例 **37** 条  
 > 生成时间：2026-11-06
 
 ## 0. 摘要
@@ -121,22 +121,22 @@ Python 复刻见 `sdk/cgapi.py`：`offset_from_encrypt()` / `offset_en()` / `off
 
 | 分类 | 接口数 |
 |---|---|
-| 首页/推荐 | 17 |
-| 游戏/详情 | 23 |
+| 首页/推荐 | 22 |
+| 游戏/详情 | 22 |
 | 启动/排队 | 13 |
 | 悬浮球/键位/画质 | 4 |
-| 我的/账户 | 93 |
-| 登录/鉴权 | 15 |
-| 云电脑/云手机 | 8 |
-| 社区/直播 | 51 |
+| 我的/账户 | 96 |
+| 登录/鉴权 | 17 |
+| 云电脑/云手机 | 9 |
+| 社区/直播 | 52 |
 | SEO | 2 |
-| 其他 | 33 |
-| **合计** | **259** |
+| 其他 | 35 |
+| **合计** | **272** |
 
 | Method | 数量 |
 |---|---|
-| GET | 164 |
-| POST | 74 |
+| GET | 173 |
+| POST | 78 |
 | PATCH | 8 |
 | DELETE | 13 |
 
@@ -956,18 +956,112 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 ## 11. 登录
 
 
-| 接口 | 用途 |
-|---|---|
-| `GET api/v1/phones-registered/<phone>-<cc>` | 手机号是否已注册 |
-| `GET api/v1/phone-captchas/<phone>-<cc>` | 请求短信验证码 |
-| `POST api/v1/tokens` | 验证码登录 → 返回 `{token, user_id, encrypt}` |
-| `POST api/v2/auth-token` | 密码 / 第三方登录 |
-| `POST api/v2/login-qrcodes` + `GET api/v1/tokens?qrcode_id=` | 扫码登录 |
-| `DELETE api/v2/tokens/@current` | 登出 |
-| `POST api/v2/users/@me/realname-info` | 实名认证 |
+登录是整站唯一的硬门槛：除登录本身，`POST api/v2/tickets`（启动机位）、`GET api/v2/users/@me`
+系列、`common_setting` 全部要求 `Authorization: Bearer`。这一章的三条链路都实测过，
+错误码是从响应体里抄回来的原文。
 
-密码登录：`SHA256(salt + password)` 的 hex 拼接 `login_random_text`，再用
-`TripleDES/CBC/Pkcs7` 以 `pwd_encrypt_key` 加密、`login_iv` 为 IV，Base64 后放 `pwd` 字段。
+### 11.1 接口一览
+
+| 方法 | 接口 | 用途 | 匿名可用 |
+|---|---|---|---|
+| GET | `api/v1/phones-registered/<ctcode>-<phone>` | 手机号是否已注册 | ✅ |
+| POST | `api/v1/phone-captchas/<ctcode>-<phone>` | 请求短信验证码 | ✅ |
+| POST | `api/v1/tokens` | 短信验证码登录 → `{token, user_id, encrypt}` | ✅ |
+| GET | `api/v1/user-pwd-info?phone=&ctcode=` | 密码登录前置（取本轮 salt / IV / key） | ✅ |
+| POST | `api/v1/user-pwd-tokens` | 密码登录 → 同 `api/v1/tokens` 的返回 | ✅ |
+| POST | `api/v2/login-qrcodes` | 生成扫码二维码 | ❌ 需已登录 |
+| GET | `api/v1/tokens?qrcode_id=` | 轮询扫码结果 | ✅ |
+| GET | `api/v2/auth-token` | 换短期 token 给内嵌活动页 | 需登录 |
+| DELETE | `api/v2/tokens/@current` | 登出 | 需登录 |
+| POST | `api/v2/users/@me/realname-info` | 实名认证 | 需登录 |
+
+### 11.2 路径参数顺序（文档级坑）
+
+`phones-registered` 和 `phone-captchas` 的路径参数是 **`<ctcode>-<phone>`，区号在前**：
+
+| 请求 | 结果 |
+|---|---|
+| `GET api/v1/phones-registered/86-138****0000` | 200 `{ctcode:"86", phone:"138****0000", user_need_negotiate_manually:false, user_need_yixin_validate:false}` |
+| `GET api/v1/phones-registered/86-13800000000` | 404 `errcode=1104` `phone not exist` / `电话号码不存在` |
+| `GET api/v1/phones-registered/13800000000-86` | 400 `errcode=1103` `invalid ctcode` / `无效区号` |
+
+`phone-captchas` **必须 POST**（GET 报 405），body 为
+`{"extra":{"invite_code":""},"etc":{"validate":""}}`。同一号码 60 秒内重复请求返回
+`errcode=1100` `apply phone captcha too frequently` / `短信验证码申请太频繁`。
+
+### 11.3 短信验证码登录
+
+```python
+POST api/v1/tokens
+{"auth_method":"phone-captcha", "ctcode":"86", "phone":"138****0000",
+ "captcha":"123456", "login_mode":"sms_code"}
+```
+
+| 情况 | 响应 |
+|---|---|
+| 验证码正确 | 200 `{token, user_id, encrypt, ...}` |
+| 验证码错误 | **HTTP 401** `errcode=1102` `短信验证码错误` |
+| 错太多次 | **HTTP 401** `errcode=1109` `错误次数过多，验证码已失效，请重新获取验证码` |
+
+### 11.4 密码登录（三级加密）
+
+先取本轮参数（`login_random_text` 与 `salt` **每次请求都会变**，必须现取现用）：
+
+```python
+GET api/v1/user-pwd-info?phone=138****0000&ctcode=86
+→ {"has_pwd":true, "is_registered":true,
+   "login_iv":1742291771803, "login_random_text":"FET4GtMg",
+   "pwd_encrypt_key":"67d9433b785d5705bcbdcb83",
+   "user_pwd_login_salt":"m2R4iYuF"}
+```
+
+未注册号码只返回 `{"is_registered":false}`；缺参返回 400 `errcode=1` `需要输入号码和ctcode`。
+
+然后按前端 `PasswordLoginForm.onSubmit` 的三步走：
+
+```js
+o   = SHA256(user_pwd_login_salt + password)        // 64 字符 hex
+key = Utf8.parse(pwd_encrypt_key)                   // 24 字节 → 3DES
+iv  = Hex.parse(login_iv.toString(16).padStart(16, "0"))   // 16 hex → 8 字节
+u   = TripleDES.encrypt(o + login_random_text, key, {iv, mode:CBC, padding:Pkcs7})
+pwd = u.ciphertext.toString(Base64)
+```
+
+```python
+POST api/v1/user-pwd-tokens
+{"phone":"138****0000", "ctcode":"86", "pwd":"<上面算出的 Base64>", "login_mode":"password"}
+```
+
+服务端只认「本轮」的 salt/IV，所以 `pwd_info` 和 `user-pwd-tokens` 必须在同一次会话里连着发。
+`sdk/cgapi.py` 的 `login_password()` 已经把这两步包在一起，`encrypt_password()` 里的 3DES
+优先用 pycryptodome / cryptography，两者都没有时退回 `sdk/_des3.py`（纯标准库实现，
+已用 pycryptodome 对同一组密钥/IV/明文做过逐字节交叉验证）。
+
+### 11.5 扫码登录（匿名不可用）
+
+`POST api/v2/login-qrcodes` 在**未登录时对任何 X-Platform 都返回 401 `errcode=1006`**；
+只有 `X-Platform: 6`（android-tv-platform）返回不同的 `errcode=1025`。原因是前端只在
+「TV 端免费时长耗尽、引导用户扫码注册」时才调用它（`chunk-common.144278fd.js` 里
+`showExceed()` → `dispatch("postQr")`）。PC 首页那个登录二维码走的是另一个入口，
+不在本次移动端范围内。
+
+轮询 `GET api/v1/tokens?qrcode_id=<id>` 本身匿名可用，无效 id 返回
+400 `errcode=1218` `invalid qrcode` / `二维码无效`。
+
+### 11.6 拿到 token 之后
+
+任何一条链路成功后都返回 `{token, user_id, encrypt}`，前端做三件事：
+
+```js
+t = cookieSet(randomSplit(encrypt))
+s = cookieGet(t)          // 还原成 "<a>:<num>,<b>:<num>"
+o = getOffset2(s) % 256   // 0..255，v2 请求体/响应体的位移量
+localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = encrypt
+```
+
+`user_id` 也可以直接从 JWT 的 `identity` 字段取（`token` 是 HS256 的 JWT）。
+拿到这三样之后的所有 v2 调用都要带 `Authorization: Bearer <token>`，
+请求体用 `offsetEn(offset, json)` 加密、响应体用 `offsetOut(offset, base64)` 解密。
 
 
 ## 12. 实测验证
@@ -979,7 +1073,8 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 第 1 轮 | 匿名 | 37 | 29 | 覆盖首页/游戏/社区/SEO 全部匿名面；失败的 8 条全是 v2，`errcode=1006` 未登录，属预期 |
 | 第 2 轮 | 真实账号 | 60 | 49 | 覆盖「悬浮球/键位」「启动/排队」「云电脑」「社区」；失败 11 条均为缺必填参数或方法不对，接口本身存在 |
 | 第 3 轮 | 真实账号 | 22 | 17 | 「我的」页 `#/center` 真实抓包复现；失败 5 条同上（缺 query / 方法错） |
-| **合计** | | **119** | **95** | |
+| 第 4 轮 | 匿名（直连） | 16 | 16 | 登录链路 16 个用例：注册检查 / 密码前置 / 扫码轮询 / 登出 / 6 个新补的 `c()` 接口。全部符合预期 |
+| **合计** | | **135** | **111** | |
 
 ### 12.1 第 1 轮：匿名接口
 
@@ -1136,6 +1231,30 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 > （`?type=main_page` / `?pendant_type=mobile_home` / `?banner_type=mobile_home`，补上即 200）；
 > `login_role` 必须 POST 且带 body；`pay_rec` 缺必填 query。
 
+### 12.5 第 4 轮：登录链路 16 个用例
+
+| 用例 | HTTP | 耗时 | 结果 / 错误 | 判定 |
+|---|---|---|---|---|
+| 手机号已注册 | 200 | 537 ms | `{ctcode,phone,user_need_negotiate_manually,user_need_yixin_validate}` | ✅ |
+| 手机号未注册(1104) | 404 | 466 ms | `errcode=1104 电话号码不存在` | ✅ |
+| 区号顺序反了(1103) | 400 | 519 ms | `errcode=1103 无效区号` | ✅ |
+| 密码登录前置 | 200 | 537 ms | `{has_pwd,ignore_pwd_popup,is_registered,login_iv,login_random_text,pwd_encrypt_key…}` | ✅ |
+| 密码前置-缺参(1) | 400 | 504 ms | `errcode=1 需要输入号码和ctcode` | ✅ |
+| 扫码轮询-无效id(1218) | 400 | 562 ms | `errcode=1218 二维码无效` | ✅ |
+| 扫码创建-匿名401 | 401 | 727 ms | `errcode=1006 登录信息失效，请重新登录` | ✅ |
+| 登出-匿名401 | 401 | 618 ms | `errcode=1006 登录信息失效，请重新登录` | ✅ |
+| auth-token换票(需登录) | 401 | 574 ms | `errcode=1006 登录信息失效，请重新登录` | ✅ |
+| 反馈游戏类型 | 200 | 579 ms | `array[2]` | ✅ |
+| 签到信息v2 | 200 | 464 ms | `{is_potential,is_vip,sign_awards}` | ✅ |
+| 礼包列表 | 200 | 787 ms | `{gift_packs,server_time}` | ✅ |
+| 七牛上传凭证 | 200 | 419 ms | `{token}` | ✅ |
+| 每日任务状态 | 200 | 455 ms | `array[12]` | ✅ |
+| 直播每日任务 | 200 | 573 ms | `{desc,steps}` | ✅ |
+| 活动Banner | 200 | 467 ms | `{banners}` | ✅ |
+
+> 第 4 轮在直连环境下跑（本机 10808 代理已关闭，`make_api()` 自动探测后走直连）。
+> 其中「扫码创建-匿名401」「登出-匿名401」「auth-token换票」期望失败、实际也失败，属正确行为。
+
 
 ## 13. 匿名边界与补全登录态的方法
 
@@ -1158,10 +1277,10 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 
 ## 14. 附录：全量接口清单
 
-从 3 个 bundle 自动抽取，共 **259** 条；Method 由 `$http.<verb>(` 的邻近上下文投票推断，个别复合路径（`api/{v1|v2}/…`）表示同一函数按参数拼 v1/v2。
+从 3 个 bundle 自动抽取，共 **272** 条；Method 由 `$http.<verb>(` 的邻近上下文投票推断，个别复合路径（`api/{v1|v2}/…`）表示同一函数按参数拼 v1/v2。
 
 
-### 首页/推荐（17 条）
+### 首页/推荐（22 条）
 
 > 首页信息流、Banner、挂件、弹窗、公告、资源位、搜索联想、版本/客户端配置
 
@@ -1179,13 +1298,18 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 10 | `GET` | `api/v2/start_game_popup/game_code/{e}` | `getStartGamePopup` | `e` |
 | 11 | `GET` | `api/v2/users/@me/team_up_notice` | `myTeamUpNotices` | `—` |
 | 12 | `GET` | `api/v2/users/queue_popup` | `getExitQueuePop` | `—` |
-| 13 | `GET` | `api/{v1|v2}/banners?banner_type={e}` | `getBanner` | `e,t` |
-| 14 | `GET` | `api/{v1|v2}/main_recommendations` | `getRecommend` | `e` |
-| 15 | `GET` | `api/{v1|v2}/popups` | `getPopups` | `e` |
-| 16 | `GET` | `api/{ver}/client-settings/@current` | `getClientSettings` | `e` |
-| 17 | `GET` | `api/{ver}/speed_url` | `getSpeedUrl` | `e` |
+| 13 | `GET` | `api/{v1|v2}/activity-banners` | `getActivityBanner` | `—` |
+| 14 | `GET` | `api/{v1|v2}/banners?banner_type={e}` | `getBanner` | `e,t` |
+| 15 | `GET` | `api/{v1|v2}/bottom_config_items` | `getBottomConfigItems` | `e` |
+| 16 | `GET` | `api/{v1|v2}/main_recommendations` | `getRecommend` | `e` |
+| 17 | `GET` | `api/{v1|v2}/popups` | `getPopups` | `e` |
+| 18 | `GET` | `api/{v1|v2}/text_res_position_items` | `getTextResourceLocation` | `e` |
+| 19 | `GET` | `api/{ver}/client-settings/@current` | `getClientSettings` | `e` |
+| 20 | `GET` | `api/{ver}/home_page_tabs` | `getHomePageTab` | `e` |
+| 21 | `GET` | `api/{ver}/notices/list` | `getNoticesList` | `e` |
+| 22 | `GET` | `api/{ver}/speed_url` | `getSpeedUrl` | `e` |
 
-### 游戏/详情（23 条）
+### 游戏/详情（22 条）
 
 > 游戏详情、列表、猜你喜欢、游玩历史、键位映射、通用设置
 
@@ -1212,8 +1336,7 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 19 | `POST` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `getKeyMappingsDetail` | `e,t` |
 | 20 | `GET` | `api/v2/users/@me/games/{e}/key_mappings_new` | `getKeyMappingsNew` | `e` |
 | 21 | `GET` | `api/v2/users/@me/games/{e}/key_mappings_simple` | `getKeyMappingsSimple` | `e` |
-| 22 | `GET` | `api/{(t||"v2")}/games/{e}` | `getGame` | `e,t` |
-| 23 | `GET` | `api/{v1|v2}/games` | `getGames` | `e` |
+| 22 | `GET` | `api/{v1|v2}/games` | `getGames` | `e` |
 
 ### 启动/排队（13 条）
 
@@ -1246,7 +1369,7 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 3 | `GET` | `api/v2/users/@me/gamepads-count` | `getVirtualGamepad` | `—` |
 | 4 | `GET` | `api/v2/zte-gamepad-verify/{e}` | `getGamepadVerify` | `e` |
 
-### 我的/账户（93 条）
+### 我的/账户（96 条）
 
 > 用户资料、VIP、等级成长、订单、充值、签到、优惠券、消息、活动、隐私
 
@@ -1298,55 +1421,58 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 44 | `GET` | `api/v2/purchase_giving_record/{e}` | `getPurpaseReward` | `e` |
 | 45 | `GET` | `api/v2/push_msg?msg_id={e}` | `getPushMsg` | `e` |
 | 46 | `POST` | `api/v2/push_msgs` | `postPushMsgs` | `—` |
-| 47 | `GET` | `api/v2/push_msgs?count=…` | `getPushMsgs` | `e,t,i` |
-| 48 | `GET` | `api/v2/recharges` | `getRecharges` | `—` |
-| 49 | `POST` | `api/v2/recomm_superior_recharge_coupons` | `getRecommSuperiorRechargeCoupons` | `—` |
-| 50 | `GET` | `api/v2/reservation-activities{(e?…` | `reservationActivities` | `e` |
-| 51 | `GET` | `api/v2/sec_kill_activity/run_page_entry` | `getSeckillRunEntry` | `—` |
-| 52 | `DELETE` | `api/v2/self_cancellations` | `deleteSelfCancellation` | `—` |
-| 53 | `POST` | `api/v2/self_cancellations` | `postSelfCancellation` | `—` |
-| 54 | `GET` | `api/v2/share-checks/1` | `shareCheck` | `—` |
-| 55 | `POST` | `api/v2/sign-today` | `postSignToday` | `—` |
-| 56 | `GET` | `api/v2/sign-user-info` | `getSignUserInfo` | `—` |
-| 57 | `POST` | `api/v2/sign-user-info/pc_game_award` | `postSignPcGameAward` | `—` |
-| 58 | `GET` | `api/v2/step-activities/{e}` | `getStepActivity` | `e` |
-| 59 | `GET` | `api/v2/system_msg_push_msgs?count=…` | `getMessageSystem` | `e,t` |
-| 60 | `GET` | `api/v2/user-gift-packs` | `getUserGiftPacks` | `—` |
-| 61 | `POST` | `api/v2/user-reservations/{e}` | `postReservation` | `e` |
-| 62 | `PATCH` | `api/v2/user_config/@me` | `userConfig` | `—` |
-| 63 | `GET` | `api/v2/user_single_config` | `getUserSingleConfig` | `—` |
-| 64 | `GET` | `api/v2/user_values` | `getUserValues` | `—` |
-| 65 | `GET` | `api/v2/users/@me` | `getUser` | `—` |
-| 66 | `GET` | `api/v2/users/@me` | `updateUser` | `—` |
-| 67 | `PATCH` | `api/v2/users/@me` | `patchUser` | `—` |
-| 68 | `POST` | `api/v2/users/@me/cloud_pc_tips/{e}` | `postCloudPcTip` | `e` |
-| 69 | `GET` | `api/v2/users/@me/coins-changes` | `getPlayOrders` | `—` |
-| 70 | `GET` | `api/v2/users/@me/file_sharing/favorites` | `getFSFavorites` | `—` |
-| 71 | `GET` | `api/v2/users/@me/first-play-game/{e}` | `getFistPlayGame` | `e` |
-| 72 | `GET` | `api/v2/users/@me/friend_recommendations` | `getFriendRecommendations` | `—` |
-| 73 | `GET` | `api/v2/users/@me/game-playing-histories` | `getPlayingHistories` | `—` |
-| 74 | `GET` | `api/v2/users/@me/game-playing-histories-hidden/{e}` | `removeHistory` | `e` |
-| 75 | `GET` | `api/v2/users/@me/gift-income-balance` | `getBalance` | `—` |
-| 76 | `GET` | `api/v2/users/@me/gift-income-change-list` | `getIncome` | `—` |
-| 77 | `GET` | `api/v2/users/@me/growth_value_histories` | `getGrowthRecord` | `—` |
-| 78 | `GET` | `api/v2/users/@me/last-created-room-info` | `getLastCreatedRoomInfo` | `—` |
-| 79 | `GET` | `api/v2/users/@me/level_info` | `getLevelInfo` | `—` |
-| 80 | `GET` | `api/v2/users/@me/pc-vip-time-changes` | `getPcVipChanges` | `—` |
-| 81 | `GET` | `api/v2/users/@me/pc_free_time_details` | `getPCFreeTimeDetails` | `—` |
-| 82 | `GET` | `api/v2/users/@me/status` | `getStatus` | `—` |
-| 83 | `DELETE` | `api/v2/users/@me/storage/{e}` | `removeUserStorage` | `e` |
-| 84 | `GET` | `api/v2/users/@me/user_rel_types/{e}` | `getUserRelTypes` | `e` |
-| 85 | `GET` | `api/v2/users/@me/vip-statistics` | `getVipStatistics` | `—` |
-| 86 | `GET` | `api/v2/users/@me/wechat_binding/reward` | `getWechatBind` | `—` |
-| 87 | `GET` | `api/v2/users/@me/{e}` | `getFollows` | `e` |
-| 88 | `GET` | `api/v2/users/ab_switch/android_h5_2apk_new` | `getAndroidConfirmSwitch` | `—` |
-| 89 | `GET` | `api/v2/users/ab_switch/pcweb_ads_entry_2apk` | `getPcAdsSwitch` | `—` |
-| 90 | `GET` | `api/v2/users/ab_switch/{e}` | `getUsersABSwitch` | `e` |
-| 91 | `GET` | `api/v2/welfare_center_coupons` | `getWelfareCoupons` | `—` |
-| 92 | `POST` | `api/v2/withdraws` | `postWithdraws` | `—` |
-| 93 | `POST` | `api/{ver}/behaviors` | `postBehaviors` | `e` |
+| 47 | `GET` | `api/v2/recharges` | `getRecharges` | `—` |
+| 48 | `POST` | `api/v2/recomm_superior_recharge_coupons` | `getRecommSuperiorRechargeCoupons` | `—` |
+| 49 | `GET` | `api/v2/sec_kill_activity/run_page_entry` | `getSeckillRunEntry` | `—` |
+| 50 | `DELETE` | `api/v2/self_cancellations` | `deleteSelfCancellation` | `—` |
+| 51 | `POST` | `api/v2/self_cancellations` | `postSelfCancellation` | `—` |
+| 52 | `GET` | `api/v2/share-checks/1` | `shareCheck` | `—` |
+| 53 | `POST` | `api/v2/sign-today` | `postSignToday` | `—` |
+| 54 | `GET` | `api/v2/sign-user-info` | `getSignUserInfo` | `—` |
+| 55 | `POST` | `api/v2/sign-user-info/pc_game_award` | `postSignPcGameAward` | `—` |
+| 56 | `GET` | `api/v2/step-activities/{e}` | `getStepActivity` | `e` |
+| 57 | `GET` | `api/v2/user-gift-packs` | `getUserGiftPacks` | `—` |
+| 58 | `POST` | `api/v2/user-reservations/{e}` | `postReservation` | `e` |
+| 59 | `PATCH` | `api/v2/user_config/@me` | `userConfig` | `—` |
+| 60 | `GET` | `api/v2/user_single_config` | `getUserSingleConfig` | `—` |
+| 61 | `GET` | `api/v2/user_values` | `getUserValues` | `—` |
+| 62 | `GET` | `api/v2/users/@me` | `getUser` | `—` |
+| 63 | `GET` | `api/v2/users/@me` | `updateUser` | `—` |
+| 64 | `PATCH` | `api/v2/users/@me` | `patchUser` | `—` |
+| 65 | `GET` | `api/v2/users/@me/cloud_pc_config` | `getCloudPcConfig` | `—` |
+| 66 | `POST` | `api/v2/users/@me/cloud_pc_config` | `postCloudPcConfig` | `—` |
+| 67 | `POST` | `api/v2/users/@me/cloud_pc_tips/{e}` | `postCloudPcTip` | `e` |
+| 68 | `GET` | `api/v2/users/@me/coins-changes` | `getPlayOrders` | `—` |
+| 69 | `GET` | `api/v2/users/@me/file_sharing/favorites` | `getFSFavorites` | `—` |
+| 70 | `GET` | `api/v2/users/@me/first-play-game/{e}` | `getFistPlayGame` | `e` |
+| 71 | `GET` | `api/v2/users/@me/friend_recommendations` | `getFriendRecommendations` | `—` |
+| 72 | `GET` | `api/v2/users/@me/game-playing-histories` | `getPlayingHistories` | `—` |
+| 73 | `GET` | `api/v2/users/@me/game-playing-histories-hidden/{e}` | `removeHistory` | `e` |
+| 74 | `GET` | `api/v2/users/@me/gift-income-balance` | `getBalance` | `—` |
+| 75 | `GET` | `api/v2/users/@me/gift-income-change-list` | `getIncome` | `—` |
+| 76 | `GET` | `api/v2/users/@me/growth_value_histories` | `getGrowthRecord` | `—` |
+| 77 | `GET` | `api/v2/users/@me/last-created-room-info` | `getLastCreatedRoomInfo` | `—` |
+| 78 | `GET` | `api/v2/users/@me/level_info` | `getLevelInfo` | `—` |
+| 79 | `GET` | `api/v2/users/@me/pc-vip-time-changes` | `getPcVipChanges` | `—` |
+| 80 | `GET` | `api/v2/users/@me/pc_free_time_details` | `getPCFreeTimeDetails` | `—` |
+| 81 | `GET` | `api/v2/users/@me/status` | `getStatus` | `—` |
+| 82 | `DELETE` | `api/v2/users/@me/storage/{e}` | `removeUserStorage` | `e` |
+| 83 | `GET` | `api/v2/users/@me/user_rel_types/{e}` | `getUserRelTypes` | `e` |
+| 84 | `GET` | `api/v2/users/@me/vip-statistics` | `getVipStatistics` | `—` |
+| 85 | `GET` | `api/v2/users/@me/wechat_binding/reward` | `getWechatBind` | `—` |
+| 86 | `GET` | `api/v2/users/@me/{e}` | `getFollows` | `e` |
+| 87 | `GET` | `api/v2/users/ab_switch/android_h5_2apk_new` | `getAndroidConfirmSwitch` | `—` |
+| 88 | `GET` | `api/v2/users/ab_switch/pcweb_ads_entry_2apk` | `getPcAdsSwitch` | `—` |
+| 89 | `GET` | `api/v2/users/ab_switch/{e}` | `getUsersABSwitch` | `e` |
+| 90 | `GET` | `api/v2/welfare_center_coupons` | `getWelfareCoupons` | `—` |
+| 91 | `POST` | `api/v2/withdraws` | `postWithdraws` | `—` |
+| 92 | `GET` | `api/{v1|v2}/gift-packs` | `getGiftPacks` | `—` |
+| 93 | `GET` | `api/{v1|v2}/sign-info-v2` | `getSignInfo` | `—` |
+| 94 | `GET` | `api/{v1|v2}/users/@me/task_status` | `getTaskStatus` | `—` |
+| 95 | `POST` | `api/{ver}/behaviors` | `postBehaviors` | `e` |
+| 96 | `GET` | `api/{ver}/file_sharing/recommendations` | `getFsRecommend` | `e` |
 
-### 登录/鉴权（15 条）
+### 登录/鉴权（17 条）
 
 > 短信验证码、密码/二维码登录、token、实名、注销
 
@@ -1355,20 +1481,22 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 1 | `POST` | `api/v1/phone-captchas/{e}-{t}` | `getCaptcha` | `e,t` |
 | 2 | `GET` | `api/v1/phones-registered/{e}-{t}` | `getRegistered` | `e,t` |
 | 3 | `GET` | `api/v1/tokens` | `getToken` | `—` |
-| 4 | `GET` | `api/v1/wechat_binding/auth_data` | `getWechatOpenid` | `—` |
-| 5 | `GET` | `api/v1/yidun/anti_spam_check` | `getYidunAntiSpamCheck` | `—` |
-| 6 | `GET` | `api/v2/auth-token` | `getAuthToken` | `—` |
-| 7 | `GET` | `api/v2/auth-token` | `activity_authToken` | `—` |
-| 8 | `POST` | `api/v2/cancellation/captcha` | `postCancellationCaptcha` | `—` |
-| 9 | `GET` | `api/v2/login` | `bindLogin` | `—` |
-| 10 | `POST` | `api/v2/login-qrcodes` | `postQr` | `—` |
-| 11 | `POST` | `api/v2/login_role` | `postLoginRole` | `—` |
-| 12 | `GET` | `api/v2/poster-invitation-qrcodes` | `activity_qrcode` | `—` |
-| 13 | `DELETE` | `api/v2/tokens/@current` | `deleteToken` | `—` |
-| 14 | `GET` | `api/v2/users/@me/games-playing/@current/qrcode` | `getQr` | `—` |
-| 15 | `POST` | `api/v2/users/@me/realname-info` | `postRealName` | `—` |
+| 4 | `POST` | `api/v1/user-pwd-tokens` | `postUserPwdTokens` | `—` |
+| 5 | `GET` | `api/v1/wechat_binding/auth_data` | `getWechatOpenid` | `—` |
+| 6 | `GET` | `api/v1/yidun/anti_spam_check` | `getYidunAntiSpamCheck` | `—` |
+| 7 | `GET` | `api/v2/auth-token` | `getAuthToken` | `—` |
+| 8 | `GET` | `api/v2/auth-token` | `activity_authToken` | `—` |
+| 9 | `POST` | `api/v2/cancellation/captcha` | `postCancellationCaptcha` | `—` |
+| 10 | `GET` | `api/v2/login` | `bindLogin` | `—` |
+| 11 | `POST` | `api/v2/login-qrcodes` | `postQr` | `—` |
+| 12 | `POST` | `api/v2/login_role` | `postLoginRole` | `—` |
+| 13 | `GET` | `api/v2/poster-invitation-qrcodes` | `activity_qrcode` | `—` |
+| 14 | `DELETE` | `api/v2/tokens/@current` | `deleteToken` | `—` |
+| 15 | `GET` | `api/v2/users/@me/games-playing/@current/qrcode` | `getQr` | `—` |
+| 16 | `POST` | `api/v2/users/@me/realname-info` | `postRealName` | `—` |
+| 17 | `POST` | `api/{v1|v2}/upload-tokens` | `createUploadToken` | `—` |
 
-### 云电脑/云手机（8 条）
+### 云电脑/云手机（9 条）
 
 > 云电脑实例、价格、订单、存储重置、云手机迁移
 
@@ -1380,10 +1508,11 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 4 | `POST` | `api/v2/cloud-pc-orders` | `postCloudOrder` | `—` |
 | 5 | `GET` | `api/v2/cloud-pc-price` | `getCloudPcPrice` | `—` |
 | 6 | `GET` | `api/v2/cloud-pc-storage` | `resetCloudPCStorage` | `—` |
-| 7 | `POST` | `api/v2/users/@me/cloud_mobile_tips/{e}` | `postCloudMobileTip` | `e` |
-| 8 | `POST` | `api/v2/users/@me/move-new-cloud-mobile` | `postCloudMobileUpdate` | `—` |
+| 7 | `GET` | `api/v2/users/@me/cloud-pc` | `getCloudPCInfo` | `—` |
+| 8 | `POST` | `api/v2/users/@me/cloud_mobile_tips/{e}` | `postCloudMobileTip` | `e` |
+| 9 | `POST` | `api/v2/users/@me/move-new-cloud-mobile` | `postCloudMobileUpdate` | `—` |
 
-### 社区/直播（51 条）
+### 社区/直播（52 条）
 
 > 云友圈话题、动态、评论、点赞、关注、直播间、群组
 
@@ -1439,7 +1568,8 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 48 | `GET` | `api/v2/square/message/game/@me` | `getSquareMessageGame` | `—` |
 | 49 | `POST` | `api/v2/square/message/op` | `postSquareMessage` | `—` |
 | 50 | `GET` | `api/v2/users/@me/live_room/daily_task_status` | `getDailyTask` | `—` |
-| 51 | `GET` | `api/{ver}/topics` | `getTopics` | `e` |
+| 51 | `GET` | `api/{v1|v2}/users/@me/live_room/daily_task_status_v2` | `getDailyTaskDetail` | `—` |
+| 52 | `GET` | `api/{ver}/topics` | `getTopics` | `e` |
 
 ### SEO（2 条）
 
@@ -1450,7 +1580,7 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 1 | `GET` | `api/v1/seo/game_contents` | `getSeoGameContent` | `—` |
 | 2 | `GET` | `api/v1/seo/metis_contents` | `getSeoMetisContents` | `—` |
 
-### 其他（33 条）
+### 其他（35 条）
 
 > 活动、邀请、愿望单、客服反馈、埋点等杂项
 
@@ -1458,15 +1588,15 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 |---|---|---|---|---|
 | 1 | `GET` | `api/v1/ctcodes` | `getCtcodes` | `—` |
 | 2 | `GET` | `api/v1/invites/{e}` | `getInvites` | `e` |
-| 3 | `GET` | `api/v1/personal-invite-games` | `activity_invite_games` | `—` |
-| 4 | `GET` | `api/v1/questions` | `getQuestions` | `—` |
-| 5 | `GET` | `api/v1/questions/{e}` | `getQuestionDetail` | `e` |
-| 6 | `GET` | `api/v2/action-awards?activity={e}` | `activity_getAward` | `e` |
-| 7 | `POST` | `api/v2/alipay_sign` | `postAlipaySign` | `—` |
-| 8 | `GET` | `api/v2/alipay_sign_check` | `getAlipayCheck` | `—` |
-| 9 | `POST` | `api/v2/alipay_sign_link` | `postAlipayLink` | `—` |
-| 10 | `GET` | `api/v2/award-history/{e}` | `activity_patchAward` | `e` |
-| 11 | `GET` | `api/v2/award-history?activity=…&action=…` | `activity_getExtraAward` | `e,t` |
+| 3 | `GET` | `api/v1/merchant_paas_configs` | `getMerchantPaasConfigs` | `—` |
+| 4 | `GET` | `api/v1/personal-invite-games` | `activity_invite_games` | `—` |
+| 5 | `GET` | `api/v1/questions` | `getQuestions` | `—` |
+| 6 | `GET` | `api/v1/questions/{e}` | `getQuestionDetail` | `e` |
+| 7 | `GET` | `api/v2/action-awards?activity={e}` | `activity_getAward` | `e` |
+| 8 | `POST` | `api/v2/alipay_sign` | `postAlipaySign` | `—` |
+| 9 | `GET` | `api/v2/alipay_sign_check` | `getAlipayCheck` | `—` |
+| 10 | `POST` | `api/v2/alipay_sign_link` | `postAlipayLink` | `—` |
+| 11 | `GET` | `api/v2/award-history/{e}` | `activity_patchAward` | `e` |
 | 12 | `GET` | `api/v2/following/rooms` | `getFollowingRooms` | `—` |
 | 13 | `GET` | `api/v2/game_users` | `getGameUsers` | `—` |
 | 14 | `GET` | `api/v2/liveroom_limit` | `getLiveroomLimit` | `—` |
@@ -1478,17 +1608,19 @@ yunxin_account: {"accid": "5f2c1a7d8b3e4f60a1c2d3e4", "token": "0000000000000000
 | 20 | `GET` | `api/v2/start_game_vip_guide_config` | `getStartGameVipGuideConfig` | `—` |
 | 21 | `GET` | `api/v2/start_game_vip_guide_info` | `getStartGameVipGuideInfo` | `—` |
 | 22 | `GET` | `api/v2/total-awards?activity={e}` | `activity_getTotalAward` | `e` |
-| 23 | `POST` | `api/v2/user_game_wish/{e}` | `postUserGameWish` | `e` |
-| 24 | `GET` | `api/v2/user_gray_and_version` | `getUserGrayAndVersion` | `—` |
-| 25 | `DELETE` | `api/v2/user_history_game_code` | `deletePlayingHistories` | `—` |
-| 26 | `POST` | `api/v2/wechat_binding/reward_acceptions` | `postWechatBindAward` | `—` |
-| 27 | `POST` | `api/v2/wechat_bindings` | `postWechatBind` | `—` |
-| 28 | `GET` | `api/{v1|v2}` | `getTextResourceLocation` | `e` |
-| 29 | `GET` | `api/{v1|v2}` | `getBottomConfigItems` | `e` |
+| 23 | `POST` | `api/v2/user-pwd-info` | `postUserPwdInfo` | `—` |
+| 24 | `POST` | `api/v2/user_game_wish/{e}` | `postUserGameWish` | `e` |
+| 25 | `GET` | `api/v2/user_gray_and_version` | `getUserGrayAndVersion` | `—` |
+| 26 | `DELETE` | `api/v2/user_history_game_code` | `deletePlayingHistories` | `—` |
+| 27 | `POST` | `api/v2/wechat_binding/reward_acceptions` | `postWechatBindAward` | `—` |
+| 28 | `POST` | `api/v2/wechat_bindings` | `postWechatBind` | `—` |
+| 29 | `GET` | `api/{v1|v2}/feedback_game_types` | `getGameType` | `—` |
 | 30 | `GET` | `api/{v1|v2}/main_recommendation/{t}` | `getRecommendList` | `e,t` |
 | 31 | `GET` | `api/{v1|v2}/questions/search/{t}` | `getFaqQuestions` | `e,t` |
-| 32 | `POST` | `api/{ver}/customer_service` | `postCustomerService` | `e` |
-| 33 | `POST` | `api/{ver}/feedbacks` | `postFeedback` | `e` |
+| 32 | `GET` | `api/{v1|v2}/user-pwd-info` | `getUserPwdInfo` | `—` |
+| 33 | `GET` | `api/{ver}/cloud-devices` | `getCloudDevices` | `e` |
+| 34 | `POST` | `api/{ver}/customer_service` | `postCustomerService` | `e` |
+| 35 | `POST` | `api/{ver}/feedbacks` | `postFeedback` | `e` |
 
 ---
 

@@ -5,7 +5,7 @@
 把「首页推荐 → 选游戏 → 申请机位 → 连网关 → WebRTC 收画面 → 触摸操控 → 悬浮球调画质」
 这整条链路拆开、写清楚、并且能跑起来。
 
-**259 条接口** · **119 条实测用例（95 通过）** · **23 份脱敏响应样本** · **6 张真机截图**
+**272 条接口** · **135 条实测用例（111 通过）** · **23 份脱敏响应样本** · **6 张真机截图**
 
 ---
 
@@ -243,15 +243,15 @@ section.mobilemenu
 
 ### 6. 其余接口
 
-从 3 个 bundle 自动抽出 **259 条**，分类：
+从 3 个 bundle 自动抽出 **272 条**，分类：
 
 | 分类 | 数量 | | 分类 | 数量 |
 |---|---|---|---|---|
-| 我的/账户 | 93 | | 登录/鉴权 | 15 |
-| 社区/直播 | 51 | | 启动/排队 | 13 |
-| 其他 | 33 | | 云电脑/云手机 | 8 |
-| 游戏/详情 | 23 | | 悬浮球/键位/画质 | 4 |
-| 首页/推荐 | 17 | | SEO | 2 |
+| 我的/账户 | 96 | | 登录/鉴权 | 17 |
+| 社区/直播 | 52 | | 启动/排队 | 13 |
+| 其他 | 35 | | 云电脑/云手机 | 9 |
+| 游戏/详情 | 22 | | 悬浮球/键位/画质 | 4 |
+| 首页/推荐 | 22 | | SEO | 2 |
 
 全量清单见 [`docs/接口清单.csv`](docs/接口清单.csv)，
 带分类 / Method / Path / 客户端函数名 / 参数 / 源码偏移，可以直接 grep 定位。
@@ -318,10 +318,67 @@ socketSend(e, t, i, n) {
 用浏览器自动化进游玩页时，必须写 `localStorage.setItem(k, JSON.stringify({data: v}))`，
 而且要先 `goto` 到 `cg.163.com` 源下再写。
 
-### 启动必须登录
+### 启动必须登录，登录链路如下
 
 匿名点「秒玩」会跳 `#/login?backTo=%2Fpay`。这部分没有绕过手段，也不需要：
-正常登录一次，从 localStorage 拿 `NCG-token` + `NCG-eid` 就能在脚本里复用。
+`POST api/v2/tickets` 只要求 `Authorization: Bearer`，拿一次 token 就能长期复用。
+三条链路都实测过，错误码是从响应体里原样抄的。
+
+**① 短信验证码**
+
+```
+POST api/v1/phone-captchas/<ctcode>-<phone>          # 区号在前！
+     {"extra":{"invite_code":""},"etc":{"validate":""}}
+POST api/v1/tokens
+     {"auth_method":"phone-captcha","ctcode":"86","phone":"…",
+      "captcha":"123456","login_mode":"sms_code"}
+```
+
+路径参数顺序是个坑：`86-18664598726` → 200，反过来 → 400 `errcode=1103 无效区号`，
+未注册号 → 404 `errcode=1104 电话号码不存在`。同一号码 60 秒内重复请求 →
+`errcode=1100 短信验证码申请太频繁`。验证码错 → **HTTP 401** `errcode=1102`；
+错太多次 → `errcode=1109 错误次数过多，验证码已失效`。
+
+**② 密码登录（三级加密）**
+
+```
+GET api/v1/user-pwd-info?phone=…&ctcode=86
+→ {"has_pwd":true,"is_registered":true,
+   "login_iv":1742291771803,"login_random_text":"FET4GtMg",
+   "pwd_encrypt_key":"67d9433b785d5705bcbdcb83",
+   "user_pwd_login_salt":"m2R4iYuF"}
+```
+
+```js
+o   = SHA256(salt + password)                     // 64 字符 hex
+key = Utf8.parse(pwd_encrypt_key)                 // 24 字节 → 3DES
+iv  = Hex.parse(login_iv.toString(16).padStart(16, "0"))
+pwd = TripleDES.encrypt(o + login_random_text, key, {iv, CBC, Pkcs7}).toString(Base64)
+```
+
+`login_random_text` 和 salt **每次请求都会变**，所以 `pwd_info` 和
+`POST api/v1/user-pwd-tokens` 必须连着发。`sdk/cgapi.py` 的 `login_password()` 已封装；
+`encrypt_password()` 优先用 pycryptodome / cryptography，两者都没有时退回
+`sdk/_des3.py`（纯标准库 3DES，已用 pycryptodome 对同一组 key/iv/明文逐字节交叉验证）。
+
+**③ 扫码登录 —— 匿名拿不到**
+
+`POST api/v2/login-qrcodes` 未登录时对任何 `X-Platform` 都返回 401 `errcode=1006`；
+只有 `X-Platform: 6`（TV）返回不同的 `errcode=1025`。原因是它只用在
+「TV 端免费时长耗尽、引导扫码注册」的场景（`showExceed()` → `dispatch("postQr")`）。
+PC 首页那个登录二维码走的是另一个入口，不在移动端范围内。
+轮询 `GET api/v1/tokens?qrcode_id=` 本身匿名可用，无效 id 报 `errcode=1218 二维码无效`。
+
+**拿到 token 之后**
+
+```js
+t = cookieSet(randomSplit(resp.encrypt))
+s = cookieGet(t)               // "<a>:<num>,<b>:<num>"
+o = getOffset2(s) % 256        // 注意 %256，getOffset2 可能大于 255
+localStorage: NCG-token / NCG-eid(=t) / NCG-id / NCG-encrypt
+```
+
+`user_id` 也可以直接从 JWT 的 `identity` 字段取。
 
 ### 排队协议
 
@@ -358,13 +415,14 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 .
 ├── README.md
 ├── LICENSE                   GPL-3.0
-├── report.html               单页可视化报告（259 行可搜索接口表 + 真机截图）
+├── report.html               单页可视化报告（272 行可搜索接口表 + 真机截图）
 ├── docs/
 │   ├── API文档.md            主文档，14 章，约 1500 行
 │   ├── 接口清单.csv
 │   └── img/                  真机截图（已打码）
 ├── sdk/
-│   └── cgapi.py              SDK：HTTP 全接口 + WS 客户端 + 输入封装，约 1000 行
+│   ├── cgapi.py              SDK：HTTP 全接口 + WS 客户端 + 输入封装，约 1200 行
+│   └── _des3.py              纯标准库 3DES-CBC + PKCS7（密码登录用，无第三方依赖）
 └── samples/                  23 份匿名接口的真实响应样本（原始 101 份，脱敏后保留无个人信息的部分）
 ```
 
@@ -374,14 +432,15 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 
 ## 实测数据
 
-三轮，都是真发请求：
+四轮，都是真发请求：
 
 | 轮次 | 身份 | 用例 | 通过 | 说明 |
 |---|---|---|---|---|
 | 1 | 匿名 | 37 | 29 | 覆盖首页/游戏/社区/SEO；失败 8 条全是 v2，401 未登录，属预期 |
 | 2 | 登录 | 60 | 49 | 悬浮球/键位、启动排队、云电脑、社区 |
 | 3 | 登录 | 22 | 17 | 「我的」页真实抓包复现 |
-| **合计** | | **119** | **95** | |
+| 4 | 匿名（直连） | 16 | 16 | 登录链路：注册检查 / 密码前置 / 扫码轮询 / 登出 / 6 个补充接口 |
+| **合计** | | **135** | **111** | |
 
 **没通过的 24 条没有一条是接口不存在**，全是缺必填 query 或 HTTP 方法错。举几个：
 
@@ -409,6 +468,9 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 - **DataChannel 没实装**。`common_setting.enable_data_channel` 默认 `false`，输入全走 WS；
   服务端会周期性推 `9 <port>,1,<hex>,<base64>` 催你建 DataChannel，但这条路径没验证过。
 - **iOS 原生 App / 小程序端没碰**，`NCGJsBridge` 那条分支只是读代码了解。
+- **登录链路只验证到「取到 token 前」**：短信/密码两种方式的接口、参数、加密流程都已实测，
+  但为了不给测试号发短信、不碰别人的密码，没有真正完成一次登录；后续调用用的 token 是从
+  已登录浏览器的 localStorage 复用的。密码加密结果已用 pycryptodome 逐字节交叉验证。
 - 接口会变。这份快照是 2026-11-06 的，前端发版后 add/remove 字段很正常。
 
 ---

@@ -248,27 +248,120 @@ class CGAPI:
         self.encrypt = encrypt
         self.offset = offset_from_encrypt(encrypt) if encrypt else 0
 
-    def request_sms_code(self, phone: str, cc: str = "86") -> Any:
-        return self.get(f"api/v1/phone-captchas/{phone}-{cc}")
-
-    def check_phone(self, phone: str, cc: str = "86") -> Any:
-        return self.get(f"api/v1/phones-registered/{phone}-{cc}")
-
-    def login_sms(self, phone: str, code: str, cc: str = "86") -> dict:
-        """手机验证码登录。返回 {token, user_id, encrypt}，并自动注入。"""
-        r = self.post("api/v1/tokens", {
-            "phone": phone, "ctcode": cc, "captcha": code,
-            "auth_method": "phone-captcha",
-        })
+    def _apply_login(self, r: dict) -> dict:
+        """把 token 响应的登录态注入本实例。"""
         self.token = r.get("token")
         self.uid = str(r.get("user_id") or "")
         self.encrypt = r.get("encrypt")
         self.offset = offset_from_encrypt(self.encrypt) if self.encrypt else 0
         return r
 
+    # ---- 手机号探测（只读，不发短信）----
+    def check_phone(self, phone: str, cc: str = "86") -> Any:
+        """查手机号是否注册。注意路径是 <ctcode>-<phone>（区号在前）。
+
+        已实测：/86-138****0000 → 200 {ctcode, phone, user_need_negotiate_manually,
+        user_need_yixin_validate}；号码不存在 → 404 errcode=1104「电话号码不存在」；
+        参数顺序写反 → 400 errcode=1103「无效区号」。
+        """
+        return self.get(f"api/v1/phones-registered/{cc}-{phone}")
+
+    def pwd_info(self, phone: str, cc: str = "86") -> Any:
+        """查号码的密码登录参数（含 3DES 需要的 salt/key/iv）。
+
+        返回 {has_pwd, is_registered, ignore_pwd_popup, login_iv,
+        login_random_text, pwd_encrypt_key, user_pwd_login_salt}。
+        """
+        return self.get("api/v1/user-pwd-info", phone=phone, ctcode=cc)
+
+    # ---- 短信验证码 ----
+    def request_sms_code(self, phone: str, cc: str = "86",
+                         invite_code: str = "", validate: str = "") -> Any:
+        """申请短信验证码。POST（GET 会 405）。路径同样是 <ctcode>-<phone>。
+
+        :param validate: 极验（yidun）校验串，风控命中时才需要。
+        返回 {captcha}；频率过高 → errcode=1100「短信验证码申请太频繁」。
+        """
+        return self.post(f"api/v1/phone-captchas/{cc}-{phone}",
+                         {"extra": {"invite_code": invite_code},
+                          "etc": {"validate": validate}})
+
+    def login_sms(self, phone: str, code: str, cc: str = "86") -> dict:
+        """短信验证码登录。返回 {token, user_id, encrypt}，并自动注入。"""
+        return self._apply_login(self.post("api/v1/tokens", {
+            "auth_method": "phone-captcha",
+            "ctcode": cc,
+            "phone": phone,
+            "captcha": code,
+            "login_mode": "sms_code",
+        }))
+
+    # ---- 密码登录 ----
+    def encrypt_password(self, password: str, info: dict) -> str:
+        """复刻前端密码加密，需要 pycryptodome 或 cryptography。
+
+        JS 原文：
+            o = SHA256(salt + password)             // hex
+            key = Utf8.parse(pwd_encrypt_key)       // 24 字节 → 3DES
+            iv  = Hex.parse(login_iv.toString(16).padStart(16, "0"))
+            c   = TripleDES(o + login_random_text).encrypt(key, iv, CBC, Pkcs7)
+            pwd = c.ciphertext.toString(Base64)
+        """
+        import hashlib
+        secret = hashlib.sha256(
+            (info["user_pwd_login_salt"] + password).encode()).hexdigest()
+        plain = (secret + info["login_random_text"]).encode()
+        key = info["pwd_encrypt_key"].encode()
+        iv = bytes.fromhex(format(int(info["login_iv"]), "x").rjust(16, "0")[-16:])
+        try:
+            from Crypto.Cipher import DES3
+            from Crypto.Util.Padding import pad
+            c = DES3.new(key, DES3.MODE_CBC, iv)
+            return base64.b64encode(c.encrypt(pad(plain, 8))).decode()
+        except ImportError:
+            pass
+        try:
+            from cryptography.hazmat.primitives.ciphers import (
+                Cipher, algorithms, modes)
+            from cryptography.hazmat.primitives import padding
+            p = padding.PKCS7(64).padder()
+            data = p.update(plain) + p.finalize()
+            enc = Cipher(algorithms.TripleDES(key), modes.CBC(iv)).encryptor()
+            return base64.b64encode(enc.update(data) + enc.finalize()).decode()
+        except ImportError:
+            pass
+        # 两个库都没有时退回自带的纯标准库实现（已用 pycryptodome 交叉验证）
+        from _des3 import des3_cbc_encrypt_pkcs7
+        return base64.b64encode(
+            des3_cbc_encrypt_pkcs7(plain, key, iv)).decode()
+
+    def login_password(self, phone: str, password: str, cc: str = "86",
+                       yidun_validate_str: str | None = None) -> dict:
+        """密码登录。先取 pwd_info 拿到本轮 salt，再 POST api/v1/user-pwd-tokens。"""
+        info = self.pwd_info(phone, cc)
+        body = {"phone": phone, "ctcode": cc,
+                "pwd": self.encrypt_password(password, info),
+                "login_mode": "password"}
+        if yidun_validate_str:
+            body["yidun_validate_str"] = yidun_validate_str
+        return self._apply_login(self.post("api/v1/user-pwd-tokens", body))
+
+    # ---- 扫码登录 ----
     def login_qrcode_create(self) -> Any:
-        """创建扫码登录二维码。返回 {qrcode_id, qrcode_url, ...}"""
+        """创建扫码登录二维码。
+
+        ⚠️ 实测：匿名 POST 返回 401 errcode=1006，该接口需要已登录态
+        （前端只在「免费时长耗尽、想让 TV 端用户扫码注册」时调用）。
+        真正的登录二维码在 PC 端 index 页由另一个入口生成。
+        """
         return self.post("api/v2/login-qrcodes", {})
+
+    def login_qrcode_poll(self, qrcode_id: str) -> dict:
+        """轮询扫码结果。未扫/无效 → 400 errcode=1218「二维码无效」。"""
+        r = self.get("api/v1/tokens", qrcode_id=qrcode_id)
+        if r.get("token"):
+            self._apply_login(r)
+        return r
 
     def login_qrcode_poll(self, qrcode_id: str) -> dict:
         r = self.get("api/v1/tokens", qrcode_id=qrcode_id)
@@ -628,6 +721,48 @@ class CGAPI:
 
     def client_error(self, body: dict) -> Any:
         return self.post("api/v2/client-errors", body)
+
+    # -------------------------------------------------- 补充：c() 形式的接口
+    # 这批接口由 api 模块里的 c(e,t) = s+"api/".concat(t||"v1|v2").concat(e)
+    # 拼出来，早期抽取脚本只匹配 s+"api/..." 所以漏了。全部已实测。
+    def feedback_game_types(self) -> Any:
+        """反馈表单里的游戏类型下拉（匿名可读）。"""
+        return self.get("api/v1/feedback_game_types")
+
+    def sign_info_v2(self) -> Any:
+        """签到信息 v2：连签天数、今日是否已签、奖励档位（匿名可读）。"""
+        return self.get("api/v1/sign-info-v2")
+
+    def gift_packs(self) -> Any:
+        """礼包列表（匿名可读）。"""
+        return self.get("api/v1/gift-packs")
+
+    def upload_tokens(self) -> Any:
+        """取七牛上传凭证（匿名即可，返回 {token}，Policy+Signature 形式）。"""
+        return self.post("api/v1/upload-tokens", {})
+
+    def task_status(self) -> Any:
+        """每日任务状态（匿名返回模板，登录后带 finished 进度）。"""
+        return self.get("api/v1/users/@me/task_status")
+
+    def daily_task_detail(self) -> Any:
+        """直播/云玩每日任务详情（匿名可读）。"""
+        return self.get("api/v1/users/@me/live_room/daily_task_status_v2")
+
+    def activity_banners(self) -> Any:
+        """活动 Banner（匿名可读，字段比首页 banners 多 channel_names/banners）。"""
+        return self.get("api/v1/activity-banners")
+
+    def merchant_paas_configs(self) -> Any:
+        return self.get("api/v1/merchant_paas_configs")
+
+    def cloud_pc_info(self) -> Any:
+        """云电脑实例信息（需登录，v2）。"""
+        return self.get("api/v2/users/@me/cloud-pc")
+
+    def cloud_pc_config(self) -> Any:
+        """云电脑配置（需登录，v2）。"""
+        return self.get("api/v2/users/@me/cloud_pc_config")
 
 
 # ============================================================ 游玩态 WebSocket
@@ -1000,8 +1135,30 @@ class PlaySession:
 
 
 # ============================================================ 便捷入口
-def make_api(proxy: str | None = "http://127.0.0.1:10808", **kw) -> CGAPI:
-    return CGAPI(proxy=proxy, **kw)
+DEFAULT_PROXY = "http://127.0.0.1:10808"
+
+
+def probe_proxy(proxy: str = DEFAULT_PROXY, timeout: int = 3) -> bool:
+    """探测本地 HTTP 代理是否可用（能连上端口即算可用）。"""
+    try:
+        host, port = proxy.split("//", 1)[-1].rstrip("/").rsplit(":", 1)
+        with socket.create_connection((host, int(port)), timeout=timeout):
+            return True
+    except Exception:
+        return False
+
+
+def make_api(proxy: str | None = None, auto_proxy: bool = True, **kw) -> CGAPI:
+    """构造 CGAPI。
+
+    :param proxy: 显式代理，传 "" 或 None 表示不走代理。
+    :param auto_proxy: 未显式指定代理时，若本机 10808 在监听就走它；
+        否则直连。这样在「校园网需要代理」和「已经能直连」两种环境下
+        都不用改代码。
+    """
+    if proxy is None and auto_proxy and probe_proxy():
+        proxy = DEFAULT_PROXY
+    return CGAPI(proxy=proxy or None, **kw)
 
 
 if __name__ == "__main__":

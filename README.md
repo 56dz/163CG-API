@@ -214,10 +214,50 @@ section.mobilemenu
 没有权限的账号切蓝光**一个字节都不会发出去**，别以为是接口不支持。
 
 **帧率 / 分辨率不是热切换**：`setFps` / `setResolution` 会 `resetGateWaty()` 重连整个 WS
-重新 auth。移动端 H5 的 `resolution_configs` 里没有 `web-mobile` 条目，
-所以移动端菜单只有「画质」一栏，端游才会多出「画质帧率」。
+重新 auth。只有 `game_type=pc` 且 `enable_resolution_config=true` 的游戏才在菜单里
+多出「画质帧率」一栏（面板见 `docs/img/quality-selector.png`），手游只有「画质」四档。
 
 默认画质来自 `api/v1/speed_url?game_type=mobile` 的 `default_quality`（实测 `high`）。
+
+端游在手机浏览器里点「画质帧率」会出三组选项（真机实测）：
+
+```
+画质      标清 / 高清 / 超清(on) / 蓝光
+帧率      30帧 / 60帧(on) / 90帧 / 120帧
+分辨率    720P / 900P / 1080P(on) / 2K / 4K
+```
+
+### 4.1 屏幕适配（分辨率）怎么调
+
+「适配不同设备屏幕」不是一个 REST 接口，是四层叠起来的：
+
+| 层 | 位置 | 做什么 |
+|---|---|---|
+| 0 自动 | `getVideoScreen()` | 手游高度锁 720、宽度 `floor(长边×720/短边)` 按设备宽高比反算；端游 `屏幕css×dpr`。**任何屏幕自适应，不用调** |
+| 1 运营配置 | `GET api/v1/customize-settings/pc_game/{platform_resolution, resolution_auto_2k_enable, resolution_auto_2k_whitelist, resolution_tips}`（**匿名可读**） | 各平台默认档位、是否放行「跟随本机」、升档提示文案 |
+| 2 逐游戏 | `GET api/v1/games/<code>` 的 `resolution_configs[]` | 某游戏在某平台支持哪些 `fps`/`res`；只有 pc + `enable_resolution_config=true` 才有 |
+| 3 生效 | WS 重连 `resetGateWaty()` → 新 `auth` 带 `res`/`fps` | **不是** `game_set_quality`（那只是码率） |
+
+```bash
+# 各平台默认档位（匿名）
+GET api/v1/customize-settings/pc_game/platform_resolution
+{"val":"android-mobile-platform##720p,900p,1080p##30,60##900p##30;ios-native-platform##...;web-pc##900p,1080p,2k##60##1080p##60;"}
+```
+
+SDK 里三个方法直接对应：
+
+```python
+api.platform_resolution()                   # → {platform: {resolutions, fps, default_resolution, default_fps}}
+api.resolution_options("wow_cn_high", 4)    # → 该游戏在 ios-mobile-platform 上的最终可选项
+CGAPI.video_screen(screen_w=390, screen_h=844, dpr=3, game_type="pc")   # → {'w': 2400, 'h': 1170}
+```
+
+两个实测边界，别踩：
+
+- `res` / `fps` / `quality` 全部只影响**请求**，**不改 SDP、不改 `encoder`**。
+  真正出流尺寸由机位 `tickets.lock_detail.width/height` 决定（手游恒 `1280×720`，
+  端游恒 `1920×1080`），客户端只读不写。
+- 请求超出机位能力的分辨率（如 1080 机位点 2K）**不会发新 auth 帧**，面板选中态也不变。
 
 ### 5. 首页 - 我的
 

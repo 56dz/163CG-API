@@ -729,6 +729,186 @@ android-mobile-platform / ios-native-platform / pc-native-platform`，
 ```
 
 
+### 9.5 分辨率与帧率：屏幕适配分四层，不是一个接口
+
+![画质帧率面板](img/quality-selector.png)
+
+> 端游在手机浏览器里的「画质帧率」面板（真机截图）：画质 4 档 / 帧率 4 档 / 分辨率 5 档，绿框为当前选中。
+
+
+「适配不同设备屏幕」在这套系统里不是一个可调的 REST 接口，而是**四层叠起来的**。
+按从前到后排列：
+
+#### 第 0 层（自动）：客户端把屏幕换算成画布尺寸
+
+`getVideoScreen(w, h, isPort, gameType, greyWM)`（`chunk-common.144278fd.js:1201447`）。
+它在 `run.html` 启动时算一次、切分辨率时（`resetScreenSize()`，`chunk-common.144278fd.js:542122`）再算一次：
+
+```js
+getVideoScreen=function(e,t,i,n,s){var o=window.devicePixelRatio||1,a=t||720,r=e||1280;
+ if(v.isMobile()){
+   var d=h.os.ios&&!(weixin/qq/aweme/news), f=navigator.standalone,
+       g=d&&v.isIphoneX(), _=g?v.getIphoneXSaftArea():0;
+   d&&!i||f ? (l=window.screen,c=Math.ceil(l.width),u=Math.ceil(l.height))
+            : (c=Math.ceil(innerWidth||screen.width),u=Math.ceil(innerHeight||screen.height));
+   i ? (p=Math.max(c,u)-(f?g?_:20:0), m=Math.min(c,u))
+     : (p=Math.max(c,u)-(g?_:0),     m=Math.min(c,u)-(f?20:0));
+   "pc"==n ? (r=Math.round(p*devicePixelRatio), a=Math.round(m*devicePixelRatio))
+           : s ? (r=p,a=m) : r=Math.floor(p*a/m);
+ } else if("pc"==n){ var y=window.screen; r=Math.round(y.width*o); a=Math.round(y.height*o);}
+ return {w:r,h:a}}
+```
+
+| 场景 | 宽度 | 高度 | 说明 |
+|---|---|---|---|
+| 手游（`game_type=mobile`） | `floor(长边 × 720 / 短边)` | 固定 `720` | **按设备宽高比反算宽度**，所以任何屏幕都自适应，无需接口 |
+| 端游（`game_type=pc`） | `max(屏幕css) × dpr` | `min(屏幕css) × dpr` | 直接吃满设备像素 |
+| iPhone X 系列 | 长边再减安全区 | — | 屏幕像素 `1170×2532 / 1284×2778 / 1080×2340` → 扣 `44`；`1179×2556 / 1290×2796` → 扣 `54` |
+| PWA standalone | — | 再减 `20` | `navigator.standalone` 为真时 |
+
+实测对照（iPhone 14，390×844、dpr 3）：
+
+| 设备/场景 | 公式结果 | run 页 auth 里真实发的值 |
+|---|---|---|
+| 端游 `wow_cn_high` | `2400 × 1170` | `{"w":2400,"h":1170}` ✅ |
+| 手游 `mrfzzmd` | `1558 × 720` | 机位 `lock_detail` 给的是 `1280×720`（见第 3 层） |
+
+SDK 已复刻成静态方法：
+
+```python
+from cgapi import CGAPI
+CGAPI.video_screen(screen_w=390, screen_h=844, dpr=3, game_type="pc")
+# {'w': 2400, 'h': 1170}
+CGAPI.video_screen(screen_w=390, screen_h=844, game_type="mobile")
+# {'w': 1558, 'h': 720}
+CGAPI.iphone_x_safe_area(390, 844, 3)     # 1170×2532 → 44
+```
+
+#### 第 1 层（运营配置）：`customize-settings`，**匿名可读**
+
+`GET api/v1/customize-settings/{group}/{key}` —— 分辨率相关的四条全在 `pc_game` 组下。
+`v1` 匿名可访问，`v2` 需要登录（内容相同）。
+
+| key | 实测值 | 作用 |
+|---|---|---|
+| `platform_resolution` | `android-mobile-platform##720p,900p,1080p##30,60##900p##30;ios-native-platform##720p,900p,1080p##30,60##900p##60;android-mobile-pc##720p,900p,1080p##30,60##900p##30;web-pc##900p,1080p,2k##60##1080p##60;` | 各平台默认档位。格式 `<platform>##<分辨率列表>##<帧率列表>##<默认分辨率>##<默认帧率>`，多条 `;` 分隔 |
+| `resolution_auto_2k_enable` | `1` | 是否放行「跟随本机」 |
+| `resolution_auto_2k_whitelist` | `phy_cloud_pc_high_x,yysls_4070ti,blackmyth_4070Ti,wxnn_4070,qrsjpc_4070ti,blackmyth_wegame_4070,yjwj_ntes_4070Ti,zxsjpc_4070,monsterhunterwilds_4070ti,cloud_pc_high,wegame_4070ti` | 白名单内游戏也放行「跟随本机」 |
+| `resolution_tips` | `提高分辨率/码率，依赖网速及设备解码性能，如遇卡顿请降低画面配置。<br/> 强烈建议先退出游戏返回桌面，再从菜单栏切换新的分辨率配置…` | 升档前的确认文案 |
+
+`allowAutoGameResolution = (resolution_auto_2k_enable === 1) || whitelist.includes(game_code)`，
+它决定 `QualitySelector` 里要不要出现「跟随本机（W*H）」这一项
+（`resolutions = (resolutionSupports||[]).filter(t => allowAutoGameResolution || t !== "auto")`）。
+
+#### 第 2 层（逐游戏能力）：游戏详情里的 `resolution_configs`
+
+`GET api/v1/games/<code>` 返回，**只有 `enable_resolution_config === true` 的游戏才有**，
+而且只有 `game_type === "pc"` 的游戏会走分辨率逻辑（`run.cbc92ca7.js:133277`）。
+
+`wow_cn_high` 实测 5 条：
+
+| platform | fps_default | fps_supports | res_default | res_supports |
+|---|---|---|---|---|
+| `android-mobile-platform` | 30 | 30/60/90/120 | `1080p` | auto,720p,900p,1080p,2k,4k |
+| `ios-native-platform` | 60 | 30/60/90/120 | `1080p` | auto,720p,900p,1080p,2k,4k |
+| `web-pc` | 60 | 30/60/90/120 | `auto` | 720p,900p,1080p,2k,auto,4k |
+| `pc-native-platform` | 60 | 30/60/90/120 | `auto` | auto,720p,…,4k |
+| `ios-mobile-platform` | 60 | 30/60/90/120 | `1080p` | 720p,…,4k（无 auto） |
+
+顶层还有回落值：`fps_default="30" fps_supports=["30","60"] resolution_default="900p" resolution_supports=["auto","720p","900p","1080p"]`。
+
+手游 `mrfzzmd`：`enable_resolution_config=false`、**没有 `resolution_configs`**，只有顶层同名字段
+→ 手游玩家**看不到分辨率调节入口**，画质只有码率四档。
+
+SDK：
+
+```python
+api.platform_resolution()                       # 解析成 {platform: {resolutions, fps, default_*}}
+api.resolution_options("wow_cn_high", 4)        # 按平台算最终可选项（4=ios-mobile-platform）
+# {'enable_resolution_config': True, 'fps_supports': ['30','60','90','120'],
+#  'visible_resolutions': ['720p','900p','1080p','2k','4k'],
+#  'resolution_default': '1080p', 'fps_default': '60',
+#  'allow_auto_game_resolution': True, ...}
+```
+
+#### 第 3 层（真正生效）：改 `res`/`fps` 要**重连网关**，重发 auth
+
+分辨率/帧率**不是**走 `game_set_quality`（那只是码率）。真实链路：
+
+```
+用户点「1080P」
+  → QualitySelector.setResolution('1080p')            chunk-common.144278fd.js:541868
+      resetScreenSize()                                重算画布 w/h
+      postBehaviors({action:"cg_res_changed",res:t})    埋点
+      commit("commonsetting/setGameResolution", t)      Vuex
+      setConfig("resolution_default", t)                写 localStorage NCG-game-config
+      $emit("resetGateWaty")                             ★
+  → resetGateWaty()                                    run.cbc92ca7.js:75447
+      GET api/v2/users/@me/status?region=&game_type=    拿最新 gateway_url
+      $ws.$reconnect(2, url)                            断开重连
+  → onOpen → socketSend("auth", {...res, fps...})       新参数生效
+```
+
+`auth` 里带 `if(this.gameFps) i.fps = this.gameFps; if(this.gameResolution) i.res = this.gameResolution;`
+（`run.cbc92ca7.js:73153`）。`resetFps` 同构，只是埋点换成 `cg_fps_changed`、存储键换 `fps_default`；
+**升帧**（`fps_supports` 里更靠后的一档）会先拉 `resolution_tips` 弹确认。
+
+实测（`work/captures/play10-2026-11-06T10-22-23-184Z/`，直调 `QualitySelector.__vue__`）：
+
+| 动作 | 是否发出新 auth | auth 里的 `res`/`fps` | 面板选中态 |
+|---|---|---|---|
+| 初始 | — | `res=1080p fps=60` | 分辨率 1080P / 帧率 60帧 |
+| `setResolution("720p")` | ✅ 重连 | `res=720p fps=60` | 分辨率 720P |
+| `setResolution("2k")` | ❌ 无新帧 | — | 仍 1080P（超出机位能力，被拒） |
+| `setFps("30")` | ✅ 重连 | `res=720p fps=30` | 帧率 30帧 |
+| `setFps("120")` | ❌ 无新帧 | — | 仍 30帧 |
+
+> 注意：直接在屏幕上 tap 那几个按钮**点不动**（`mobilemenu-panel` 的定位让命中区偏移），
+> 必须直调组件方法才能触发，这也是自动化时唯一稳的路子。
+
+#### 关键边界：`res` 只是「请求」，真正出流尺寸由机位决定
+
+实测把 `res`、`fps`、`quality` 全部换一遍再拉 SDP，**SDP 完全一样**：
+
+- 同一机位 `res=720p` vs `res=1080p`，SDP diff 只有 `o=` 时间戳、`ice-ufrag`、`ice-pwd`、`cname`、`candidate` 端口；
+  `fmtp` 恒为 `level-asymmetry-allowed=1;profile-level-id=42e01f;packetization-mode=1`，没有 `max-fs`/`framesize`。
+- `q=low,fps=30,res=720p` 与 `q=bluray,fps=60,res=1080p` 返回的 `result.encoder` 都是 `high,None`（手游）/`h264`（端游）。
+
+真正决定出流分辨率的是 **tickets 返回的 `lock_detail.width/height`**：
+
+| 游戏 | `lock_detail` | 说明 |
+|---|---|---|
+| `mrfzzmd`（手游） | `1280×720` | 恒 720p |
+| `wow_cn_high`（端游） | `1920×1080` | 恒 1080p |
+
+客户端对 `lock_detail` 只读不写（`run.cbc92ca7.js:128311`）：
+
+```js
+1080==lock_detail.height
+  ? (2496==lock_detail.width ? setIs1081(!0) : setIs1080(!0))
+  : 1296==lock_detail.height && setIs1296(!0)
+```
+
+`is1080 / is1081 / is1296` 进而决定画质记忆用哪一套键（`getQualityStorageKey(gameType, is1080)`）——
+所以 **720p 机位和 1080p 机位各有独立的一套画质选择**。
+
+`POST api/v2/tickets` 里塞 `width/height`（1170×2532 或 1920×1080）**不会**改变 `lock_detail`；
+`extra.support_1080: "true"` 也不改（该字段只在安卓 APK 且 `mx_inAndroidApk` 分支才带）。
+`GET api/v2/media-servers?game_code=` 每条都有 `is_1080` 字段，实测手游 11 个 region、端游 9 个 region
+**全部为 `false`**，加 `&is_1080=true` / `&support_1080=true` 返回不变 → 1080 媒体服目前没放开。
+
+#### 一句话总结
+
+| 你想做的事 | 用什么 |
+|---|---|
+| 让画面适配任意手机屏幕 | 什么都不用调，`getVideoScreen` 自动按宽高比算 |
+| 查某游戏能开哪些分辨率/帧率 | `GET api/v1/games/<code>` 的 `resolution_configs` |
+| 查各平台默认档位 / 开关「跟随本机」 | `GET api/v1/customize-settings/pc_game/{platform_resolution,…}`（匿名可读） |
+| 运行时切分辨率/帧率 | WS 重连 + 新 `auth` 带 `res`/`fps`（**不是** `game_set_quality`） |
+| 只改码率清晰度 | WS `op:"game_set_quality"`（low/middle/high/bluray），见 9.3 |
+| 想把 720p 机位变成 1080p | 客户端做不到，得靠账号/媒体服资格，`lock_detail` 由服务端下发 |
+
+
 ## 10. 「我的」（登录态真机实测）
 
 

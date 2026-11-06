@@ -66,6 +66,9 @@ QUALITIES = [
 ]
 QUALITY_KEYS = [q["key"] for q in QUALITIES]
 
+# 反查：X-Platform 数值 → 平台名（getXPlatformStr）
+PLATFORM_NAMES = {v: k for k, v in PLATFORMS.items()}
+
 
 # ============================================================ 加密算法复刻
 def random_split(s: str) -> str:
@@ -432,6 +435,121 @@ class CGAPI:
         return self.post(f"api/{ver}/group-customize-settings",
                          {"groups": groups or ["realname", "QQ_games",
                                                "gray_style_h5", "multi_cloud_pc_tag"]})
+
+    def customize_setting(self, group: str, key: str, ver: str = "v1") -> Any:
+        """单条运营配置：api/{ver}/customize-settings/<group>/<key> → {"val": "..."}。
+
+        分辨率相关的 key 都在 pc_game 组下（v1 匿名可读，v2 需登录）：
+          platform_resolution          "<platform>##<res>##<fps>##<默认res>##<默认fps>;..."
+          resolution_auto_2k_enable    "1" / "0"
+          resolution_auto_2k_whitelist "game_code,game_code,..."
+          resolution_tips              切换分辨率前的提示文案
+        """
+        return self.get(f"api/{ver}/customize-settings/{group}/{key}")
+
+    def platform_resolution(self, ver: str = "v1") -> dict[str, dict]:
+        """各平台可用的分辨率/帧率档位，解析成 {platform: {...}}。"""
+        raw = (self.customize_setting("pc_game", "platform_resolution", ver) or {}).get("val") or ""
+        out: dict[str, dict] = {}
+        for item in raw.split(";"):
+            parts = item.split("##")
+            if len(parts) < 5:
+                continue
+            out[parts[0]] = {
+                "resolutions": [x for x in parts[1].split(",") if x],
+                "fps": [x for x in parts[2].split(",") if x],
+                "default_resolution": parts[3],
+                "default_fps": parts[4],
+            }
+        return out
+
+    def resolution_options(self, game_code: str, platform: int | str | None = None) -> dict:
+        """某游戏在某平台上可用的分辨率/帧率档位，以及「跟随本机」是否开放。
+
+        platform 可传 X-Platform 数值（1=web-mobile、4=ios-mobile-platform …）或平台名，
+        不传则用本实例的 platform。取值优先级：
+          游戏详情 resolution_configs[platform]  →  运营配置 platform_resolution[platform]
+        「跟随本机(auto)」只有 allow_auto_game_resolution 为真才出现在可选列表里。
+        """
+        if platform is None:
+            platform = self.platform
+        if isinstance(platform, int):
+            platform = PLATFORM_NAMES.get(platform, "web-mobile")
+
+        detail = self.game(game_code)
+        cfg: dict = {}
+        for c in detail.get("resolution_configs") or []:
+            if c.get("platform") == platform:
+                cfg = c
+                break
+        fallback = self.platform_resolution().get(platform, {})
+
+        fps_supports = list(cfg.get("fps_supports") or fallback.get("fps") or [])
+        res_supports = list(cfg.get("resolution_supports") or fallback.get("resolutions") or [])
+        if not fps_supports:                       # 手游只在顶层给
+            fps_supports = list(detail.get("fps_supports") or [])
+        if not res_supports:
+            res_supports = list(detail.get("resolution_supports") or [])
+
+        auto_on, whitelist = False, ""
+        try:
+            auto_on = int(float((self.customize_setting("pc_game", "resolution_auto_2k_enable") or {}).get("val") or 0)) == 1
+            whitelist = str((self.customize_setting("pc_game", "resolution_auto_2k_whitelist") or {}).get("val") or "")
+        except (TypeError, ValueError, CGError):
+            pass
+        allow_auto = auto_on or game_code in whitelist.split(",")
+
+        return {
+            "game_code": game_code,
+            "game_type": detail.get("game_type"),
+            "platform": platform,
+            "enable_resolution_config": bool(detail.get("enable_resolution_config")),
+            "switchable_in_game": bool(detail.get("enable_resolution_config")),
+            "fps_supports": fps_supports,
+            "fps_default": cfg.get("fps_default") or fallback.get("default_fps") or detail.get("fps_default"),
+            "resolution_supports": res_supports,
+            "resolution_default": (cfg.get("resolution_default") or fallback.get("default_resolution")
+                                   or detail.get("resolution_default")),
+            "allow_auto_game_resolution": allow_auto,
+            "visible_resolutions": [r for r in res_supports if r != "auto" or allow_auto],
+        }
+
+    # iPhone 刘海/灵动岛机型的安全区（按物理像素识别，来源 getIphoneXSaftArea）
+    _SAFE_AREAS = {
+        (1170, 2532): 44, (1284, 2778): 44, (1080, 2340): 44,
+        (1179, 2556): 54, (1290, 2796): 54, (1206, 2622): 54,
+    }
+
+    @classmethod
+    def iphone_x_safe_area(cls, screen_w: int, screen_h: int, dpr: float = 3) -> int:
+        """按物理像素判断是否刘海机型，返回安全区像素（0 表示不需要扣）。"""
+        px = tuple(sorted((round(screen_w * dpr), round(screen_h * dpr))))
+        return cls._SAFE_AREAS.get(px, 0)
+
+    @staticmethod
+    def video_screen(base_w: int = 1280, base_h: int = 720, is_portrait: bool = False,
+                     game_type: str = "mobile", screen_w: int = 390, screen_h: int = 844,
+                     dpr: float = 3, standalone: bool = False, safe_area: int | None = None) -> dict:
+        """复刻 getVideoScreen()：把设备屏幕换算成要推给机位的画布尺寸。
+
+        - 手游(mobile)：高度固定 base_h(720)，宽度 = floor(长边 × 720 / 短边)，
+          即按设备宽高比反算 —— 所以「适配各种屏幕」是自动的，不需要调接口。
+        - 端游(pc)：宽 = (长边 - 安全区) × dpr，高 = 短边 × dpr；
+          安全区按 iPhone 刘海机型自动识别（1170×2532 等 → 44px，1179×2556 等 → 54px）。
+        - standalone(PWA 全屏) 会额外扣 20px。
+
+        实测对照（iPhone 14，390×844、dpr 3）：
+            video_screen(game_type="pc")     -> {"w": 2400, "h": 1170}  (= auth 里真实发的值)
+            video_screen(game_type="mobile") -> {"w": 1558, "h": 720}
+        """
+        long_side, short_side = max(screen_w, screen_h), min(screen_w, screen_h)
+        if game_type == "pc":
+            cut = CGAPI.iphone_x_safe_area(screen_w, screen_h, dpr) if safe_area is None else safe_area
+            w = round((long_side - cut) * dpr)
+            h = round((short_side - (20 if standalone else 0)) * dpr)
+            return {"w": w, "h": h}
+        long_side -= 20 if standalone else 0
+        return {"w": int(long_side * base_h / short_side), "h": base_h}
 
     def ctcodes(self) -> Any:
         return self.get("api/v1/ctcodes")

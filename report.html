@@ -229,8 +229,45 @@ POST api/v2/tickets
 <code>setGameQuality</code> 之前就拦截，弹「成为会员即可享受蓝光极致画质。」（按钮「暂不」「开通会员」）。
 端游版文案按云币/小时计价。</div>
 <p><b>帧率/分辨率不是热切换</b> —— 改 <code>fps</code>/<code>res</code> 走 <code>resetGateWaty()</code>
-重连整个 WS 重新 auth。移动 H5 的 <code>resolution_configs</code> 里没有 <code>web-mobile</code> 条目，
-所以移动端只暴露「画质」一栏。</p>
+重连整个 WS 重新 auth，新值写进 auth 包。</p>
+<h3>4.1 端游在手机浏览器里：多出「画质帧率」一栏 <span class="tag">真机实测</span></h3>
+<p>同一个悬浮球，打开 <b>PC 游戏</b>（<code>game_type=pc</code> 且 <code>enable_resolution_config=true</code>）时，
+左栏一级图标条变成 <code>常用操作 / 画质帧率 / 福利中心 / 文字键盘 / 退出游戏</code>，
+右栏「画质」一栏被隐藏，改由「画质帧率」切出 <code>QualitySelector</code>：</p>
+<pre><code>div.controlpanel-quality-selector.controlpanel-pcmenu.mobilemenu-panel
+├─ 画质      标清 / 高清 / 超清(on) / 蓝光
+├─ 帧率      30帧 / 60帧(on) / 90帧 / 120帧
+└─ 分辨率    720P / 900P / 1080P(on) / 2K / 4K</code></pre>
+<p>手游（<code>enable_resolution_config=false</code>）没有这一栏，面板里直接内联「画质」四档。
+判定代码在 <code>run.cbc92ca7.js:133277</code>：<code>"pc"!==game_type || !game.enable_resolution_config</code> 就跳过。</p>
+<div class="shots">
+  <figure><img src="docs/img/quality-selector.png" alt="QualitySelector"><figcaption>端游在手机上的「画质帧率」面板（真机）</figcaption></figure>
+</div>
+<h3>4.2 屏幕适配是四层，不是一个接口</h3>
+<table>
+<tr><th>层</th><th>位置</th><th>做什么</th></tr>
+<tr><td>0 自动</td><td><code>getVideoScreen()</code> <small>chunk-common:1201447</small></td>
+<td>手游：高度锁 720，宽度 <code>floor(长边×720/短边)</code>，按设备宽高比反算 → <b>任何屏幕自适应</b>；端游：<code>屏幕css×dpr</code></td></tr>
+<tr><td>1 运营配置</td><td><code>GET api/v1/customize-settings/pc_game/{platform_resolution, resolution_auto_2k_enable, resolution_auto_2k_whitelist, resolution_tips}</code> <b>匿名可读</b></td>
+<td>各平台默认档位；开关「跟随本机」；升档提示文案</td></tr>
+<tr><td>2 逐游戏</td><td><code>GET api/v1/games/&lt;code&gt;</code> 的 <code>resolution_configs[]</code></td>
+<td>某游戏在某平台支持哪些 <code>fps</code>/<code>res</code>。只有 pc 游戏 + <code>enable_resolution_config=true</code> 才有</td></tr>
+<tr><td>3 生效</td><td>WS 重连 <code>resetGateWaty()</code> → 新 <code>auth</code> 带 <code>res</code>/<code>fps</code></td>
+<td><b>不是</b> <code>game_set_quality</code>；重连后参数才生效</td></tr>
+</table>
+<p>实测「分辨率」按钮的三种写法差异很大：</p>
+<table>
+<tr><th>动作</th><th>是否发新 auth</th><th>auth 里的值</th><th>面板选中态</th></tr>
+<tr><td>初始</td><td>—</td><td><code>res=1080p fps=60</code></td><td>1080P / 60帧</td></tr>
+<tr><td><code>setResolution("720p")</code></td><td>✅ 重连</td><td><code>res=720p</code></td><td>720P</td></tr>
+<tr><td><code>setResolution("2k")</code></td><td>❌ 无帧</td><td>—</td><td>仍 1080P（超机位能力被拒）</td></tr>
+<tr><td><code>setFps("30")</code></td><td>✅ 重连</td><td><code>fps=30</code></td><td>30帧</td></tr>
+<tr><td><code>setFps("120")</code></td><td>❌ 无帧</td><td>—</td><td>仍 30帧</td></tr>
+</table>
+<div class="warn"><code>res</code>/<code>fps</code>/<code>quality</code> 全部只影响 <b>请求</b>，不改 SDP、不改 <code>encoder</code>。
+真正出流尺寸由机位 <code>tickets.lock_detail.width/height</code> 决定（手游恒 <code>1280×720</code>，
+端游恒 <code>1920×1080</code>），客户端只读不写。想把 720p 机位变 1080p 靠改参数做不到 ——
+<code>media-servers</code> 的 <code>is_1080</code> 实测全 false。</div>
 <pre><code>POST api/v2/users/@me/games/&lt;code&gt;/common_setting
 { "ball_x": 0, "ball_y": 42, "show_network": true,
   "key_transparency": 100, "menu_arouse_key": "escape" }</code></pre>

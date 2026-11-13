@@ -309,7 +309,16 @@ CGAPI.video_screen(screen_w=390, screen_h=844, dpr=3, game_type="pc")   # → {'
 或者用了 `"api/".concat(x?"v2":"v1").concat(y)` 这种拼接形式（简单正则会在内层逗号处截断）。
 现在的抽取器会先把 webpack 的 chunkhash 表解析出来、把 98 个 chunk 全量下载，
 再用「括号配平 + concat 递归展开」解析路径。`diff` 可复现：
-`ADDED 65 / REMOVED 0 / METHOD-CHANGED 10`（旧版把 10 条读成 GET，实际是 DELETE/POST/PATCH）。
+
+```bash
+git show 997eab3:docs/接口清单.csv > /tmp/old.csv      # 上一版 272 条
+diff <(cut -d, -f2,3 /tmp/old.csv | sort) <(cut -d, -f2,3 docs/接口清单.csv | sort)
+# ADDED 65 / REMOVED 0 / METHOD-CHANGED 10（旧版把 10 条读成 GET，实际是 DELETE/POST/PATCH）
+```
+
+那 10 条 Method 修正是：`cloud-mobile-storage`、`cloud-pc-storage`、`community/article`、
+`community/comment`、`community/comment_reply`、`file_sharing/followships`、`live-room`、
+`live_room_invite`、`users/@me`、`users/@me/game-playing-histories-hidden/{x}`。
 
 ---
 

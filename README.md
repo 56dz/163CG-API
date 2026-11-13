@@ -484,7 +484,7 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 | 1 | **前端无操作计时器** | 无（纯客户端） | 600 s 不操作 → 弹「由于长时间不操作，已经自动退出」，主动断开 |
 | 2 | **服务端回收机位** | `op:"error"` + `errcode` **403 / 1213** | 弹「由于您太久没回来游戏已关闭…」，**自己重 POST tickets 换机位** |
 | 3 | **服务端正常结束** | `op:"close"` `{code:0, reason:"normal"}` | `onGameStop` + `onClose`，**不弹窗、不重连** |
-| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open、consent 仍被回。**根因未定位**，11 个协议层假设已排除，见下 |
+| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open、consent 仍被回。**根因未定位**，12 个协议层假设已排除，见下 |
 
 第 1 条的 600 s 来自游戏详情的 `no_op_duration1 + no_op_duration2`（实测 `480 + 120`），
 13 分钟实测里精确落在 **602 s**。第 3 条的真实抓包里，`op:"close"` 之前 43 ms
@@ -503,7 +503,7 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 | answer 不回 `a=extmap`/`a=rtcp-fb` | 让 Chrome 从 answer 删掉 5 条 extmap + 19 条 rtcp-fb | 连播 **481 s**，`ct=477.883` |
 | answer 是 `recvonly` | 再把 `sendrecv` 全改 `recvonly` | 跑到 **354 s** 仍正常 |
 
-顺着这条线又排除了 8 个假设，合计 **11 个协议层差异全部被排除**：
+顺着这条线又排除了 8 个假设，合计 **11 个协议层差异全部被排除**（后来又在真机上否定了第 12 条 DTLS cipher 指纹，合计 12）：
 DataChannel、WS 心跳、前端 600 s 计时器、服务端 300 s kickout、上行 RTCP
 （1 Hz RR + 2 s PLI + NACK）、游玩期 HTTP 轮询、auth 之后不发 input 帧、
 auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`）。
@@ -531,10 +531,11 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 剩下的候选方向按性价比排（详见
 [`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md) §8.2）：
 
-1. **DTLS 层指纹**——自建客户端是 OpenSSL 默认（`DTLSv1.2` + `ECDHE-RSA-CHACHA20-POLY1305`
-   + `use_srtp` 只给 `SRTP_AES128_CM_SHA1_80`），Chrome 是 BoringSSL 且 `use_srtp` 里
-   GCM 在前。网关最终选中同一套 SRTP profile，但 **ClientHello 本身不一样**，
-   若按指纹风控就在这里。
+1. **DTLS cipher 指纹——已在真机 A/B 中否定（第 12 条）。** 给客户端加 `chromeFp` 开关，
+   ClientHello 从 203B（28 个 OpenSSL 默认套件）变成 177B（14 个 Chrome 序套件，静态 RSA
+   全消失，扩展区逐字节不变），握手照常成功，**停推时刻 ≈237 s 与未改时同量级**。
+   指纹方向只剩 extension 级（ALPN/supported_versions/use_srtp 列表），但 ALPN
+   服务端没选，性价比低。
 2. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
    ROC 若没加，之后所有索引都错。但真机取到的第一个包 `seq` 已经是 **31394**
    （不是 0），实测包率 **≈80 pkt/s**，算下来第一次回绕要 **427 s**，
@@ -576,7 +577,7 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 ├── report.html               单页可视化报告（338 行可搜索接口表 + 真机截图）
 ├── docs/
 │   ├── API文档.md            主文档，14 章，约 2300 行
-│   ├── 断流与保活根因分析.md   SDP/getStats 实测 + 11 个假设的二分记录 + 四条「断」的路径
+│   ├── 断流与保活根因分析.md   SDP/getStats 实测 + 12 个假设的二分记录 + 四条「断」的路径
 │   ├── 接口清单.csv          338 行
 │   └── img/                  真机截图（已打码）
 ├── sdk/
@@ -634,7 +635,7 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 - **登录链路只验证到「取到 token 前」**：短信/密码两种方式的接口、参数、加密流程都已实测，
   但为了不给测试号发短信、不碰别人的密码，没有真正完成一次登录；后续调用用的 token 是从
   已登录浏览器的 localStorage 复用的。密码加密结果已用 pycryptodome 逐字节交叉验证。
-- **断流一节只到「排除完所有协议差异」**：11 个假设（ICE consent、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位；剩下 DTLS 指纹、`container`/`host` 分档两个方向（SRTP ROC 回绕已按实测 `seq=31394` + 80 pkt/s 算过，需 427 s 才回绕，与 230~259 s 冻结不符，基本排除）。
+- **断流一节只到「排除完所有协议差异」**：12 个假设（ICE consent、DTLS cipher 指纹、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位；剩下 DTLS 指纹、`container`/`host` 分档两个方向（SRTP ROC 回绕已按实测 `seq=31394` + 80 pkt/s 算过，需 427 s 才回绕，与 230~259 s 冻结不符，基本排除）。
 - 接口会变。两次快照分别是 2026-11-06 与 2026-11-13；后者相对前者 **ADDED 65 / REMOVED 0**，
   说明线上是纯增量、向后兼容。但新接口的参数语义只做到「能打通」，字段含义未逐个核实。
 

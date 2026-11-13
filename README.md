@@ -531,19 +531,29 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 剩下的候选方向按性价比排（详见
 [`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md) §8.2）：
 
-1. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
-   ROC 若没加，之后所有索引都错。按实测码率估算，250 s 量级正好接近第一次回绕，
-   **时间尺度吻合得最好**。
-2. **DTLS 层指纹**——手写 `cm_dtls.c` vs BoringSSL：版本选择、cipher suite 顺序、
-   `use_srtp` 的 profile 顺序、证书字段。网关有可能按指纹风控。
-3. **网关按 `pkg`/`game_code` 的分档**——`op:result` 回的 `encoder`/`host` 与冻结
-   时刻是否有相关性。
+1. **DTLS 层指纹**——自建客户端是 OpenSSL 默认（`DTLSv1.2` + `ECDHE-RSA-CHACHA20-POLY1305`
+   + `use_srtp` 只给 `SRTP_AES128_CM_SHA1_80`），Chrome 是 BoringSSL 且 `use_srtp` 里
+   GCM 在前。网关最终选中同一套 SRTP profile，但 **ClientHello 本身不一样**，
+   若按指纹风控就在这里。
+2. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
+   ROC 若没加，之后所有索引都错。但真机取到的第一个包 `seq` 已经是 **31394**
+   （不是 0），实测包率 **≈80 pkt/s**，算下来第一次回绕要 **427 s**，
+   与 230~259 s 的冻结差 1.7 倍，**基本可以排除**。
+3. **网关按 `pkg`/`game_code`/宿主机分档**——`op:result` 回的
+   `{"container":"…,t-04","encoder":"high,None","host":"ahnfs10015"}`，
+   自建客户端在 `t-04/ahnfs10015` 上 230 s 冻结，网页端在 `t-18/ahnfs10007` 上 481 s 未冻结。
+   `encoder` 两边一样，所以判据不在它身上；但 `container`/`host` 值得每轮都记。
 
 ### 给「只想能用」的人的建议
 
-不要去复刻官方客户端的逐字节行为——**按每 ~230 s 主动换一次会话**，当成常规保活手段，
-成本远低于逐位逆向网关的判活逻辑。用户侧表现是「画面卡 1~2 秒」，
-比「4 分钟后彻底冻结」好得多。
+不要去复刻官方客户端的逐字节行为。两道防线按顺序上：
+
+1. **停滞自愈（第一道）**：`STALL_RX_MS = 8000` 判定 + `L2` 复用网关重连。
+   真机实测 7 秒内恢复（`stall detected: rx=15071` → 7 s 后 `stall recovered: rx=97`）。
+2. **主动换会话（第二道）**：每 ~230 s 重新 `POST tickets` + 重连。
+
+用户侧表现是「画面卡 1~2 秒」，比「4 分钟后彻底冻结」好得多，
+成本也远低于逐位逆向网关的判活逻辑。
 
 ### 方法上的一个教训
 
@@ -624,8 +634,7 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 - **登录链路只验证到「取到 token 前」**：短信/密码两种方式的接口、参数、加密流程都已实测，
   但为了不给测试号发短信、不碰别人的密码，没有真正完成一次登录；后续调用用的 token 是从
   已登录浏览器的 localStorage 复用的。密码加密结果已用 pycryptodome 逐字节交叉验证。
-- **断流一节只到「排除完所有协议差异」**：11 个假设（ICE consent、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位，剩下 SRTP ROC 回绕与 DTLS 指纹两个方向；
-  下一步按候选方向逐个验证（SRTP ROC → DTLS 指纹 → `encoder`/`host` 相关性）。
+- **断流一节只到「排除完所有协议差异」**：11 个假设（ICE consent、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位；剩下 DTLS 指纹、`container`/`host` 分档两个方向（SRTP ROC 回绕已按实测 `seq=31394` + 80 pkt/s 算过，需 427 s 才回绕，与 230~259 s 冻结不符，基本排除）。
 - 接口会变。两次快照分别是 2026-11-06 与 2026-11-13；后者相对前者 **ADDED 65 / REMOVED 0**，
   说明线上是纯增量、向后兼容。但新接口的参数语义只做到「能打通」，字段含义未逐个核实。
 

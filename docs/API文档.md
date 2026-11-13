@@ -2,8 +2,9 @@
 
 > 目标站点：`https://cg.163.com/`（移动端 H5 / 触摸版）  
 > 逆向方式：静态拆包（3 个 JS bundle）+ Playwright 真机仿真抓包 + 直接 HTTP 复现  
-> 接口总数：**272** 条（自动抽取），真实样本 **34** 份，实测用例 **37** 条  
-> 生成时间：2026-11-06
+> 接口总数：**338** 条（2026-11-13 重抓 bundle 自动抽取），真实样本 **34** 份  
+> 实测：匿名 **37** 轮 + 登录态 **60** 条 + 「我的」**22** 条 + 登录链路 **16** 条 + 新增接口 **137** 条  
+> 抓取日期：2026-11-06（首轮）/ 2026-11-13（线上变化复核）
 
 ## 0. 摘要
 
@@ -121,24 +122,217 @@ Python 复刻见 `sdk/cgapi.py`：`offset_from_encrypt()` / `offset_en()` / `off
 
 | 分类 | 接口数 |
 |---|---|
-| 首页/推荐 | 22 |
-| 游戏/详情 | 22 |
+| 首页/推荐 | 30 |
+| 游戏/详情 | 25 |
 | 启动/排队 | 13 |
 | 悬浮球/键位/画质 | 4 |
-| 我的/账户 | 96 |
-| 登录/鉴权 | 17 |
-| 云电脑/云手机 | 9 |
-| 社区/直播 | 52 |
-| SEO | 2 |
-| 其他 | 35 |
-| **合计** | **272** |
+| 我的/账户 | 112 |
+| 登录/鉴权 | 19 |
+| 云电脑/云手机 | 10 |
+| 社区/直播 | 89 |
+| SEO | 3 |
+| 其他 | 33 |
+| **合计** | **338** |
 
 | Method | 数量 |
 |---|---|
-| GET | 173 |
-| POST | 78 |
-| PATCH | 8 |
-| DELETE | 13 |
+| GET | 227 |
+| POST | 81 |
+| PATCH | 9 |
+| DELETE | 21 |
+
+### 4.1 线上变化复核（2026-11-13）
+
+比 2026-11-06 首轮，本次重新抓取线上 bundle（`chunk-common.eb5489e3.js` 1,430,766 B、
+`index.89d39400.js` 507,383 B、`run.5e59f26c.js` 146,099 B，另加 **98 个懒加载 chunk**，共 980,748 B），
+用重写的解析器（支持 `.concat()` 递归展开、顶层 `+` 拆分、三元与 `void 0` 默认值）重新抽取：
+
+| 项 | 2026-11-06 | 2026-11-13 |
+|---|---|---|
+| 抽取到的接口 | 272 | **338** |
+| 扫描的 bundle | 3 个主包 | 3 个主包 + 98 个 chunk |
+| 分类 | 10 类 | 10 类 |
+
+**与旧清单的 diff（canonical 化后比较，忽略 v1/v2 与路径参数命名）：**
+
+| 项 | 数量 | 说明 |
+|---|---|---|
+| ADDED | **65** | 旧清单里没有的路径 |
+| REMOVED | **0** | **0 条** —— 线上接口是纯增量，向后兼容 |
+| METHOD-CHANGED | **10** | 旧版投票推断错、新版更准 |
+
+> **注意区分「线上新增」与「本次补齐」**：新增的 65 条里，相当一部分是
+> **一直都在、只是旧解析器抽不到**——旧脚本只匹配 `return s+"api/..."`，且 `.concat` 用 lookahead
+> 在参数内层逗号处截断，产出残片后被过滤掉。真正因为发版而新增的集中在社区 / 群组 / 乐谱这几组。
+
+
+### 4.2 方法推断修正（10 条）
+
+这些不是接口换了方法，而是旧版靠 `$http.<verb>(` 邻近窗口投票时窗口抓错，新版用更长的上下文纠正：
+
+| Path（归一后） | 旧推断 | 新推断 | 函数 |
+|---|---|---|---|
+| `api/{v}/cloud-mobile-storage` | `GET` | `DELETE` | `resetCloudMobileStorage` |
+| `api/{v}/cloud-pc-storage` | `GET` | `DELETE` | `resetCloudPCStorage` |
+| `api/{v}/users/@me` | `GET` | `PATCH` | `updateUser` |
+| `api/{v}/users/@me/game-playing-histories-hidden/{}` | `GET` | `POST` | `removeHistory` |
+| `api/{v}/community/article` | `DELETE` | `GET` | `getCommunityArticle` |
+| `api/{v}/community/comment` | `POST` | `DELETE` | `postCommunityComment` |
+| `api/{v}/community/comment_reply` | `POST` | `DELETE` | `postCommunityCommentReply` |
+| `api/{v}/file_sharing/followships` | `POST` | `DELETE` | `postFsFollow` |
+| `api/{v}/live-room` | `GET` | `POST` | `createLiveRooms` |
+| `api/{v}/live_room_invite` | `GET` | `POST` | `liveRoomInvite` |
+
+### 4.3 新增/补齐接口的实测结果（第 5 轮）
+
+跑法：`work/verify_new.py` → `verify_new2.py` → `verify_new3.py`，三轮逐步按 bundle 里真实的默认版本与必填参数修正。
+合并去重后共 **137 条**，通过 **68**、失败 **69**。
+
+| 接口 | HTTP | 响应大小 | 结构 / 错误 | 结果 |
+|---|---|---|---|---|
+| `GET api/v1/customize-settings/pc_game/platform_resolution` | 200 | 212 B | `{val}` | ✅ |
+| `GET api/v1/games/mrfzzmd` | 200 | 5281 B | `{account_protection,ali_bitrate_region,app_limit,apps,archive_protecti` | ✅ |
+| `GET api/v1/games_pro` | 200 | 141 B | `{games,groups,rooms,users}` | ✅ |
+| `POST api/v1/group-customize-settings` | 200 | 6998 B | `{ads_scene,change_channel}` | ✅ |
+| `GET api/v1/kol_user_recommends` | 200 | 2333 B | `{recommend_users}` | ✅ |
+| `GET api/v1/live_room_game_multi_player` | 200 | 3581 B | `{items}` | ✅ |
+| `GET api/v1/live_rooms_recommend` | 200 | 5558 B | `{classes,is_in_regulation,live_rooms,total}` | ✅ |
+| `GET api/v1/pendant_list?pendant_type=mobile_home` | 200 | 2629 B | `{pendants}` | ✅ |
+| `GET api/v1/pendants?pendant_type=mobile_home` | 200 | 782 B | `{_id,addfreetime_test,create_time,exclude_channels,game_behavior_tags,` | ✅ |
+| `GET api/v1/search_keyword_hints` | 200 | 619 B | `{search_keyword_hints}` | ✅ |
+| `GET api/v1/seo_games/mrfzzmd` | 200 | 117186 B | `{_id,application_introduction,buttons,description,game_download_info,g` | ✅ |
+| `GET api/v1/seo_games/mrfzzmd` | 200 | 117186 B | `{_id,application_introduction,buttons,description,game_download_info,g` | ✅ |
+| `GET api/v1/sign-desc` | 200 | 1414 B | `{val}` | ✅ |
+| `GET api/v1/sign-desc` | 200 | 1414 B | `{val}` | ✅ |
+| `GET api/v1/square/game/latest` | 200 | 144 B | `{game_code,game_type,icon,name}` | ✅ |
+| `GET api/v1/team_up_notices` | 200 | 5271 B | `{notices}` | ✅ |
+| `GET api/v1/team_up_notices` | 200 | 5271 B | `{notices}` | ✅ |
+| `GET api/v1/user_guide` | 200 | 2439 B | `{items}` | ✅ |
+| `GET api/v1/users/5f2c1a7d8b3e4f60a1c2d3e4` | 200 | 587 B | `{accid,avatar_frame_url,certified,community_article_count,dating_squar` | ✅ |
+| `GET api/v1/users/5f2c1a7d8b3e4f60a1c2d3e4` | 200 | 587 B | `{accid,avatar_frame_url,certified,community_article_count,dating_squar` | ✅ |
+| `GET api/v1/users/5f2c1a7d8b3e4f60a1c2d3e4/live-room` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v1/versions/infos` | 200 | 28 B | `{total,versions}` | ✅ |
+| `GET api/v1/versions/infos?need_latest=1&platforms=0,1,2` | 200 | 16 B | `{versions}` | ✅ |
+| `DELETE api/v2/block` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/block?block_user_id=5f2c1a7d8b3e4f60a1c2d3e4` | 200 | 18 B | `{blocked}` | ✅ |
+| `GET api/v2/community/article_list/0/5` | 200 | 5685 B | `array[5]` | ✅ |
+| `GET api/v2/community/hot/article_list` | 200 | 5249 B | `array[5]` | ✅ |
+| `GET api/v2/community/hot/article_list` | 200 | 5602 B | `array[5]` | ✅ |
+| `GET api/v2/community/hot/article_list` | 200 | 5242 B | `array[5]` | ✅ |
+| `GET api/v2/community/recommend/gy_music_sheet_list/0/5` | 200 | 36619 B | `array[5]` | ✅ |
+| `GET api/v2/community/recommend/gy_music_sheet_list/0/5` | 200 | 36619 B | `array[5]` | ✅ |
+| `GET api/v2/community/topic/article_list/0/5` | 200 | 5685 B | `array[5]` | ✅ |
+| `GET api/v2/customize-settings/pc_game/platform_resolution` | 200 | 212 B | `{val}` | ✅ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=1` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=2` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=3` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/games/mrfzzmd` | 200 | 5281 B | `{account_protection,ali_bitrate_region,app_limit,apps,archive_protecti` | ✅ |
+| `GET api/v2/games/mrfzzmd/run_page_popup` | 200 | 799 B | `{is_popup,popup}` | ✅ |
+| `GET api/v2/games_pro` | 200 | 141 B | `{games,groups,rooms,users}` | ✅ |
+| `POST api/v2/group-customize-settings` | 200 | 6998 B | `{ads_scene,change_channel}` | ✅ |
+| `GET api/v2/group/hot_group_recommend_list/0/5` | 200 | 4592 B | `array[5]` | ✅ |
+| `GET api/v2/group/search_group_by_key/0/5?key=a` | 200 | 4350 B | `array[5]` | ✅ |
+| `GET api/v2/group/tag_cluster_list/0/20` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/group/tag_cluster_list/0/5` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/group/user_group_list/0/20` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/group/user_joined_groups/0/20` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/gy_music_sheet_games` | 200 | 36434 B | `array[10]` | ✅ |
+| `GET api/v2/gy_music_sheet_games` | 200 | 36434 B | `array[10]` | ✅ |
+| `GET api/v2/kol_user_recommends` | 200 | 2333 B | `{recommend_users}` | ✅ |
+| `GET api/v2/live_room_game_multi_player` | 200 | 3581 B | `{items}` | ✅ |
+| `GET api/v2/live_room_game_multi_player` | 200 | 3581 B | `{items}` | ✅ |
+| `DELETE api/v2/open-login/1/binding` | 200 | 2 B | `{}` | ✅ |
+| `DELETE api/v2/open-login/wechat/binding` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/pendant_list?pendant_type=mobile_home` | 200 | 2629 B | `{pendants}` | ✅ |
+| `GET api/v2/pendants?pendant_type=mobile_home` | 200 | 782 B | `{_id,addfreetime_test,create_time,exclude_channels,game_behavior_tags,` | ✅ |
+| `GET api/v2/push_msgs?count=5` | 200 | 3590 B | `{messages,no_read_num}` | ✅ |
+| `GET api/v2/reservation-activities` | 200 | 18 B | `{activities}` | ✅ |
+| `GET api/v2/reservation-activities` | 200 | 18 B | `{activities}` | ✅ |
+| `GET api/v2/search_keyword_hints` | 200 | 619 B | `{search_keyword_hints}` | ✅ |
+| `GET api/v2/sign-desc` | 200 | 1414 B | `{val}` | ✅ |
+| `GET api/v2/system_msg_push_msgs?count=5` | 200 | 3590 B | `{messages,no_read_num}` | ✅ |
+| `GET api/v2/team_up_notices` | 200 | 5271 B | `{notices}` | ✅ |
+| `POST api/v2/users/@me/storage/probe_key/probe_val` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/versions/infos?need_latest=1&platforms=0,1,2` | 200 | 16 B | `{versions}` | ✅ |
+| `GET api/v2/welfare_center/1/tabs` | 200 | 142 B | `{tabs}` | ✅ |
+| `GET api/v2/welfare_center/mrfzzmd/info` | 200 | 5570 B | `{daka_activity,is_exp_user,is_vip,levitating_ball_activities,mobile_vi` | ✅ |
+| `GET api/v2/welfare_center/mrfzzmd/info` | 200 | 5570 B | `{daka_activity,is_exp_user,is_vip,levitating_ball_activities,mobile_vi` | ✅ |
+| `GET api/v2/welfare_center/mrfzzmd/tabs` | 200 | 279 B | `{tabs}` | ✅ |
+| `GET api/v1/community/topic` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/community/topic` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/community_topic_recommend/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v1/community_topic_recommends` | 400 | 0 B | `参数错误` | ❌ |
+| `POST api/v1/group-customize-settings` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/live-rooms` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/live-rooms?skip=0&limit=5` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/live-rooms?skip=0&limit=5` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/main_page_live_rooms_recommend` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/square/message` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/square/message` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/team_up_user_recommendations` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/users` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/users?ids=5f2c1a7d8b3e4f60a1c2d3e4` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/users?user_ids=5f2c1a7d8b3e4f60a1c2d3e4` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/wechat_binding/js_auth_data` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/alipay_sign_goods` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/alipay_sign_goods` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/alipay_sign_goods?price=1` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/award-history?activity=checkin` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/award-history?activity=daily_sign` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/award-history?activity=test&action=run` | 400 | 0 B | `参数错误` | ❌ |
+| `DELETE api/v2/block?user_id=5f2c1a7d8b3e4f60a1c2d3e4` | 400 | 0 B | `参数错误` | ❌ |
+| `DELETE api/v2/block?user_id=5f2c1a7d8b3e4f60a1c2d3e4` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/hot_article_list` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/hot_article_list?skip=0&limit=5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/recent_reply_article_list/0/5` | 500 | 0 B | `` | ❌ |
+| `GET api/v2/community/mix/recent_reply_article_list/0/5` | 500 | 0 B | `` | ❌ |
+| `GET api/v2/community/mix/related?article_id=1` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/related?article_id=None` | 400 | 0 B | `参数错误` | ❌ |
+| `POST api/v2/community/recommend/article` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/search_gy_music_sheets/0/5?key=a` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/topic` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/topic?skip=0&limit=5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/user/article_list/0/5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/user/article_list/0/5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/user/gy_music_sheet_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community/user/gy_music_sheet_score_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community/user_followed/gy_music_sheet_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community/user_like/gy_music_sheet_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community_topic_recommend/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community_topic_recommends` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community_topic_recommends` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/file_sharings/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/file_sharings/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/file_sharings/abc` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=game_detail` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=mobile` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=run` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/cluster_group_recommend_list/0/20` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/cluster_group_recommend_list/0/5?group_id=1` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/main_recommend_group` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/main_recommend_group` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/main_recommend_group?skip=0&limit=5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/user_group_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/group/user_joined_groups/5f2c1a7d8b3e4f60a1c2d3e4/0/20` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/group/user_joined_groups/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/live-rooms?skip=0&limit=5` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/live_room_game_multi_player/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/live_rooms_recommend` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/main_page_live_rooms_recommend` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/recharges/1/coupons` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/reservation-activities/1` | 404 | 0 B | `不存在` | ❌ |
+| `POST api/v2/reservation-activities/1/shown` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/square/message` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/team_up_user_recommendations` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/user_guide` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/wechat_binding/js_auth_data` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/welfare_center/1/info` | 404 | 0 B | `不存在` | ❌ |
+
+> 失败的都是**缺必填参数**（`award-history` 要真实 `activity`、`file_sharings` 要真实 id），
+> 不是接口不存在。另有 14 条（`community/mix/*`、`group/cluster_group_recommend_list`、`live-rooms`、
+> `users` 列表等）三轮都停在 `errcode=1302 参数错误` 或 `500`，参数名未能在 bundle 里定位到，
+> 已在 `docs/接口清单.csv` 里保留但标注为「未验证」。
+
 
 ## 5. 首页（推荐流）
 
@@ -595,17 +789,136 @@ o=- 1700000006 1 IN IP4 198.51.100.7...'
 | `18 0` | 摄像头状态 |
 | `23 <pkg>/<activity>` | 当前前台应用（如 `com.hypergryph.endfield/com.u8.sdk.U8UnityContext`） |
 
-### 8.6 断线与错误码
+### 8.6 断线、超时与保活（2026-11-13 实测修订）
 
-| code | 处理 |
+这一节区分**三套完全不同的机制**。它们文案相似、都由前端弹，但触发源和处置方式不同；把它们混为一谈是本项目早期最容易踩的坑。
+
+#### 8.6.1 机制一：前端「无操作」计时器（客户端自杀，不是服务端踢人）
+
+```js
+// chunk-common.eb5489e3.js（约 offset 667904）
+interval: function () {
+  var e = this; clearInterval(this.intervalTimer);
+  var t = this.gameCutTime.warn;              // 毫秒
+  this.intervalTimer = setInterval(function () {
+    if ((e.intervalTime = e.intervalTime - t, e.intervalTime <= 0)) {
+      if (e.closeInterval(), e.onPostClientError(1002), e.intervalExitGame(), e.errorConfirm) return;
+      return e.exitPanel(), e.disableEvent(),
+        e.errorConfirm = e.$confirm({
+          message: "由于长时间不操作，已经自动退出",
+          confirmBtn: "确定", confirmBack: function () { e.closeWindow(10020) } }), !1 }
+    e.intervalTime <= t && !e.warInterToast &&
+      (e.warInterToast = e.$toast({ duration: 9999999, type: "warn", text: "您还在玩游戏吗？" }))
+  }, t) }
+```
+
+- 时长来源（`run.5e59f26c.js` 约 132629）：`commit("setGameCutTime", { total: 1e3*(game.no_op_duration1 + game.no_op_duration2), warn: 1e3*game.no_op_duration2 })`。
+- 实测 `mrfzzmd` / `wow_cn_high` 均为 `no_op_duration1=480`、`no_op_duration2=120` → **total = 600 s（10 分钟）**、warn = 120 s。
+- 重置事件（`bindInterVal`）：移动端 `touchstart`（捕获阶段，绑在 `$parent.$el` 与 `document.body`）、PC `keydown` + `click`、总线事件 `inputAction`、`window` 的 `keyup`。任一命中就 `setIntervalTime()` 把计时器归零。
+- 唯一的「主动心跳」是 `setGameInputRefresh()`：发 `input` cmd `"0 0"`，但被 `inputRefreshTimer` **节流 600 s**，同一时刻只发一次。**没有任何固定周期的 WS 心跳。**
+
+**实测证据**（`work/captures/longplay-2026-11-13T15-51-10-437Z/`，13 分钟、纯观察不操作）：
+
+| 时刻 | 现象 |
 |---|---|
-| 0 | 正常退出 |
-| 1001 / 1008 / 1003 / 1005 / 1004 / 1709 | 重连 |
-| 1512 | 媒体服 SDP 连续失败 → 转 1501 |
-| 1236（或 pc 的 509） | 云游戏重启中 |
-| 403 / 1213 | 切媒体服（读 `NCG-mediaservers` 选延时最低） |
-| 2004 | 设备不支持游玩 |
-| 超时 | 「由于您太久没回来游戏已关闭」 |
+| 0–600 s | `inbound-rtp.bytesReceived` 51,622 → 218,116,760，`framesDecoded` 179 → 9,103，`currentTime` 与墙钟同步，`connectionState=connected` |
+| **602 s** | 两次 `pageerror: Uncaught (in promise) undefined`，紧接着 `ws-close`（`wss://gw-yd-hnfs-13…/ws` 被客户端关闭） |
+| 605 s+ | body 文本含「长时间不操作」，`connectionState=closed`；`video.currentTime` 仍在涨（本地缓冲） |
+| 全程 | **没有任何「太久没回来」「正在尝试重新连接」**，`.flyme` 一直在，DataChannel 数为 0 |
+
+**600 s 落点与代码推算的 `total` 完全一致** → 这条文案是**前端计时器**造成的，不是服务端断流。
+
+#### 8.6.2 机制二：服务端回收机位（`op:"error"` + `errcode` 403 / 1213）
+
+`run.5e59f26c.js` 的 `onError(e)` 里，`n = i.errcode || i.code`，只有 `403 == n || 1213 == n` 会走这段：
+
+```js
+var r = function (msg) { t.errorConfirm = t.$confirm({
+    message: msg || "由于您太久没回来游戏已关闭，目前在线小伙伴较多，可能需要排队，请尝试自行重开游戏",
+    confirmBtn: "确定", confirmBack: function () { t.closeWindow() } }) };
+return h["a"].isCloudPc(this.gameCode) ? (r("请重启云电脑以继续游玩"), !1)
+  : ("pc" === this.gameType && "ios" === ti) ? (r("由于您太久没回来游戏已关闭，请尝试自行重开游戏"), !1)
+  : (s.length ? this.$http.post(postTickets(), { regions: s, game_code: this.gameCode,
+        codecs: getMobileCode(this.gameType) || this.devInfo.codecs })
+        .then(function (e) { if (e.expires) { /* 写回 NCG-gwurl 等并 reload */ return !1 } r() })
+      : r("由于您太久没回来游戏已关闭，测速信息已失效，请尝试自行重开游戏"), !1);
+```
+
+- **触发源是 `op:"error"` 携带 `errcode` 403 或 1213**（不是 `op:"game_stop"`，也不是 `op:"close"`）。
+- 语义是「机位没了」（被回收 / 到期 / 被别的实例拿走），所以前端会**自己重新 POST tickets 拿新机位再 reload**。
+
+#### 8.6.3 机制三：网关主动结束会话（`op:"close"`，`code:0 reason:"normal"`）
+
+2026-11-13 的真机位观测中实际抓到了这条路径。网关在会话被另一端接管/正常收尾时会推：
+
+```json
+{"op": "close", "data": {"code": 0, "reason": "normal"}}
+```
+
+`run.5e59f26c.js` 的 dispatch 表里 `case"close": this.onGameStop(i), this.onClose(i); break;`，于是走的是「正常结束」分支：`status="game_stop"`、`ye.stop()`、清定时器，**不会弹「太久没回来游戏已关闭」，也不会弹「长时间不操作」**。
+
+同一时刻的旁证（同一次抓包，已用 `offsetOut(85, …)` 解开）：
+
+| 相对时刻 | 事件 |
+|---|---|
+| 406.9 s / 412.1 s | `games_playing_status` 里仍是我们自己的会话 `_id=000000000000000000000000` |
+| 413.199 s | `games_playing_status` 变成 `games_playing: []`（机位已被摘除） |
+| 413.203 s | `op:"message"`「终末地打卡-赠PC高配体验时长活动领奖通知」 |
+| 413.255 s | `op:"close"` `{code:0, reason:"normal"}` |
+| 413.263 s | 浏览器 `ws-close`，页面上 `video.currentTime` 仍靠本地缓冲继续涨 |
+| 418.651 s | 同一 token 下冒出**另一个** `play_id` 的会话（`game_code="yssy"`，华北五区） |
+
+**对实现方的意义**：如果客户端只监听 `op:"error"` 和 WS 的 onclose，会漏掉这条「礼貌下线」；正确做法是 `op:"close"` 也当成终止信号（网页端就是这么做的），并且不要把它误判成需要重连的网络故障。
+
+#### 8.6.4 机制四：真正的「静默停推」——网关不再发 RTP，WS 仍 open
+
+这是第三套机制，也是最难定位的：**没有 error、没有 close、WS 正常、心跳（若有）照样被回显，但 RTP 完全停了。**
+
+网页端 13 分钟实测中**从未出现**这种情况（600 s 前一直是 1.5–2.9 MB/5s 的稳定码率），说明正常网页客户端不会触发它。
+
+它成立的前提是「客户端行为与网页端有差异」。2026-11-13 抓到的完整 SDP 与 `getStats()` 给出了差异清单：
+
+**服务端 offer（`server-offer.sdp`，2,550 B，`a=ice-lite`）**
+
+| 项 | 值 |
+|---|---|
+| m 段 | 只有 2 段：`m=audio 36757`（opus/48000/2）、`m=video 36757`（H264 98 / VP8 96 / H265 107 / rtx 99,97,108） |
+| SCTP | **无 `m=application`**，所以网页端根本不会创建 DataChannel |
+| extmap | audio `2`(audio-level) `9`(transport-cc)；video `11`(transport-cc) `12`(playout-delay) `13`(generic-frame-descriptor) |
+| rtcp-fb | 每个视频 PT 都有 `ccm fir` / `nack` / `nack pli` / `goog-remb` / `rrtr` / `transport-cc` |
+| candidate | 单个 host：`1 1 udp 2015364607 198.51.100.9 36757` |
+
+**客户端 answer（Chrome，`client-answer.sdp`，2,705 B）**：`a=setup:active`、**`a=sendrecv`**、**逐段回显全部 `a=extmap`**、**逐 PT 回显全部 `a=rtcp-fb`**，H264 fmtp 追加 `x-google-max-bitrate=2800;x-google-min-bitrate=1000;x-google-start-bitrate=1000`。
+
+**20 次 × 5 s 的 `getStats()` 采样（`stats.json`）**
+
+| 指标 | 观测 |
+|---|---|
+| `candidate-pair.consentRequestsSent` | 5 → 40，**约每 2.5 s 一次 ICE consent（STUN Binding），单调递增** |
+| `candidate-pair.responsesReceived` | 6 → 41，网关每次都回 |
+| `candidate-pair.requestsReceived` / `responsesSent` | 恒为 1 / 1（网关几乎不主动发） |
+| `inbound-rtp.pliCount` / `nackCount` | **全程 0**（网页端一次 PLI/NACK 都没发） |
+| `remote-inbound-rtp` | 全程缺失（网关从不发 RTCP RR） |
+| `outbound-rtp.kind=video.bytesSent` | 恒 0（纯下行） |
+
+**结论**：网关是标准 WebRTC SFU（ice-lite + twcc + remb + rrtr + nack/pli + H265/H264/VP8 + rtx）。它**不靠 RTCP 反馈判活**（网页端 pliCount/nackCount 全 0 也能连收 10 分钟），真正的双向保活是 **ICE consent（STUN Binding，~2.5 s 一次）**。同时网页端协商了 `transport-cc` 双向、m 段是 `sendrecv`。
+
+因此，一个「只做一次 STUN、之后全靠 UDP 收流、answer 里回 `recvonly`、不回 extmap/rtcp-fb」的客户端，与网页端存在三处可观测差异 —— 这是排查「静默停推」的优先方向（详见 `docs/断流与保活根因分析.md`）。
+
+#### 8.6.5 错误码总表
+
+| code | 来源 | 处理 |
+|---|---|---|
+| 0 | `op:"game_stop"` | 正常退出 |
+| 1001 / 1003 / 1004 / 1005 / 1008 / 1709 | `onclose` / `op:"error"` | 重连（`$ws.$reconnect`） |
+| 1512 | 媒体服 SDP 连续失败 | 转 1501（切媒体服） |
+| 1236（PC 为 509） | `op:"error"` | 云游戏重启中 |
+| **403 / 1213** | `op:"error"` | **机位被回收** → 重 POST tickets 或弹「太久没回来游戏已关闭」 |
+| **0 + reason:"normal"** | `op:"close"` | **正常结束会话**（被接管/收尾）→ 走 `onGameStop`，不弹窗、不重连 |
+| 2004 | `op:"error"` | 设备不支持游玩 |
+| 1002 / 10020 | **前端** `onPostClientError` / `closeWindow` | 「长时间不操作，已经自动退出」 |
+| 1288 | 前端（DataChannel 降级） | `switch_ws_after_x_failure` 次数用尽 → 回落 WS |
+| 静默停推 | 无任何 op | RTP 冻结、WS 仍 open、心跳照回 → 见 8.6.4 |
 
 
 ## 9. 悬浮球与画质（真机实测）
@@ -1246,7 +1559,7 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 
 ## 12. 实测验证
 
-三轮实测，都是真发请求、真拿响应，不是靠读代码猜：
+共六轮，前五轮是 HTTP 用例、第 6 轮是 WebRTC 观测，全部真发请求/真连接，不是靠读代码猜：
 
 | 轮次 | 身份 | 用例 | 成功 | 说明 |
 |---|---|---|---|---|
@@ -1254,7 +1567,8 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 | 第 2 轮 | 真实账号 | 60 | 49 | 覆盖「悬浮球/键位」「启动/排队」「云电脑」「社区」；失败 11 条均为缺必填参数或方法不对，接口本身存在 |
 | 第 3 轮 | 真实账号 | 22 | 17 | 「我的」页 `#/center` 真实抓包复现；失败 5 条同上（缺 query / 方法错） |
 | 第 4 轮 | 匿名（直连） | 16 | 16 | 登录链路 16 个用例：注册检查 / 密码前置 / 扫码轮询 / 登出 / 6 个新补的 `c()` 接口。全部符合预期 |
-| **合计** | | **135** | **111** | |
+| 第 5 轮 | 登录态（直连） | 137 | 68 | 2026-11-13 重抓 bundle 后新增/补齐的接口；失败 69 条为缺必填参数 |
+| **合计** | | **272** | **179** | |
 
 ### 12.1 第 1 轮：匿名接口
 
@@ -1435,6 +1749,161 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 > 第 4 轮在直连环境下跑（本机 10808 代理已关闭，`make_api()` 自动探测后走直连）。
 > 其中「扫码创建-匿名401」「登出-匿名401」「auth-token换票」期望失败、实际也失败，属正确行为。
 
+### 12.6 第 5 轮：2026-11-13 新增/补齐接口
+
+| 接口 | HTTP | 响应大小 | 结构 / 错误 | 结果 |
+|---|---|---|---|---|
+| `GET api/v1/customize-settings/pc_game/platform_resolution` | 200 | 212 B | `{val}` | ✅ |
+| `GET api/v1/games/mrfzzmd` | 200 | 5281 B | `{account_protection,ali_bitrate_region,app_limit,apps,archive_protecti` | ✅ |
+| `GET api/v1/games_pro` | 200 | 141 B | `{games,groups,rooms,users}` | ✅ |
+| `POST api/v1/group-customize-settings` | 200 | 6998 B | `{ads_scene,change_channel}` | ✅ |
+| `GET api/v1/kol_user_recommends` | 200 | 2333 B | `{recommend_users}` | ✅ |
+| `GET api/v1/live_room_game_multi_player` | 200 | 3581 B | `{items}` | ✅ |
+| `GET api/v1/live_rooms_recommend` | 200 | 5558 B | `{classes,is_in_regulation,live_rooms,total}` | ✅ |
+| `GET api/v1/pendant_list?pendant_type=mobile_home` | 200 | 2629 B | `{pendants}` | ✅ |
+| `GET api/v1/pendants?pendant_type=mobile_home` | 200 | 782 B | `{_id,addfreetime_test,create_time,exclude_channels,game_behavior_tags,` | ✅ |
+| `GET api/v1/search_keyword_hints` | 200 | 619 B | `{search_keyword_hints}` | ✅ |
+| `GET api/v1/seo_games/mrfzzmd` | 200 | 117186 B | `{_id,application_introduction,buttons,description,game_download_info,g` | ✅ |
+| `GET api/v1/seo_games/mrfzzmd` | 200 | 117186 B | `{_id,application_introduction,buttons,description,game_download_info,g` | ✅ |
+| `GET api/v1/sign-desc` | 200 | 1414 B | `{val}` | ✅ |
+| `GET api/v1/sign-desc` | 200 | 1414 B | `{val}` | ✅ |
+| `GET api/v1/square/game/latest` | 200 | 144 B | `{game_code,game_type,icon,name}` | ✅ |
+| `GET api/v1/team_up_notices` | 200 | 5271 B | `{notices}` | ✅ |
+| `GET api/v1/team_up_notices` | 200 | 5271 B | `{notices}` | ✅ |
+| `GET api/v1/user_guide` | 200 | 2439 B | `{items}` | ✅ |
+| `GET api/v1/users/5f2c1a7d8b3e4f60a1c2d3e4` | 200 | 587 B | `{accid,avatar_frame_url,certified,community_article_count,dating_squar` | ✅ |
+| `GET api/v1/users/5f2c1a7d8b3e4f60a1c2d3e4` | 200 | 587 B | `{accid,avatar_frame_url,certified,community_article_count,dating_squar` | ✅ |
+| `GET api/v1/users/5f2c1a7d8b3e4f60a1c2d3e4/live-room` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v1/versions/infos` | 200 | 28 B | `{total,versions}` | ✅ |
+| `GET api/v1/versions/infos?need_latest=1&platforms=0,1,2` | 200 | 16 B | `{versions}` | ✅ |
+| `DELETE api/v2/block` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/block?block_user_id=5f2c1a7d8b3e4f60a1c2d3e4` | 200 | 18 B | `{blocked}` | ✅ |
+| `GET api/v2/community/article_list/0/5` | 200 | 5685 B | `array[5]` | ✅ |
+| `GET api/v2/community/hot/article_list` | 200 | 5249 B | `array[5]` | ✅ |
+| `GET api/v2/community/hot/article_list` | 200 | 5602 B | `array[5]` | ✅ |
+| `GET api/v2/community/hot/article_list` | 200 | 5242 B | `array[5]` | ✅ |
+| `GET api/v2/community/recommend/gy_music_sheet_list/0/5` | 200 | 36619 B | `array[5]` | ✅ |
+| `GET api/v2/community/recommend/gy_music_sheet_list/0/5` | 200 | 36619 B | `array[5]` | ✅ |
+| `GET api/v2/community/topic/article_list/0/5` | 200 | 5685 B | `array[5]` | ✅ |
+| `GET api/v2/customize-settings/pc_game/platform_resolution` | 200 | 212 B | `{val}` | ✅ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=1` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=2` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=3` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/games/mrfzzmd` | 200 | 5281 B | `{account_protection,ali_bitrate_region,app_limit,apps,archive_protecti` | ✅ |
+| `GET api/v2/games/mrfzzmd/run_page_popup` | 200 | 799 B | `{is_popup,popup}` | ✅ |
+| `GET api/v2/games_pro` | 200 | 141 B | `{games,groups,rooms,users}` | ✅ |
+| `POST api/v2/group-customize-settings` | 200 | 6998 B | `{ads_scene,change_channel}` | ✅ |
+| `GET api/v2/group/hot_group_recommend_list/0/5` | 200 | 4592 B | `array[5]` | ✅ |
+| `GET api/v2/group/search_group_by_key/0/5?key=a` | 200 | 4350 B | `array[5]` | ✅ |
+| `GET api/v2/group/tag_cluster_list/0/20` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/group/tag_cluster_list/0/5` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/group/user_group_list/0/20` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/group/user_joined_groups/0/20` | 200 | 2 B | `array[0]` | ✅ |
+| `GET api/v2/gy_music_sheet_games` | 200 | 36434 B | `array[10]` | ✅ |
+| `GET api/v2/gy_music_sheet_games` | 200 | 36434 B | `array[10]` | ✅ |
+| `GET api/v2/kol_user_recommends` | 200 | 2333 B | `{recommend_users}` | ✅ |
+| `GET api/v2/live_room_game_multi_player` | 200 | 3581 B | `{items}` | ✅ |
+| `GET api/v2/live_room_game_multi_player` | 200 | 3581 B | `{items}` | ✅ |
+| `DELETE api/v2/open-login/1/binding` | 200 | 2 B | `{}` | ✅ |
+| `DELETE api/v2/open-login/wechat/binding` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/pendant_list?pendant_type=mobile_home` | 200 | 2629 B | `{pendants}` | ✅ |
+| `GET api/v2/pendants?pendant_type=mobile_home` | 200 | 782 B | `{_id,addfreetime_test,create_time,exclude_channels,game_behavior_tags,` | ✅ |
+| `GET api/v2/push_msgs?count=5` | 200 | 3590 B | `{messages,no_read_num}` | ✅ |
+| `GET api/v2/reservation-activities` | 200 | 18 B | `{activities}` | ✅ |
+| `GET api/v2/reservation-activities` | 200 | 18 B | `{activities}` | ✅ |
+| `GET api/v2/search_keyword_hints` | 200 | 619 B | `{search_keyword_hints}` | ✅ |
+| `GET api/v2/sign-desc` | 200 | 1414 B | `{val}` | ✅ |
+| `GET api/v2/system_msg_push_msgs?count=5` | 200 | 3590 B | `{messages,no_read_num}` | ✅ |
+| `GET api/v2/team_up_notices` | 200 | 5271 B | `{notices}` | ✅ |
+| `POST api/v2/users/@me/storage/probe_key/probe_val` | 200 | 2 B | `{}` | ✅ |
+| `GET api/v2/versions/infos?need_latest=1&platforms=0,1,2` | 200 | 16 B | `{versions}` | ✅ |
+| `GET api/v2/welfare_center/1/tabs` | 200 | 142 B | `{tabs}` | ✅ |
+| `GET api/v2/welfare_center/mrfzzmd/info` | 200 | 5570 B | `{daka_activity,is_exp_user,is_vip,levitating_ball_activities,mobile_vi` | ✅ |
+| `GET api/v2/welfare_center/mrfzzmd/info` | 200 | 5570 B | `{daka_activity,is_exp_user,is_vip,levitating_ball_activities,mobile_vi` | ✅ |
+| `GET api/v2/welfare_center/mrfzzmd/tabs` | 200 | 279 B | `{tabs}` | ✅ |
+| `GET api/v1/community/topic` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/community/topic` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/community_topic_recommend/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v1/community_topic_recommends` | 400 | 0 B | `参数错误` | ❌ |
+| `POST api/v1/group-customize-settings` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/live-rooms` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/live-rooms?skip=0&limit=5` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/live-rooms?skip=0&limit=5` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/main_page_live_rooms_recommend` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/square/message` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/square/message` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/team_up_user_recommendations` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/users` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v1/users?ids=5f2c1a7d8b3e4f60a1c2d3e4` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/users?user_ids=5f2c1a7d8b3e4f60a1c2d3e4` | 500 | 0 B | `` | ❌ |
+| `GET api/v1/wechat_binding/js_auth_data` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/alipay_sign_goods` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/alipay_sign_goods` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/alipay_sign_goods?price=1` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/award-history?activity=checkin` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/award-history?activity=daily_sign` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/award-history?activity=test&action=run` | 400 | 0 B | `参数错误` | ❌ |
+| `DELETE api/v2/block?user_id=5f2c1a7d8b3e4f60a1c2d3e4` | 400 | 0 B | `参数错误` | ❌ |
+| `DELETE api/v2/block?user_id=5f2c1a7d8b3e4f60a1c2d3e4` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/hot_article_list` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/hot_article_list?skip=0&limit=5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/recent_reply_article_list/0/5` | 500 | 0 B | `` | ❌ |
+| `GET api/v2/community/mix/recent_reply_article_list/0/5` | 500 | 0 B | `` | ❌ |
+| `GET api/v2/community/mix/related?article_id=1` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/mix/related?article_id=None` | 400 | 0 B | `参数错误` | ❌ |
+| `POST api/v2/community/recommend/article` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/search_gy_music_sheets/0/5?key=a` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/topic` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/topic?skip=0&limit=5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/user/article_list/0/5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/user/article_list/0/5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community/user/gy_music_sheet_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community/user/gy_music_sheet_score_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community/user_followed/gy_music_sheet_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community/user_like/gy_music_sheet_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community_topic_recommend/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/community_topic_recommends` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/community_topic_recommends` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/file_sharings/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/file_sharings/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/file_sharings/abc` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=game_detail` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=mobile` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/game_download_config/mrfzzmd?download_scene=run` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/cluster_group_recommend_list/0/20` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/cluster_group_recommend_list/0/5?group_id=1` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/main_recommend_group` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/main_recommend_group` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/main_recommend_group?skip=0&limit=5` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/group/user_group_list/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/group/user_joined_groups/5f2c1a7d8b3e4f60a1c2d3e4/0/20` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/group/user_joined_groups/5f2c1a7d8b3e4f60a1c2d3e4/0/5` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/live-rooms?skip=0&limit=5` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/live_room_game_multi_player/1` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/live_rooms_recommend` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/main_page_live_rooms_recommend` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/recharges/1/coupons` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/reservation-activities/1` | 404 | 0 B | `不存在` | ❌ |
+| `POST api/v2/reservation-activities/1/shown` | 404 | 0 B | `不存在` | ❌ |
+| `GET api/v2/square/message` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/team_up_user_recommendations` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/user_guide` | 401 | 0 B | `登录信息失效，请重新登录` | ❌ |
+| `GET api/v2/wechat_binding/js_auth_data` | 400 | 0 B | `参数错误` | ❌ |
+| `GET api/v2/welfare_center/1/info` | 404 | 0 B | `不存在` | ❌ |
+
+> 这一轮的完整表（含每轮失败原因）见 4.3 节与 `work/recon/verify_new*.json`。
+
+### 12.7 第 6 轮：WebRTC / 断流行为实测（无 HTTP 用例，只有观测）
+
+| 实验 | 产物 | 结论 |
+|---|---|---|
+| 13 分钟网页端长玩（不操作） | `work/captures/longplay-2026-11-13T15-51-10-437Z/` | 0–600 s 稳定收流；**602 s 由前端「无操作」计时器主动断开**；全程 DataChannel=0、WS 帧只在头 29 s |
+| 13 分钟网页端长玩（每 45 s 合成触摸） | `work/captures/longplay2-*/` | 用于验证 600 s 确实是 `gameCutTime` 前端计时器而非服务端 |
+| 完整 SDP + getStats 采样 | `work/captures/sdp-2026-11-13T16-04-54-613Z/` | 网关 ice-lite / twcc / remb / rrtr / sendrecv；**ICE consent 每 2.5 s 一次**；网页端 pliCount/nackCount 全程 0 |
+
+> 这些实验全部是「真机位 + Playwright + Chrome」，不是静态推断。机位每次 ttl 只有 24 s，
+> 所以脚本里都是「申请即连」（`work/get_ticket.py` → `work/longplay*.js` / `work/sdp_probe.js`）。
+
 
 ## 13. 匿名边界与补全登录态的方法
 
@@ -1457,10 +1926,10 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 
 ## 14. 附录：全量接口清单
 
-从 3 个 bundle 自动抽取，共 **272** 条；Method 由 `$http.<verb>(` 的邻近上下文投票推断，个别复合路径（`api/{v1|v2}/…`）表示同一函数按参数拼 v1/v2。
+从 3 个 bundle 自动抽取，共 **338** 条；Method 由 `$http.<verb>(` 的邻近上下文投票推断，个别复合路径（`api/{v1|v2}/…`）表示同一函数按参数拼 v1/v2。
 
 
-### 首页/推荐（22 条）
+### 首页/推荐（30 条）
 
 > 首页信息流、Banner、挂件、弹窗、公告、资源位、搜索联想、版本/客户端配置
 
@@ -1473,50 +1942,61 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 | 5 | `GET` | `api/v1/versions/@current` | `getVersion` | `—` |
 | 6 | `POST` | `api/v2/activity-banners-read` | `postActivityRead` | `—` |
 | 7 | `GET` | `api/v2/free_time_exhaust_popup` | `getFreeTimeExhaustPopup` | `—` |
-| 8 | `DELETE` | `api/v2/notices/close` | `deleteNotices` | `—` |
-| 9 | `GET` | `api/v2/queue_popup_behavior` | `queuePopup` | `—` |
-| 10 | `GET` | `api/v2/start_game_popup/game_code/{e}` | `getStartGamePopup` | `e` |
-| 11 | `GET` | `api/v2/users/@me/team_up_notice` | `myTeamUpNotices` | `—` |
-| 12 | `GET` | `api/v2/users/queue_popup` | `getExitQueuePop` | `—` |
-| 13 | `GET` | `api/{v1|v2}/activity-banners` | `getActivityBanner` | `—` |
-| 14 | `GET` | `api/{v1|v2}/banners?banner_type={e}` | `getBanner` | `e,t` |
-| 15 | `GET` | `api/{v1|v2}/bottom_config_items` | `getBottomConfigItems` | `e` |
-| 16 | `GET` | `api/{v1|v2}/main_recommendations` | `getRecommend` | `e` |
-| 17 | `GET` | `api/{v1|v2}/popups` | `getPopups` | `e` |
-| 18 | `GET` | `api/{v1|v2}/text_res_position_items` | `getTextResourceLocation` | `e` |
-| 19 | `GET` | `api/{ver}/client-settings/@current` | `getClientSettings` | `e` |
-| 20 | `GET` | `api/{ver}/home_page_tabs` | `getHomePageTab` | `e` |
-| 21 | `GET` | `api/{ver}/notices/list` | `getNoticesList` | `e` |
-| 22 | `GET` | `api/{ver}/speed_url` | `getSpeedUrl` | `e` |
+| 8 | `GET` | `api/v2/games/{e}/run_page_popup` | `getRunPagePopup` | `e` |
+| 9 | `DELETE` | `api/v2/notices/close` | `deleteNotices` | `—` |
+| 10 | `GET` | `api/v2/queue_popup_behavior` | `queuePopup` | `—` |
+| 11 | `GET` | `api/v2/start_game_popup/game_code/{e}` | `getStartGamePopup` | `e` |
+| 12 | `GET` | `api/v2/users/@me/team_up_notice` | `myTeamUpNotices` | `—` |
+| 13 | `GET` | `api/v2/users/queue_popup` | `getExitQueuePop` | `—` |
+| 14 | `GET` | `api/{i}/customize-settings/{e}/{t}` | `getCustomizeSettings` | `e,t` |
+| 15 | `GET` | `api/{v1|v2}/activity-banners` | `getActivityBanner` | `—` |
+| 16 | `GET` | `api/{v1|v2}/banners?banner_type={e}` | `getBanner` | `e,t` |
+| 17 | `GET` | `api/{v1|v2}/bottom_config_items` | `getBottomConfigItems` | `e` |
+| 18 | `GET` | `api/{v1|v2}/main_recommendations` | `getRecommend` | `e` |
+| 19 | `GET` | `api/{v1|v2}/popups` | `getPopups` | `e` |
+| 20 | `GET` | `api/{v1|v2}/text_res_position_items` | `getTextResourceLocation` | `e` |
+| 21 | `GET` | `api/{ver}/client-settings/@current` | `getClientSettings` | `e` |
+| 22 | `POST` | `api/{ver}/group-customize-settings` | `postCustomizeSettings` | `—` |
+| 23 | `GET` | `api/{ver}/home_page_tabs` | `getHomePageTab` | `e` |
+| 24 | `GET` | `api/{ver}/notices/list` | `getNoticesList` | `e` |
+| 25 | `GET` | `api/{ver}/pendant_list` | `getPendantList` | `—` |
+| 26 | `GET` | `api/{ver}/pendants` | `getPendants` | `—` |
+| 27 | `GET` | `api/{ver}/search_keyword_hints` | `getSearchKeywordHints` | `—` |
+| 28 | `GET` | `api/{ver}/speed_url` | `getSpeedUrl` | `e` |
+| 29 | `GET` | `api/{ver}/team_up_notices` | `teamUpNotices` | `—` |
+| 30 | `GET` | `api/{ver}/versions/infos` | `getVersionInfos` | `—` |
 
-### 游戏/详情（22 条）
+### 游戏/详情（25 条）
 
 > 游戏详情、列表、猜你喜欢、游玩历史、键位映射、通用设置
 
 | # | Method | Path | 客户端函数 | 参数 |
 |---|---|---|---|---|
 | 1 | `GET` | `api/v1/seo/games` | `getSeoGames` | `—` |
-| 2 | `GET` | `api/v2/game_exit_recommendations` | `geteGameExitRecommend` | `—` |
-| 3 | `GET` | `api/v2/game_time_remain?game_code={e}` | `getGameTimeRemain` | `e` |
-| 4 | `GET` | `api/v2/games/{e}/game_code` | `getPackage2Gamecode` | `e` |
-| 5 | `GET` | `api/v2/games/{e}/key_mapping` | `getDefaultMapping` | `e` |
-| 6 | `GET` | `api/v2/guess_user_like_games` | `getGuessUserLikeGames` | `—` |
-| 7 | `GET` | `api/v2/pc_vip/games` | `getPCVipGames` | `—` |
-| 8 | `GET` | `api/v2/user_start_game_text_view` | `getUserStartGameTextView` | `—` |
-| 9 | `GET` | `api/v2/users/@me/games-playing` | `getGamesPlaying` | `—` |
-| 10 | `DELETE` | `api/v2/users/@me/games-playing/{e}` | `stopGame` | `e` |
-| 11 | `PATCH` | `api/v2/users/@me/games-playing/{e}` | `patchPlaying` | `e` |
-| 12 | `GET` | `api/v2/users/@me/games/{e}/common_setting` | `getCommonSetting` | `e` |
-| 13 | `POST` | `api/v2/users/@me/games/{e}/common_setting` | `postCommonSetting` | `e` |
-| 14 | `POST` | `api/v2/users/@me/games/{e}/key_mapping_select_upsert` | `postKeyMappingSelect` | `e` |
-| 15 | `GET` | `api/v2/users/@me/games/{e}/key_mappings` | `getKeyMapping` | `e` |
-| 16 | `POST` | `api/v2/users/@me/games/{e}/key_mappings` | `postKeyMapping` | `e` |
-| 17 | `DELETE` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `DeleteMapping` | `e,t` |
-| 18 | `PATCH` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `PATCHMapping` | `e,t` |
-| 19 | `POST` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `getKeyMappingsDetail` | `e,t` |
-| 20 | `GET` | `api/v2/users/@me/games/{e}/key_mappings_new` | `getKeyMappingsNew` | `e` |
-| 21 | `GET` | `api/v2/users/@me/games/{e}/key_mappings_simple` | `getKeyMappingsSimple` | `e` |
-| 22 | `GET` | `api/{v1|v2}/games` | `getGames` | `e` |
+| 2 | `GET` | `api/v2/game_download_config/{e}?download_scene={t}` | `getGameDownloadConfig` | `e,t` |
+| 3 | `GET` | `api/v2/game_exit_recommendations` | `geteGameExitRecommend` | `—` |
+| 4 | `GET` | `api/v2/game_time_remain?game_code={e}` | `getGameTimeRemain` | `e` |
+| 5 | `GET` | `api/v2/games/{e}/game_code` | `getPackage2Gamecode` | `e` |
+| 6 | `GET` | `api/v2/games/{e}/key_mapping` | `getDefaultMapping` | `e` |
+| 7 | `GET` | `api/v2/guess_user_like_games` | `getGuessUserLikeGames` | `—` |
+| 8 | `GET` | `api/v2/pc_vip/games` | `getPCVipGames` | `—` |
+| 9 | `GET` | `api/v2/user_start_game_text_view` | `getUserStartGameTextView` | `—` |
+| 10 | `GET` | `api/v2/users/@me/games-playing` | `getGamesPlaying` | `—` |
+| 11 | `DELETE` | `api/v2/users/@me/games-playing/{e}` | `stopGame` | `e` |
+| 12 | `PATCH` | `api/v2/users/@me/games-playing/{e}` | `patchPlaying` | `e` |
+| 13 | `GET` | `api/v2/users/@me/games/{e}/common_setting` | `getCommonSetting` | `e` |
+| 14 | `POST` | `api/v2/users/@me/games/{e}/common_setting` | `postCommonSetting` | `e` |
+| 15 | `POST` | `api/v2/users/@me/games/{e}/key_mapping_select_upsert` | `postKeyMappingSelect` | `e` |
+| 16 | `GET` | `api/v2/users/@me/games/{e}/key_mappings` | `getKeyMapping` | `e` |
+| 17 | `POST` | `api/v2/users/@me/games/{e}/key_mappings` | `postKeyMapping` | `e` |
+| 18 | `DELETE` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `DeleteMapping` | `e,t` |
+| 19 | `PATCH` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `PATCHMapping` | `e,t` |
+| 20 | `POST` | `api/v2/users/@me/games/{e}/key_mappings/{t}` | `getKeyMappingsDetail` | `e,t` |
+| 21 | `GET` | `api/v2/users/@me/games/{e}/key_mappings_new` | `getKeyMappingsNew` | `e` |
+| 22 | `GET` | `api/v2/users/@me/games/{e}/key_mappings_simple` | `getKeyMappingsSimple` | `e` |
+| 23 | `GET` | `api/{t"v2"}/games/{e}` | `getGame` | `e,t` |
+| 24 | `GET` | `api/{v1|v2}/games` | `getGames` | `e` |
+| 25 | `GET` | `api/{ver}/games_pro` | `getGamesPro` | `—` |
 
 ### 启动/排队（13 条）
 
@@ -1549,110 +2029,126 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 | 3 | `GET` | `api/v2/users/@me/gamepads-count` | `getVirtualGamepad` | `—` |
 | 4 | `GET` | `api/v2/zte-gamepad-verify/{e}` | `getGamepadVerify` | `e` |
 
-### 我的/账户（96 条）
+### 我的/账户（112 条）
 
 > 用户资料、VIP、等级成长、订单、充值、签到、优惠券、消息、活动、隐私
 
 | # | Method | Path | 客户端函数 | 参数 |
 |---|---|---|---|---|
 | 1 | `POST` | `api/v1/behaviors_log` | `postBehaviors2` | `—` |
-| 2 | `POST` | `api/v2/ads/ad_reward` | `postAdsReward` | `—` |
-| 3 | `GET` | `api/v2/ads/get_ads_id` | `getAdsId` | `—` |
-| 4 | `POST` | `api/v2/ads/give_ad_reward` | `postAdsGiveAdReward` | `—` |
-| 5 | `POST` | `api/v2/ads/open_game_ads_display` | `getOpenGameAds` | `—` |
-| 6 | `GET` | `api/v2/ads/reward_times` | `getAdsRewardtimes` | `—` |
-| 7 | `POST` | `api/v2/cancellation/do` | `postCancellation` | `—` |
-| 8 | `GET` | `api/v2/cancellation_btn/check` | `getCancellationBtnCheck` | `—` |
-| 9 | `POST` | `api/v2/client-errors` | `postClientError` | `—` |
-| 10 | `POST` | `api/v2/client_data_transparent_transmission/{e}` | `postTransData` | `e` |
-| 11 | `GET` | `api/v2/coupon_corner_mark` | `getConponMark` | `—` |
-| 12 | `POST` | `api/v2/daily_vip/choose_valid_date` | `postDailyVipChooseValidDate` | `—` |
-| 13 | `GET` | `api/v2/daily_vip/get_daily_vip_reward_status` | `getDailyVipRewardStatus` | `—` |
-| 14 | `GET` | `api/v2/daily_vip/get_user_daily_vip_rewards` | `getUserDailyVipDates` | `—` |
-| 15 | `GET` | `api/v2/daka-activities/{e}` | `getActivity` | `e` |
-| 16 | `POST` | `api/v2/exchange_code/activations` | `postExchangeCodeActivations` | `—` |
-| 17 | `POST` | `api/v2/file_sharing/dispatches` | `postFSDispatches` | `—` |
-| 18 | `POST` | `api/v2/file_sharing/favorites` | `postFSFavorites` | `—` |
-| 19 | `GET` | `api/v2/first-price` | `getFirstPrice` | `—` |
-| 20 | `GET` | `api/v2/get_user_ultimate_game_info` | `getUserUltimateGameInfo` | `—` |
-| 21 | `POST` | `api/v2/gift-pack` | `postGiftPack` | `—` |
-| 22 | `POST` | `api/v2/gift-pack/notify` | `postGiftPackNotify` | `—` |
-| 23 | `GET` | `api/v2/gift-pack/remind` | `getGiftRemind` | `—` |
-| 24 | `POST` | `api/v2/gift-pack/remind` | `postGiftRemind` | `—` |
-| 25 | `POST` | `api/v2/hsz-file-upload` | `postHSZFileUpload` | `—` |
-| 26 | `POST` | `api/v2/level_reward_acceptions` | `postLevelReward` | `—` |
-| 27 | `GET` | `api/v2/my_coupons` | `getMyCoupons` | `—` |
-| 28 | `GET` | `api/v2/new-user-benefits` | `getNewUserBenefits` | `—` |
-| 29 | `GET` | `api/v2/one_submit_ticket?business_type={e}` | `getAdsRandomText` | `e` |
-| 30 | `GET` | `api/v2/orders` | `getOrders` | `—` |
-| 31 | `POST` | `api/v2/orders` | `postOrder` | `—` |
-| 32 | `GET` | `api/v2/orders/{e}` | `getOrderStatu` | `e` |
-| 33 | `GET` | `api/v2/parent-ctrl/info` | `getParentInfo` | `—` |
-| 34 | `PATCH` | `api/v2/parent-ctrl/info` | `patchParentInfo` | `—` |
-| 35 | `POST` | `api/v2/parent-ctrl/off` | `postParentOff` | `—` |
-| 36 | `GET` | `api/v2/pay_rec` | `getPayRec` | `—` |
-| 37 | `POST` | `api/v2/pay_rec` | `postPayRec` | `—` |
-| 38 | `GET` | `api/v2/pc_vip/@me` | `getPcVip` | `—` |
-| 39 | `POST` | `api/v2/pc_vip/choose_game` | `postPCVipChooseGame` | `—` |
-| 40 | `GET` | `api/v2/play-pre-guidances` | `getPlayGuideance` | `—` |
-| 41 | `GET` | `api/v2/promotion_coupons` | `getPromotionCoupons` | `—` |
-| 42 | `POST` | `api/v2/promotion_coupons` | `postPromotionCoupons` | `—` |
-| 43 | `GET` | `api/v2/purchase_giving/list` | `getPurchaseList` | `—` |
-| 44 | `GET` | `api/v2/purchase_giving_record/{e}` | `getPurpaseReward` | `e` |
-| 45 | `GET` | `api/v2/push_msg?msg_id={e}` | `getPushMsg` | `e` |
-| 46 | `POST` | `api/v2/push_msgs` | `postPushMsgs` | `—` |
-| 47 | `GET` | `api/v2/recharges` | `getRecharges` | `—` |
-| 48 | `POST` | `api/v2/recomm_superior_recharge_coupons` | `getRecommSuperiorRechargeCoupons` | `—` |
-| 49 | `GET` | `api/v2/sec_kill_activity/run_page_entry` | `getSeckillRunEntry` | `—` |
-| 50 | `DELETE` | `api/v2/self_cancellations` | `deleteSelfCancellation` | `—` |
-| 51 | `POST` | `api/v2/self_cancellations` | `postSelfCancellation` | `—` |
-| 52 | `GET` | `api/v2/share-checks/1` | `shareCheck` | `—` |
-| 53 | `POST` | `api/v2/sign-today` | `postSignToday` | `—` |
-| 54 | `GET` | `api/v2/sign-user-info` | `getSignUserInfo` | `—` |
-| 55 | `POST` | `api/v2/sign-user-info/pc_game_award` | `postSignPcGameAward` | `—` |
-| 56 | `GET` | `api/v2/step-activities/{e}` | `getStepActivity` | `e` |
-| 57 | `GET` | `api/v2/user-gift-packs` | `getUserGiftPacks` | `—` |
-| 58 | `POST` | `api/v2/user-reservations/{e}` | `postReservation` | `e` |
-| 59 | `PATCH` | `api/v2/user_config/@me` | `userConfig` | `—` |
-| 60 | `GET` | `api/v2/user_single_config` | `getUserSingleConfig` | `—` |
-| 61 | `GET` | `api/v2/user_values` | `getUserValues` | `—` |
-| 62 | `GET` | `api/v2/users/@me` | `getUser` | `—` |
-| 63 | `GET` | `api/v2/users/@me` | `updateUser` | `—` |
-| 64 | `PATCH` | `api/v2/users/@me` | `patchUser` | `—` |
-| 65 | `GET` | `api/v2/users/@me/cloud_pc_config` | `getCloudPcConfig` | `—` |
-| 66 | `POST` | `api/v2/users/@me/cloud_pc_config` | `postCloudPcConfig` | `—` |
-| 67 | `POST` | `api/v2/users/@me/cloud_pc_tips/{e}` | `postCloudPcTip` | `e` |
-| 68 | `GET` | `api/v2/users/@me/coins-changes` | `getPlayOrders` | `—` |
-| 69 | `GET` | `api/v2/users/@me/file_sharing/favorites` | `getFSFavorites` | `—` |
-| 70 | `GET` | `api/v2/users/@me/first-play-game/{e}` | `getFistPlayGame` | `e` |
-| 71 | `GET` | `api/v2/users/@me/friend_recommendations` | `getFriendRecommendations` | `—` |
-| 72 | `GET` | `api/v2/users/@me/game-playing-histories` | `getPlayingHistories` | `—` |
-| 73 | `GET` | `api/v2/users/@me/game-playing-histories-hidden/{e}` | `removeHistory` | `e` |
-| 74 | `GET` | `api/v2/users/@me/gift-income-balance` | `getBalance` | `—` |
-| 75 | `GET` | `api/v2/users/@me/gift-income-change-list` | `getIncome` | `—` |
-| 76 | `GET` | `api/v2/users/@me/growth_value_histories` | `getGrowthRecord` | `—` |
-| 77 | `GET` | `api/v2/users/@me/last-created-room-info` | `getLastCreatedRoomInfo` | `—` |
-| 78 | `GET` | `api/v2/users/@me/level_info` | `getLevelInfo` | `—` |
-| 79 | `GET` | `api/v2/users/@me/pc-vip-time-changes` | `getPcVipChanges` | `—` |
-| 80 | `GET` | `api/v2/users/@me/pc_free_time_details` | `getPCFreeTimeDetails` | `—` |
-| 81 | `GET` | `api/v2/users/@me/status` | `getStatus` | `—` |
-| 82 | `DELETE` | `api/v2/users/@me/storage/{e}` | `removeUserStorage` | `e` |
-| 83 | `GET` | `api/v2/users/@me/user_rel_types/{e}` | `getUserRelTypes` | `e` |
-| 84 | `GET` | `api/v2/users/@me/vip-statistics` | `getVipStatistics` | `—` |
-| 85 | `GET` | `api/v2/users/@me/wechat_binding/reward` | `getWechatBind` | `—` |
-| 86 | `GET` | `api/v2/users/@me/{e}` | `getFollows` | `e` |
-| 87 | `GET` | `api/v2/users/ab_switch/android_h5_2apk_new` | `getAndroidConfirmSwitch` | `—` |
-| 88 | `GET` | `api/v2/users/ab_switch/pcweb_ads_entry_2apk` | `getPcAdsSwitch` | `—` |
-| 89 | `GET` | `api/v2/users/ab_switch/{e}` | `getUsersABSwitch` | `e` |
-| 90 | `GET` | `api/v2/welfare_center_coupons` | `getWelfareCoupons` | `—` |
-| 91 | `POST` | `api/v2/withdraws` | `postWithdraws` | `—` |
-| 92 | `GET` | `api/{v1|v2}/gift-packs` | `getGiftPacks` | `—` |
-| 93 | `GET` | `api/{v1|v2}/sign-info-v2` | `getSignInfo` | `—` |
-| 94 | `GET` | `api/{v1|v2}/users/@me/task_status` | `getTaskStatus` | `—` |
-| 95 | `POST` | `api/{ver}/behaviors` | `postBehaviors` | `e` |
-| 96 | `GET` | `api/{ver}/file_sharing/recommendations` | `getFsRecommend` | `e` |
+| 2 | `GET` | `api/v2/action-awards?activity={e}` | `activity_getAward` | `e` |
+| 3 | `POST` | `api/v2/ads/ad_reward` | `postAdsReward` | `—` |
+| 4 | `GET` | `api/v2/ads/get_ads_id` | `getAdsId` | `—` |
+| 5 | `POST` | `api/v2/ads/give_ad_reward` | `postAdsGiveAdReward` | `—` |
+| 6 | `POST` | `api/v2/ads/open_game_ads_display` | `getOpenGameAds` | `—` |
+| 7 | `GET` | `api/v2/ads/reward_times` | `getAdsRewardtimes` | `—` |
+| 8 | `GET` | `api/v2/award-history/{e}` | `activity_patchAward` | `e` |
+| 9 | `GET` | `api/v2/award-history?activity={e}&action={t}` | `activity_getExtraAward` | `e,t` |
+| 10 | `POST` | `api/v2/cancellation/do` | `postCancellation` | `—` |
+| 11 | `GET` | `api/v2/cancellation_btn/check` | `getCancellationBtnCheck` | `—` |
+| 12 | `POST` | `api/v2/client-errors` | `postClientError` | `—` |
+| 13 | `POST` | `api/v2/client_data_transparent_transmission/{e}` | `postTransData` | `e` |
+| 14 | `GET` | `api/v2/coupon_corner_mark` | `getConponMark` | `—` |
+| 15 | `POST` | `api/v2/daily_vip/choose_valid_date` | `postDailyVipChooseValidDate` | `—` |
+| 16 | `GET` | `api/v2/daily_vip/get_daily_vip_reward_status` | `getDailyVipRewardStatus` | `—` |
+| 17 | `GET` | `api/v2/daily_vip/get_user_daily_vip_rewards` | `getUserDailyVipDates` | `—` |
+| 18 | `GET` | `api/v2/daka-activities/{e}` | `getActivity` | `e` |
+| 19 | `POST` | `api/v2/exchange_code/activations` | `postExchangeCodeActivations` | `—` |
+| 20 | `POST` | `api/v2/file_sharing/dispatches` | `postFSDispatches` | `—` |
+| 21 | `POST` | `api/v2/file_sharing/favorites` | `postFSFavorites` | `—` |
+| 22 | `GET` | `api/v2/first-price` | `getFirstPrice` | `—` |
+| 23 | `GET` | `api/v2/get_user_ultimate_game_info` | `getUserUltimateGameInfo` | `—` |
+| 24 | `POST` | `api/v2/gift-pack` | `postGiftPack` | `—` |
+| 25 | `POST` | `api/v2/gift-pack/notify` | `postGiftPackNotify` | `—` |
+| 26 | `GET` | `api/v2/gift-pack/remind` | `getGiftRemind` | `—` |
+| 27 | `POST` | `api/v2/gift-pack/remind` | `postGiftRemind` | `—` |
+| 28 | `POST` | `api/v2/hsz-file-upload` | `postHSZFileUpload` | `—` |
+| 29 | `POST` | `api/v2/level_reward_acceptions` | `postLevelReward` | `—` |
+| 30 | `GET` | `api/v2/my_coupons` | `getMyCoupons` | `—` |
+| 31 | `GET` | `api/v2/new-user-benefits` | `getNewUserBenefits` | `—` |
+| 32 | `GET` | `api/v2/one_submit_ticket?business_type={e}` | `getAdsRandomText` | `e` |
+| 33 | `GET` | `api/v2/orders` | `getOrders` | `—` |
+| 34 | `POST` | `api/v2/orders` | `postOrder` | `—` |
+| 35 | `GET` | `api/v2/orders/{e}` | `getOrderStatu` | `e` |
+| 36 | `GET` | `api/v2/parent-ctrl/info` | `getParentInfo` | `—` |
+| 37 | `PATCH` | `api/v2/parent-ctrl/info` | `patchParentInfo` | `—` |
+| 38 | `POST` | `api/v2/parent-ctrl/off` | `postParentOff` | `—` |
+| 39 | `GET` | `api/v2/pay_rec` | `getPayRec` | `—` |
+| 40 | `POST` | `api/v2/pay_rec` | `postPayRec` | `—` |
+| 41 | `GET` | `api/v2/pc_vip/@me` | `getPcVip` | `—` |
+| 42 | `POST` | `api/v2/pc_vip/choose_game` | `postPCVipChooseGame` | `—` |
+| 43 | `GET` | `api/v2/play-pre-guidances` | `getPlayGuideance` | `—` |
+| 44 | `GET` | `api/v2/promotion_coupons` | `getPromotionCoupons` | `—` |
+| 45 | `POST` | `api/v2/promotion_coupons` | `postPromotionCoupons` | `—` |
+| 46 | `GET` | `api/v2/purchase_giving/list` | `getPurchaseList` | `—` |
+| 47 | `GET` | `api/v2/purchase_giving_record/{e}` | `getPurpaseReward` | `e` |
+| 48 | `GET` | `api/v2/push_msg?msg_id={e}` | `getPushMsg` | `e` |
+| 49 | `POST` | `api/v2/push_msgs` | `postPushMsgs` | `—` |
+| 50 | `GET` | `api/v2/push_msgs?count=…&before_id=…` | `getPushMsgs` | `e,t,i` |
+| 51 | `GET` | `api/v2/recharges` | `getRecharges` | `—` |
+| 52 | `GET` | `api/v2/recharges/{e}/coupons` | `getrechargeCoupons` | `e` |
+| 53 | `POST` | `api/v2/recomm_superior_recharge_coupons` | `getRecommSuperiorRechargeCoupons` | `—` |
+| 54 | `GET` | `api/v2/reservation-activities/{e}` | `reservationActivities` | `e` |
+| 55 | `POST` | `api/v2/reservation-activities/{e}/shown` | `postReservationShown` | `e` |
+| 56 | `GET` | `api/v2/sec_kill_activity/run_page_entry` | `getSeckillRunEntry` | `—` |
+| 57 | `DELETE` | `api/v2/self_cancellations` | `deleteSelfCancellation` | `—` |
+| 58 | `POST` | `api/v2/self_cancellations` | `postSelfCancellation` | `—` |
+| 59 | `GET` | `api/v2/share-checks/1` | `shareCheck` | `—` |
+| 60 | `POST` | `api/v2/sign-today` | `postSignToday` | `—` |
+| 61 | `GET` | `api/v2/sign-user-info` | `getSignUserInfo` | `—` |
+| 62 | `POST` | `api/v2/sign-user-info/pc_game_award` | `postSignPcGameAward` | `—` |
+| 63 | `GET` | `api/v2/step-activities/{e}` | `getStepActivity` | `e` |
+| 64 | `GET` | `api/v2/system_msg_push_msgs?count={t|0}&before_id={e}` | `getMessageSystem` | `e,t` |
+| 65 | `GET` | `api/v2/total-awards?activity={e}` | `activity_getTotalAward` | `e` |
+| 66 | `GET` | `api/v2/user-gift-packs` | `getUserGiftPacks` | `—` |
+| 67 | `POST` | `api/v2/user-reservations/{e}` | `postReservation` | `e` |
+| 68 | `PATCH` | `api/v2/user_config/@me` | `userConfig` | `—` |
+| 69 | `POST` | `api/v2/user_game_wish/{e}` | `postUserGameWish` | `e` |
+| 70 | `GET` | `api/v2/user_single_config` | `getUserSingleConfig` | `—` |
+| 71 | `GET` | `api/v2/user_values` | `getUserValues` | `—` |
+| 72 | `GET` | `api/v2/users/@me` | `getUser` | `—` |
+| 73 | `PATCH` | `api/v2/users/@me` | `patchUser` | `—` |
+| 74 | `PATCH` | `api/v2/users/@me` | `updateUser` | `—` |
+| 75 | `GET` | `api/v2/users/@me/cloud_pc_config` | `getCloudPcConfig` | `—` |
+| 76 | `POST` | `api/v2/users/@me/cloud_pc_config` | `postCloudPcConfig` | `—` |
+| 77 | `POST` | `api/v2/users/@me/cloud_pc_tips/{e}` | `postCloudPcTip` | `e` |
+| 78 | `GET` | `api/v2/users/@me/coins-changes` | `getPlayOrders` | `—` |
+| 79 | `GET` | `api/v2/users/@me/file_sharing/favorites` | `getFSFavorites` | `—` |
+| 80 | `GET` | `api/v2/users/@me/first-play-game/{e}` | `getFistPlayGame` | `e` |
+| 81 | `GET` | `api/v2/users/@me/friend_recommendations` | `getFriendRecommendations` | `—` |
+| 82 | `GET` | `api/v2/users/@me/game-playing-histories` | `getPlayingHistories` | `—` |
+| 83 | `POST` | `api/v2/users/@me/game-playing-histories-hidden/{e}` | `removeHistory` | `e` |
+| 84 | `GET` | `api/v2/users/@me/gift-income-balance` | `getBalance` | `—` |
+| 85 | `GET` | `api/v2/users/@me/gift-income-change-list` | `getIncome` | `—` |
+| 86 | `GET` | `api/v2/users/@me/growth_value_histories` | `getGrowthRecord` | `—` |
+| 87 | `GET` | `api/v2/users/@me/last-created-room-info` | `getLastCreatedRoomInfo` | `—` |
+| 88 | `GET` | `api/v2/users/@me/level_info` | `getLevelInfo` | `—` |
+| 89 | `GET` | `api/v2/users/@me/pc-vip-time-changes` | `getPcVipChanges` | `—` |
+| 90 | `GET` | `api/v2/users/@me/pc_free_time_details` | `getPCFreeTimeDetails` | `—` |
+| 91 | `GET` | `api/v2/users/@me/status` | `getStatus` | `—` |
+| 92 | `DELETE` | `api/v2/users/@me/storage/{e}` | `removeUserStorage` | `e` |
+| 93 | `POST` | `api/v2/users/@me/storage/{e}/{t}` | `setUserStorage` | `e,t` |
+| 94 | `GET` | `api/v2/users/@me/user_rel_types/{e}` | `getUserRelTypes` | `e` |
+| 95 | `GET` | `api/v2/users/@me/vip-statistics` | `getVipStatistics` | `—` |
+| 96 | `GET` | `api/v2/users/@me/wechat_binding/reward` | `getWechatBind` | `—` |
+| 97 | `GET` | `api/v2/users/@me/{e}` | `getFollows` | `e` |
+| 98 | `GET` | `api/v2/users/ab_switch/android_h5_2apk_new` | `getAndroidConfirmSwitch` | `—` |
+| 99 | `GET` | `api/v2/users/ab_switch/pcweb_ads_entry_2apk` | `getPcAdsSwitch` | `—` |
+| 100 | `GET` | `api/v2/users/ab_switch/{e}` | `getUsersABSwitch` | `e` |
+| 101 | `GET` | `api/v2/welfare_center/{e}/info` | `getWelfareInfo` | `e` |
+| 102 | `GET` | `api/v2/welfare_center/{e}/tabs` | `getWelfareTabs` | `e` |
+| 103 | `GET` | `api/v2/welfare_center_coupons` | `getWelfareCoupons` | `—` |
+| 104 | `POST` | `api/v2/withdraws` | `postWithdraws` | `—` |
+| 105 | `GET` | `api/{v1|v2}/gift-packs` | `getGiftPacks` | `—` |
+| 106 | `GET` | `api/{v1|v2}/sign-info-v2` | `getSignInfo` | `—` |
+| 107 | `GET` | `api/{v1|v2}/users/@me/task_status` | `getTaskStatus` | `—` |
+| 108 | `POST` | `api/{ver}/behaviors` | `postBehaviors` | `e` |
+| 109 | `DELETE` | `api/{ver}/block` | `userBlack` | `—` |
+| 110 | `GET` | `api/{ver}/file_sharing/recommendations` | `getFsRecommend` | `e` |
+| 111 | `GET` | `api/{ver}/file_sharings/{t}` | `getFSContent` | `—` |
+| 112 | `GET` | `api/{ver}/sign-desc` | `getSignDesc` | `—` |
 
-### 登录/鉴权（17 条）
+### 登录/鉴权（19 条）
 
 > 短信验证码、密码/二维码登录、token、实名、注销
 
@@ -1670,29 +2166,32 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 | 10 | `GET` | `api/v2/login` | `bindLogin` | `—` |
 | 11 | `POST` | `api/v2/login-qrcodes` | `postQr` | `—` |
 | 12 | `POST` | `api/v2/login_role` | `postLoginRole` | `—` |
-| 13 | `GET` | `api/v2/poster-invitation-qrcodes` | `activity_qrcode` | `—` |
-| 14 | `DELETE` | `api/v2/tokens/@current` | `deleteToken` | `—` |
-| 15 | `GET` | `api/v2/users/@me/games-playing/@current/qrcode` | `getQr` | `—` |
-| 16 | `POST` | `api/v2/users/@me/realname-info` | `postRealName` | `—` |
-| 17 | `POST` | `api/{v1|v2}/upload-tokens` | `createUploadToken` | `—` |
+| 13 | `DELETE` | `api/v2/open-login/{e}/binding` | `openLoginUnbinding` | `e` |
+| 14 | `GET` | `api/v2/poster-invitation-qrcodes` | `activity_qrcode` | `—` |
+| 15 | `DELETE` | `api/v2/tokens/@current` | `deleteToken` | `—` |
+| 16 | `GET` | `api/v2/users/@me/games-playing/@current/qrcode` | `getQr` | `—` |
+| 17 | `POST` | `api/v2/users/@me/realname-info` | `postRealName` | `—` |
+| 18 | `POST` | `api/{v1|v2}/upload-tokens` | `createUploadToken` | `—` |
+| 19 | `GET` | `api/{ver}/wechat_binding/js_auth_data` | `getWechatBindRegister` | `—` |
 
-### 云电脑/云手机（9 条）
+### 云电脑/云手机（10 条）
 
 > 云电脑实例、价格、订单、存储重置、云手机迁移
 
 | # | Method | Path | 客户端函数 | 参数 |
 |---|---|---|---|---|
-| 1 | `GET` | `api/v2/cloud-mobile-storage` | `resetCloudMobileStorage` | `—` |
+| 1 | `DELETE` | `api/v2/cloud-mobile-storage` | `resetCloudMobileStorage` | `—` |
 | 2 | `POST` | `api/v2/cloud-mobile/sign-award` | `PostSignAward` | `—` |
 | 3 | `GET` | `api/v2/cloud-pc-coupons` | `getCloudPCCoupons` | `—` |
 | 4 | `POST` | `api/v2/cloud-pc-orders` | `postCloudOrder` | `—` |
 | 5 | `GET` | `api/v2/cloud-pc-price` | `getCloudPcPrice` | `—` |
-| 6 | `GET` | `api/v2/cloud-pc-storage` | `resetCloudPCStorage` | `—` |
+| 6 | `DELETE` | `api/v2/cloud-pc-storage` | `resetCloudPCStorage` | `—` |
 | 7 | `GET` | `api/v2/users/@me/cloud-pc` | `getCloudPCInfo` | `—` |
 | 8 | `POST` | `api/v2/users/@me/cloud_mobile_tips/{e}` | `postCloudMobileTip` | `e` |
 | 9 | `POST` | `api/v2/users/@me/move-new-cloud-mobile` | `postCloudMobileUpdate` | `—` |
+| 10 | `GET` | `api/{ver}/cloud-devices` | `getCloudDevices` | `e` |
 
-### 社区/直播（52 条）
+### 社区/直播（89 条）
 
 > 云友圈话题、动态、评论、点赞、关注、直播间、群组
 
@@ -1700,58 +2199,95 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 |---|---|---|---|---|
 | 1 | `GET` | `api/v1/square/message/user` | `getSquareMessageUser` | `—` |
 | 2 | `GET` | `api/v1/square/tabs` | `getSquareTabs` | `—` |
-| 3 | `GET` | `api/v2/avatar_frames` | `getAvatarFrames` | `—` |
-| 4 | `GET` | `api/v2/comment_push_msgs` | `getMessageComment` | `—` |
-| 5 | `DELETE` | `api/v2/community/article` | `deleteCommunityArticle` | `—` |
-| 6 | `POST` | `api/v2/community/article` | `poatCommunityArticle` | `—` |
-| 7 | `POST` | `api/v2/community/comment` | `postCommunityComment` | `—` |
-| 8 | `POST` | `api/v2/community/comment_reply` | `postCommunityCommentReply` | `—` |
-| 9 | `PATCH` | `api/v2/community/gy_music_sheet` | `communityGyMusicSheet` | `—` |
-| 10 | `GET` | `api/v2/community/gy_music_sheet/information_recommend_list` | `getInformationRecommendList` | `—` |
-| 11 | `GET` | `api/v2/community/gy_music_sheet_conf` | `getMusicSheetConfig` | `—` |
-| 12 | `POST` | `api/v2/community/gy_music_sheet_score` | `postMusicSheetScore` | `—` |
-| 13 | `DELETE` | `api/v2/community/like` | `deleteCommunityLike` | `—` |
-| 14 | `DELETE` | `api/v2/community/like` | `communityLike` | `—` |
-| 15 | `POST` | `api/v2/community/like` | `postCommunityLike` | `—` |
-| 16 | `DELETE` | `api/v2/community/view` | `deleteCommunityView` | `—` |
-| 17 | `POST` | `api/v2/community/view` | `postCommunityView` | `—` |
-| 18 | `POST` | `api/v2/community/views` | `postCommunityViews` | `—` |
-| 19 | `POST` | `api/v2/file_sharing/followships` | `postFsFollow` | `—` |
-| 20 | `DELETE` | `api/v2/file_sharing/followships/{e}` | `deleteFsFollow` | `e` |
-| 21 | `GET` | `api/v2/file_sharing/followships/{e}` | `getFsFollow` | `e` |
-| 22 | `DELETE` | `api/v2/follows` | `deleteFollows` | `—` |
-| 23 | `GET` | `api/v2/follows` | `getLiveFollows` | `—` |
-| 24 | `POST` | `api/v2/follows` | `postFollows` | `—` |
-| 25 | `GET` | `api/v2/frame_tips/{e}` | `getFrameTips` | `e` |
-| 26 | `GET` | `api/v2/friends_outside_live_room` | `geFriendsOutsideLiveRoom` | `—` |
-| 27 | `GET` | `api/v2/friends_within_live_room` | `geFriendsWithinLiveRoom` | `—` |
-| 28 | `GET` | `api/v2/game_live_rooms` | `getGameLiveRooms` | `—` |
-| 29 | `GET` | `api/v2/group` | `getGroup` | `—` |
-| 30 | `GET` | `api/v2/group/get_group_by_tids` | `getGroupByTids` | `—` |
-| 31 | `GET` | `api/v2/group/get_user_create_groups` | `getUserCreateGroups` | `—` |
-| 32 | `GET` | `api/v2/group/get_user_manager_groups` | `getUserManagerGroups` | `—` |
-| 33 | `GET` | `api/v2/group/member_identity` | `getGroupMemberidentity` | `—` |
-| 34 | `POST` | `api/v2/group/user_apply_join_group` | `postUserApplyJoinGroup` | `—` |
-| 35 | `GET` | `api/v2/group_tag_primary` | `getGroupTagPrimary` | `—` |
-| 36 | `GET` | `api/v2/like_push_msgs` | `getMessageLike` | `—` |
-| 37 | `GET` | `api/v2/live-room` | `createLiveRooms` | `—` |
-| 38 | `GET` | `api/v2/live-room/@current/setting` | `getLiveRoomSetting` | `—` |
-| 39 | `POST` | `api/v2/live-room/@me/op/{e}` | `postLiveRoomAction` | `e` |
-| 40 | `GET` | `api/v2/live-room/{e}` | `getLiveRoom` | `e` |
-| 41 | `PATCH` | `api/v2/live-room/{e}` | `patchLiveRoom` | `e` |
-| 42 | `POST` | `api/v2/live_room/daily_task_reward_acceptions` | `postDailyTask` | `—` |
-| 43 | `GET` | `api/v2/live_room_invite` | `liveRoomInvite` | `—` |
-| 44 | `GET` | `api/v2/live_rooms_recommend_by_game_code` | `getLiveRoomsRecommendByGameCode` | `—` |
-| 45 | `GET` | `api/v2/people_lists` | `getPeopleLists` | `—` |
-| 46 | `POST` | `api/v2/square/game/change` | `postSquareGame` | `—` |
-| 47 | `GET` | `api/v2/square/message/@me` | `getSquareMessageMe` | `—` |
-| 48 | `GET` | `api/v2/square/message/game/@me` | `getSquareMessageGame` | `—` |
-| 49 | `POST` | `api/v2/square/message/op` | `postSquareMessage` | `—` |
-| 50 | `GET` | `api/v2/users/@me/live_room/daily_task_status` | `getDailyTask` | `—` |
-| 51 | `GET` | `api/{v1|v2}/users/@me/live_room/daily_task_status_v2` | `getDailyTaskDetail` | `—` |
-| 52 | `GET` | `api/{ver}/topics` | `getTopics` | `e` |
+| 3 | `GET` | `api/v1/users/{e}/live-room` | `getUserRoom` | `e` |
+| 4 | `GET` | `api/v2/avatar_frames` | `getAvatarFrames` | `—` |
+| 5 | `GET` | `api/v2/comment_push_msgs` | `getMessageComment` | `—` |
+| 6 | `DELETE` | `api/v2/community/article` | `deleteCommunityArticle` | `—` |
+| 7 | `POST` | `api/v2/community/article` | `poatCommunityArticle` | `—` |
+| 8 | `DELETE` | `api/v2/community/comment` | `postCommunityComment` | `—` |
+| 9 | `DELETE` | `api/v2/community/comment_reply` | `postCommunityCommentReply` | `—` |
+| 10 | `PATCH` | `api/v2/community/gy_music_sheet` | `communityGyMusicSheet` | `—` |
+| 11 | `GET` | `api/v2/community/gy_music_sheet/information_recommend_list` | `getInformationRecommendList` | `—` |
+| 12 | `GET` | `api/v2/community/gy_music_sheet_conf` | `getMusicSheetConfig` | `—` |
+| 13 | `POST` | `api/v2/community/gy_music_sheet_score` | `postMusicSheetScore` | `—` |
+| 14 | `DELETE` | `api/v2/community/like` | `postCommunityLike` | `—` |
+| 15 | `DELETE` | `api/v2/community/like` | `deleteCommunityLike` | `—` |
+| 16 | `DELETE` | `api/v2/community/like` | `communityLike` | `—` |
+| 17 | `GET` | `api/v2/community/recommend/gy_music_sheet_list/{e}/{t}` | `recommendGyMusicSheetList` | `e,t` |
+| 18 | `GET` | `api/v2/community/search_gy_music_sheets/{e}/{t}` | `getSearchGyMusicSheetList` | `e,t` |
+| 19 | `GET` | `api/v2/community/user/gy_music_sheet_list/{e}/{t}` | `userGyMusicSheetList` | `e,t` |
+| 20 | `GET` | `api/v2/community/user/gy_music_sheet_score_list/{e}/{t}` | `userGyMusicSheetScoreList` | `e,t` |
+| 21 | `GET` | `api/v2/community/user_followed/gy_music_sheet_list/{e}/{t}` | `userFollowedGyMusicSheetList` | `e,t` |
+| 22 | `GET` | `api/v2/community/user_like/gy_music_sheet_list/{e}/{t}` | `userLikeGyMusicSheetList` | `e,t` |
+| 23 | `DELETE` | `api/v2/community/view` | `deleteCommunityView` | `—` |
+| 24 | `POST` | `api/v2/community/view` | `postCommunityView` | `—` |
+| 25 | `POST` | `api/v2/community/views` | `postCommunityViews` | `—` |
+| 26 | `DELETE` | `api/v2/file_sharing/followships` | `postFsFollow` | `—` |
+| 27 | `DELETE` | `api/v2/file_sharing/followships/{e}` | `deleteFsFollow` | `e` |
+| 28 | `GET` | `api/v2/file_sharing/followships/{e}` | `getFsFollow` | `e` |
+| 29 | `DELETE` | `api/v2/follows` | `deleteFollows` | `—` |
+| 30 | `GET` | `api/v2/follows` | `getLiveFollows` | `—` |
+| 31 | `POST` | `api/v2/follows` | `postFollows` | `—` |
+| 32 | `GET` | `api/v2/frame_tips/{e}` | `getFrameTips` | `e` |
+| 33 | `GET` | `api/v2/friends_outside_live_room` | `geFriendsOutsideLiveRoom` | `—` |
+| 34 | `GET` | `api/v2/friends_within_live_room` | `geFriendsWithinLiveRoom` | `—` |
+| 35 | `GET` | `api/v2/game_live_rooms` | `getGameLiveRooms` | `—` |
+| 36 | `GET` | `api/v2/group` | `getGroup` | `—` |
+| 37 | `GET` | `api/v2/group/get_group_by_tids` | `getGroupByTids` | `—` |
+| 38 | `GET` | `api/v2/group/get_user_create_groups` | `getUserCreateGroups` | `—` |
+| 39 | `GET` | `api/v2/group/get_user_manager_groups` | `getUserManagerGroups` | `—` |
+| 40 | `GET` | `api/v2/group/member_identity` | `getGroupMemberidentity` | `—` |
+| 41 | `GET` | `api/v2/group/search_group_by_key/{e}/{t}` | `getSearchGroupByKey` | `—` |
+| 42 | `POST` | `api/v2/group/user_apply_join_group` | `postUserApplyJoinGroup` | `—` |
+| 43 | `GET` | `api/v2/group/user_group_list/{e}/{t}` | `getUserGroupList` | `—` |
+| 44 | `GET` | `api/v2/group/user_joined_groups/{e}/{t}` | `getUserGroups` | `e,t` |
+| 45 | `GET` | `api/v2/group_tag_primary` | `getGroupTagPrimary` | `—` |
+| 46 | `GET` | `api/v2/like_push_msgs` | `getMessageLike` | `—` |
+| 47 | `POST` | `api/v2/live-room` | `createLiveRooms` | `—` |
+| 48 | `GET` | `api/v2/live-room/@current/setting` | `getLiveRoomSetting` | `—` |
+| 49 | `POST` | `api/v2/live-room/@me/op/{e}` | `postLiveRoomAction` | `e` |
+| 50 | `GET` | `api/v2/live-room/{e}` | `getLiveRoom` | `e` |
+| 51 | `PATCH` | `api/v2/live-room/{e}` | `patchLiveRoom` | `e` |
+| 52 | `POST` | `api/v2/live_room/daily_task_reward_acceptions` | `postDailyTask` | `—` |
+| 53 | `POST` | `api/v2/live_room_invite` | `liveRoomInvite` | `—` |
+| 54 | `GET` | `api/v2/live_rooms_recommend_by_game_code` | `getLiveRoomsRecommendByGameCode` | `—` |
+| 55 | `GET` | `api/v2/people_lists` | `getPeopleLists` | `—` |
+| 56 | `POST` | `api/v2/square/game/change` | `postSquareGame` | `—` |
+| 57 | `GET` | `api/v2/square/message/@me` | `getSquareMessageMe` | `—` |
+| 58 | `GET` | `api/v2/square/message/game/@me` | `getSquareMessageGame` | `—` |
+| 59 | `POST` | `api/v2/square/message/op` | `postSquareMessage` | `—` |
+| 60 | `GET` | `api/v2/users/@me/live_room/daily_task_status` | `getDailyTask` | `—` |
+| 61 | `GET` | `api/{v1|v2}/users/@me/live_room/daily_task_status_v2` | `getDailyTaskDetail` | `—` |
+| 62 | `GET` | `api/{ver}/community/article` | `getCommunityArticle` | `—` |
+| 63 | `GET` | `api/{ver}/community/article_list/{t}/{i}` | `getCommunityArticleList` | `—` |
+| 64 | `GET` | `api/{ver}/community/hot/article_list` | `getCommunityHotArticle` | `—` |
+| 65 | `GET` | `api/{ver}/community/mix/hot_article_list` | `getCommunityHotTopic` | `—` |
+| 66 | `GET` | `api/{ver}/community/mix/recent_reply_article_list/{t}/{i}` | `getCommunityRecentReply` | `—` |
+| 67 | `GET` | `api/{ver}/community/mix/related` | `getCommunityRelatedList` | `—` |
+| 68 | `POST` | `api/{ver}/community/recommend/article` | `postRecommendArticle` | `—` |
+| 69 | `GET` | `api/{ver}/community/topic` | `getCommunityTopic` | `—` |
+| 70 | `GET` | `api/{ver}/community/topic/article_list/{t}/{i}` | `getCommunityTopicArticle` | `—` |
+| 71 | `GET` | `api/{ver}/community/user/article_list/{t}/{i}` | `getCommunityUserArticle` | `—` |
+| 72 | `GET` | `api/{ver}/community_topic_recommend/{t}` | `getCommunityTopicRecommendByRecommendId` | `—` |
+| 73 | `GET` | `api/{ver}/community_topic_recommends` | `getCommunityTopicRecommend` | `—` |
+| 74 | `GET` | `api/{ver}/group/cluster_group_recommend_list/{t}/{i}` | `getClusterGroupRecommendList` | `—` |
+| 75 | `GET` | `api/{ver}/group/hot_group_recommend_list/{t}/{i}` | `getHotGroupRecommendList` | `—` |
+| 76 | `GET` | `api/{ver}/group/main_recommend_group` | `getPotentialJoinGroupList` | `—` |
+| 77 | `GET` | `api/{ver}/group/tag_cluster_list/{t}/{i}` | `getTagClusterList` | `—` |
+| 78 | `GET` | `api/{ver}/gy_music_sheet_games` | `getGyMusicSheetGames` | `—` |
+| 79 | `GET` | `api/{ver}/kol_user_recommends` | `getKolUserRecommends` | `—` |
+| 80 | `GET` | `api/{ver}/live-rooms` | `getLiveRooms` | `—` |
+| 81 | `GET` | `api/{ver}/live_room_game_multi_player` | `getLiveRoomMulti` | `—` |
+| 82 | `GET` | `api/{ver}/live_room_game_multi_player/{t}` | `getMultiPlayer` | `—` |
+| 83 | `GET` | `api/{ver}/live_rooms_recommend` | `getLiveRoomsRecommend` | `—` |
+| 84 | `GET` | `api/{ver}/main_page_live_rooms_recommend` | `getMainLiveRoomsRecommend` | `—` |
+| 85 | `GET` | `api/{ver}/square/game/latest` | `getSquareGame` | `—` |
+| 86 | `GET` | `api/{ver}/square/message` | `getSquareMessage` | `—` |
+| 87 | `GET` | `api/{ver}/team_up_user_recommendations` | `teamUpUserRecommendations` | `—` |
+| 88 | `GET` | `api/{ver}/topics` | `getTopics` | `e` |
+| 89 | `GET` | `api/{ver}/user_guide` | `getUserGuide` | `—` |
 
-### SEO（2 条）
+### SEO（3 条）
 
 > 面向搜索引擎的落地页数据
 
@@ -1759,8 +2295,9 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 |---|---|---|---|---|
 | 1 | `GET` | `api/v1/seo/game_contents` | `getSeoGameContent` | `—` |
 | 2 | `GET` | `api/v1/seo/metis_contents` | `getSeoMetisContents` | `—` |
+| 3 | `GET` | `api/v1/seo_games/{egame_code}` | `getGameDetail` | `—` |
 
-### 其他（35 条）
+### 其他（33 条）
 
 > 活动、邀请、愿望单、客服反馈、埋点等杂项
 
@@ -1772,35 +2309,33 @@ localStorage: NCG-token = token, NCG-eid = t, NCG-id = user_id, NCG-encrypt = en
 | 4 | `GET` | `api/v1/personal-invite-games` | `activity_invite_games` | `—` |
 | 5 | `GET` | `api/v1/questions` | `getQuestions` | `—` |
 | 6 | `GET` | `api/v1/questions/{e}` | `getQuestionDetail` | `e` |
-| 7 | `GET` | `api/v2/action-awards?activity={e}` | `activity_getAward` | `e` |
-| 8 | `POST` | `api/v2/alipay_sign` | `postAlipaySign` | `—` |
-| 9 | `GET` | `api/v2/alipay_sign_check` | `getAlipayCheck` | `—` |
+| 7 | `POST` | `api/v2/alipay_sign` | `postAlipaySign` | `—` |
+| 8 | `GET` | `api/v2/alipay_sign_check` | `getAlipayCheck` | `—` |
+| 9 | `GET` | `api/v2/alipay_sign_goods` | `getAlipaySignGoods` | `—` |
 | 10 | `POST` | `api/v2/alipay_sign_link` | `postAlipayLink` | `—` |
-| 11 | `GET` | `api/v2/award-history/{e}` | `activity_patchAward` | `e` |
-| 12 | `GET` | `api/v2/following/rooms` | `getFollowingRooms` | `—` |
-| 13 | `GET` | `api/v2/game_users` | `getGameUsers` | `—` |
-| 14 | `GET` | `api/v2/liveroom_limit` | `getLiveroomLimit` | `—` |
-| 15 | `GET` | `api/v2/personal-invite-code` | `activity_getCode` | `—` |
-| 16 | `GET` | `api/v2/personal-invite-statistics` | `activity_getInvite` | `—` |
-| 17 | `GET` | `api/v2/poster-invitations` | `activity_pictorials` | `—` |
-| 18 | `GET` | `api/v2/recharge-tab-order` | `getRechargeTabOrder` | `—` |
-| 19 | `GET` | `api/v2/room_privilege_histories` | `getRoomPrivilege` | `—` |
-| 20 | `GET` | `api/v2/start_game_vip_guide_config` | `getStartGameVipGuideConfig` | `—` |
-| 21 | `GET` | `api/v2/start_game_vip_guide_info` | `getStartGameVipGuideInfo` | `—` |
-| 22 | `GET` | `api/v2/total-awards?activity={e}` | `activity_getTotalAward` | `e` |
-| 23 | `POST` | `api/v2/user-pwd-info` | `postUserPwdInfo` | `—` |
-| 24 | `POST` | `api/v2/user_game_wish/{e}` | `postUserGameWish` | `e` |
-| 25 | `GET` | `api/v2/user_gray_and_version` | `getUserGrayAndVersion` | `—` |
-| 26 | `DELETE` | `api/v2/user_history_game_code` | `deletePlayingHistories` | `—` |
-| 27 | `POST` | `api/v2/wechat_binding/reward_acceptions` | `postWechatBindAward` | `—` |
-| 28 | `POST` | `api/v2/wechat_bindings` | `postWechatBind` | `—` |
-| 29 | `GET` | `api/{v1|v2}/feedback_game_types` | `getGameType` | `—` |
-| 30 | `GET` | `api/{v1|v2}/main_recommendation/{t}` | `getRecommendList` | `e,t` |
-| 31 | `GET` | `api/{v1|v2}/questions/search/{t}` | `getFaqQuestions` | `e,t` |
-| 32 | `GET` | `api/{v1|v2}/user-pwd-info` | `getUserPwdInfo` | `—` |
-| 33 | `GET` | `api/{ver}/cloud-devices` | `getCloudDevices` | `e` |
-| 34 | `POST` | `api/{ver}/customer_service` | `postCustomerService` | `e` |
-| 35 | `POST` | `api/{ver}/feedbacks` | `postFeedback` | `e` |
+| 11 | `GET` | `api/v2/following/rooms` | `getFollowingRooms` | `—` |
+| 12 | `GET` | `api/v2/game_users` | `getGameUsers` | `—` |
+| 13 | `GET` | `api/v2/liveroom_limit` | `getLiveroomLimit` | `—` |
+| 14 | `GET` | `api/v2/personal-invite-code` | `activity_getCode` | `—` |
+| 15 | `GET` | `api/v2/personal-invite-statistics` | `activity_getInvite` | `—` |
+| 16 | `GET` | `api/v2/poster-invitations` | `activity_pictorials` | `—` |
+| 17 | `GET` | `api/v2/recharge-tab-order` | `getRechargeTabOrder` | `—` |
+| 18 | `GET` | `api/v2/room_privilege_histories` | `getRoomPrivilege` | `—` |
+| 19 | `GET` | `api/v2/start_game_vip_guide_config` | `getStartGameVipGuideConfig` | `—` |
+| 20 | `GET` | `api/v2/start_game_vip_guide_info` | `getStartGameVipGuideInfo` | `—` |
+| 21 | `POST` | `api/v2/user-pwd-info` | `postUserPwdInfo` | `—` |
+| 22 | `GET` | `api/v2/user_gray_and_version` | `getUserGrayAndVersion` | `—` |
+| 23 | `DELETE` | `api/v2/user_history_game_code` | `deletePlayingHistories` | `—` |
+| 24 | `POST` | `api/v2/wechat_binding/reward_acceptions` | `postWechatBindAward` | `—` |
+| 25 | `POST` | `api/v2/wechat_bindings` | `postWechatBind` | `—` |
+| 26 | `GET` | `api/{v1|v2}/feedback_game_types` | `getGameType` | `—` |
+| 27 | `GET` | `api/{v1|v2}/main_recommendation/{t}` | `getRecommendList` | `e,t` |
+| 28 | `GET` | `api/{v1|v2}/questions/search/{t}` | `getFaqQuestions` | `e,t` |
+| 29 | `GET` | `api/{v1|v2}/user-pwd-info` | `getUserPwdInfo` | `—` |
+| 30 | `POST` | `api/{ver}/customer_service` | `postCustomerService` | `e` |
+| 31 | `POST` | `api/{ver}/feedbacks` | `postFeedback` | `e` |
+| 32 | `GET` | `api/{ver}/users` | `getUsers` | `—` |
+| 33 | `GET` | `api/{ver}/users/{t}` | `getUsersDetail` | `—` |
 
 ---
 

@@ -5,7 +5,11 @@
 把「首页推荐 → 选游戏 → 申请机位 → 连网关 → WebRTC 收画面 → 触摸操控 → 悬浮球调画质」
 这整条链路拆开、写清楚、并且能跑起来。
 
-**272 条接口** · **135 条实测用例（111 通过）** · **23 份脱敏响应样本** · **6 张真机截图**
+**338 条接口**（2026-11-13 重抓，较上一版 **+65 / -0**）· **272 条实测探测（179 通过）**
+· **23 份脱敏响应样本** · **7 张真机截图**
+
+> 两次快照：接口抓取自 2026-11-06 与 2026-11-13 两版前端 bundle（3 个主包 + 98 个懒加载 chunk）。
+> 游玩态、悬浮球、SDP、`getStats()` 的实测数据来自 2026-11-13 的真实机位。
 
 ---
 
@@ -152,8 +156,13 @@ wss://<gateway_url>   首包 auth（明文）→ offer(SDP) → answer → WebRT
 ← {"op":"input","data":{"cmd":"8 0"}}                       # 横屏
 ← {"op":"input","data":{"cmd":"2"}}                         # 隐藏键盘
 ← {"op":"input","data":{"cmd":"23 com.hypergryph.endfield/…"}}  # 前台应用
-← {"op":"input","data":{"cmd":"9 27643,1,4f8e,eyJtIjoi…"}}   # DataChannel 就绪握手
+← {"op":"input","data":{"cmd":"9 27643,1,4f8e,eyJtIjoi…"}}   # DataChannel 就绪握手（可忽略）
 ```
+
+`9 …` 这条之后每秒推一次、共推 12 次，载荷 base64 解开是
+`{"m":"dataChannelReady","pkg":"com.hypergryph.endfield"}`。**浏览器端从不响应它，也能正常收流** ——
+因为服务端 offer 里根本没有 `m=application`/SCTP 段，浏览器不会建 DataChannel。
+它是给原生客户端（走 SCTP）准备的，纯 WebRTC 收流实现可以直接丢弃。
 
 输入指令（坐标统一 `Math.ceil(65535 * x / videoWidth)`）：
 
@@ -283,7 +292,7 @@ CGAPI.video_screen(screen_w=390, screen_h=844, dpr=3, game_type="pc")   # → {'
 
 ### 6. 其余接口
 
-从 3 个 bundle 自动抽出 **272 条**，分类：
+从 3 个主 bundle + **98 个懒加载 chunk**（2026-11-13 快照，共 980,748 B）自动抽出 **338 条**，分类：
 
 | 分类 | 数量 | | 分类 | 数量 |
 |---|---|---|---|---|
@@ -295,6 +304,12 @@ CGAPI.video_screen(screen_w=390, screen_h=844, dpr=3, game_type="pc")   # → {'
 
 全量清单见 [`docs/接口清单.csv`](docs/接口清单.csv)，
 带分类 / Method / Path / 客户端函数名 / 参数 / 源码偏移，可以直接 grep 定位。
+
+**一个教训**：上一版只下载了 3 个主 bundle，漏了 65 条 —— 它们大多在懒加载 chunk 里，
+或者用了 `"api/".concat(x?"v2":"v1").concat(y)` 这种拼接形式（简单正则会在内层逗号处截断）。
+现在的抽取器会先把 webpack 的 chunkhash 表解析出来、把 98 个 chunk 全量下载，
+再用「括号配平 + concat 递归展开」解析路径。`diff` 可复现：
+`ADDED 65 / REMOVED 0 / METHOD-CHANGED 10`（旧版把 10 条读成 GET，实际是 DELETE/POST/PATCH）。
 
 ---
 
@@ -449,19 +464,67 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 
 ---
 
+## 断流与保活（2026-11-13 真机位实测）
+
+自己实现 ICE + DTLS-SRTP + RTP 去对接 `gw-*.cg.163.com:6443`，最常见的翻车是
+「跑了几分钟画面静默冻结、WS 还是 open、心跳照样被回显」。这里把四种「断」分开讲清楚，
+因为它们的处理方式完全不同。
+
+| # | 机制 | 报文 | 前端行为 |
+|---|---|---|---|
+| 1 | **前端无操作计时器** | 无（纯客户端） | 600 s 不操作 → 弹「由于长时间不操作，已经自动退出」，主动断开 |
+| 2 | **服务端回收机位** | `op:"error"` + `errcode` **403 / 1213** | 弹「由于您太久没回来游戏已关闭…」，**自己重 POST tickets 换机位** |
+| 3 | **服务端正常结束** | `op:"close"` `{code:0, reason:"normal"}` | `onGameStop` + `onClose`，**不弹窗、不重连** |
+| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open → 见下面的 SDP 差异 |
+
+第 1 条的 600 s 来自游戏详情的 `no_op_duration1 + no_op_duration2`（实测 `480 + 120`），
+13 分钟实测里精确落在 **602 s**。第 3 条的真实抓包里，`op:"close"` 之前 43 ms
+`games_playing` 已被清空，之后 5 s 同一 token 下冒出另一个 `play_id` 的会话——
+所以它是「礼貌下线」，不是网络故障。
+
+### 第 4 条：一个非浏览器客户端容易缺的三件事
+
+网页端**不建 DataChannel、头 29 秒之后 WS 完全静默**，照样连收 10 分钟。它唯一在走的
+周期保活是 **ICE consent（STUN Binding，约 2.5 s 一次）**；并且协商是
+**`sendrecv` + `transport-cc` 双向**。
+
+服务端 offer（2,550 B，`a=ice-lite`）：只有 2 个 m 段（audio opus + video
+H264/VP8/H265/rtx），**没有 `m=application`/SCTP**；每个视频 PT 都带全套
+`ccm fir` / `nack` / `nack pli` / `goog-remb` / `rrtr` / `transport-cc`；
+extmap audio `2`/`9`、video `11`/`12`/`13`。
+
+Chrome 的 answer（2,705 B）：`a=sendrecv`，**逐段回显全部 extmap 与 rtcp-fb**。
+
+`getStats()` 20×5 s：`consentRequestsSent` **5 → 40 单调递增**（≈2.5 s 一次），
+`responsesReceived` 6 → 41（网关每次都回），而 `pliCount` / `nackCount` **全程 0**、
+`remote-inbound-rtp` 全程缺失。
+
+**也就是说：网关不靠 RTCP 反馈判活，靠的是你还在发 ICE consent。**
+一个「只发一次 STUN 就转 DTLS、answer 回 `recvonly`、不回 extmap/rtcp-fb」的客户端，
+与网页端正好差在这三处。按性价比排：
+
+1. **会话期每 ~2.5 s 发一次带 MESSAGE-INTEGRITY 的 STUN Binding Request**（改动最小，先做这个）
+2. answer 里回显 `a=extmap:*` / `a=rtcp-fb:*`，并真的发 TWCC（PT=205 FMT=15）
+3. `a=recvonly` → `a=sendrecv`
+
+完整证据、offer/answer 全文、补丁伪代码见 [`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md)。
+
+---
+
 ## 目录
 
 ```
 .
 ├── README.md
 ├── LICENSE                   GPL-3.0
-├── report.html               单页可视化报告（272 行可搜索接口表 + 真机截图）
+├── report.html               单页可视化报告（338 行可搜索接口表 + 真机截图）
 ├── docs/
-│   ├── API文档.md            主文档，14 章，约 1500 行
-│   ├── 接口清单.csv
+│   ├── API文档.md            主文档，14 章，约 2300 行
+│   ├── 断流与保活根因分析.md   SDP / getStats 实测 + 四条「断」的路径与修复清单
+│   ├── 接口清单.csv          338 行
 │   └── img/                  真机截图（已打码）
 ├── sdk/
-│   ├── cgapi.py              SDK：HTTP 全接口 + WS 客户端 + 输入封装，约 1200 行
+│   ├── cgapi.py              SDK：HTTP 全接口 + WS 客户端 + 输入封装，约 1300 行
 │   └── _des3.py              纯标准库 3DES-CBC + PKCS7（密码登录用，无第三方依赖）
 └── samples/                  23 份匿名接口的真实响应样本（原始 101 份，脱敏后保留无个人信息的部分）
 ```
@@ -472,7 +535,7 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 
 ## 实测数据
 
-四轮，都是真发请求：
+五轮，都是真发请求：
 
 | 轮次 | 身份 | 用例 | 通过 | 说明 |
 |---|---|---|---|---|
@@ -480,9 +543,13 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 | 2 | 登录 | 60 | 49 | 悬浮球/键位、启动排队、云电脑、社区 |
 | 3 | 登录 | 22 | 17 | 「我的」页真实抓包复现 |
 | 4 | 匿名（直连） | 16 | 16 | 登录链路：注册检查 / 密码前置 / 扫码轮询 / 登出 / 6 个补充接口 |
-| **合计** | | **135** | **111** | |
+| 5 | 登录 | 137 | 68 | 2026-11-13 新增/补齐的 65 条（三轮迭代，合并去重后的探测数） |
+| **合计** | | **272** | **179** | |
 
-**没通过的 24 条没有一条是接口不存在**，全是缺必填 query 或 HTTP 方法错。举几个：
+另有 **3 次真机位长连观测**（不是 HTTP 用例）：13 分钟网页端长玩、带合成触摸的第 2 次长玩、
+以及一次完整 SDP + 20×5 s `getStats()` 采样。见下文「断流与保活」。
+
+**没通过的 93 条没有一条是接口不存在**，全是缺必填 query、HTTP 方法错、或需要真实业务 id。举几个：
 
 | 接口 | 报错 | 正确用法 |
 |---|---|---|
@@ -505,13 +572,16 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 
 - **只覆盖移动端 H5**。端游 web（`X-Platform: 0`）路径相同但部分参数不同，没深挖。
 - **`api/v2/groups` 系列、礼物/活动类接口只做到「能列出来」**，业务语义没逐个验证。
-- **DataChannel 没实装**。`common_setting.enable_data_channel` 默认 `false`，输入全走 WS；
-  服务端会周期性推 `9 <port>,1,<hex>,<base64>` 催你建 DataChannel，但这条路径没验证过。
+- **DataChannel 没实装**（也已确认浏览器路径根本没有 SCTP m 段，不需要）。输入全走 WS；
+  服务端仍会推 12 次 `9 <port>,1,<hex>,<base64>` 催建 DataChannel，可以直接忽略。
 - **iOS 原生 App / 小程序端没碰**，`NCGJsBridge` 那条分支只是读代码了解。
 - **登录链路只验证到「取到 token 前」**：短信/密码两种方式的接口、参数、加密流程都已实测，
   但为了不给测试号发短信、不碰别人的密码，没有真正完成一次登录；后续调用用的 token 是从
   已登录浏览器的 localStorage 复用的。密码加密结果已用 pycryptodome 逐字节交叉验证。
-- 接口会变。这份快照是 2026-11-06 的，前端发版后 add/remove 字段很正常。
+- **断流一节只到「定位到差异」**：网页端的行为已量化，非浏览器客户端的三个缺口也已定位，
+  但最终哪一条是网关判死的充分条件，需要按修复清单逐条实测确认。
+- 接口会变。两次快照分别是 2026-11-06 与 2026-11-13；后者相对前者 **ADDED 65 / REMOVED 0**，
+  说明线上是纯增量、向后兼容。但新接口的参数语义只做到「能打通」，字段含义未逐个核实。
 
 ---
 

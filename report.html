@@ -420,10 +420,40 @@ VIP + 一起玩特权 + <code>0 关注 / 0 粉丝 / 0 广播 / 10 成长值</cod
 <td>网关 <code>ice-lite</code> + twcc + remb + rrtr + <code>sendrecv</code>；
 <b><code>consentRequestsSent</code> 5→40（每 2.5 s 一次 STUN Binding）</b>；网页端 <code>pliCount</code>/<code>nackCount</code> 全程 0</td></tr>
 </table>
-<div class="warn">网关<b>不靠 RTCP 反馈判活</b>（网页端一次 PLI/NACK 都没发也连收 10 分钟）；
-也不是「没响应 <code>dataChannelReady</code>」把连接踢掉（网页端同样不响应，照样长玩）。
-唯一的会话期双向保活是 <b>ICE consent（STUN Binding，~2.5 s 一次）</b>。
-这条结论已回给 PenCG 用于修 4m18s 静默停流，详见 <code>docs/断流与保活根因分析.md</code>。</div>
+<h4>7.6.1 第 7 轮 · 11 个假设的二分（2026-11-14）</h4>
+<p>一个非浏览器客户端（手写 ICE + DTLS-SRTP + RTP）对接同一网关时，会在约
+<b>250 s</b> 静默停推：<code>rx</code> 冻结、<code>fps</code> 归零，但 WS 仍 open、
+<code>input</code> 心跳仍被回显、我们自己发的 ICE consent <b>仍被网关正常回应</b>。
+为了定位，全部实验都在<b>官方网页端</b>上用 Playwright + <code>addInitScript</code>
+改写报文完成（把网页端改成「自建客户端的样子」，看它是否也复现），共 11 个假设：</p>
+<table>
+<tr><th>#</th><th>假设</th><th>实验手段</th><th>结果</th></tr>
+<tr class="ok"><td>1</td><td>没建 DataChannel</td><td>网页端本来就不建（offer 无 SCTP m 段）</td><td>连播 10 min，<b>排除</b></td></tr>
+<tr class="ok"><td>2</td><td>WS 不心跳</td><td>网页端本来只发 1 次 <code>0 &lt;ts&gt;</code></td><td>连播 10 min，<b>排除</b></td></tr>
+<tr class="ok"><td>3</td><td>服务端 300 s kickout</td><td>观察 258 / 300 / 360 s</td><td>网页端无异常，<b>排除</b></td></tr>
+<tr class="ok"><td>4</td><td>前端 600 s 无操作超时</td><td><code>gameCutTime.total=1000*(480+120)=600 s</code></td><td>网页端 602 s 断（对上了），客户端 250 s 差 2.4 倍，<b>排除</b></td></tr>
+<tr class="ok"><td>5</td><td>缺会话期 ICE consent</td><td>给 native 补 2.5 s 周期 consent</td><td><code>resp</code> 从 #1 涨到 #109、网关全回，<b>仍在 4m19s 冻结</b>，排除</td></tr>
+<tr class="ok"><td>6</td><td>answer 不回 <code>a=extmap</code>/<code>a=rtcp-fb</code></td><td><code>MUNGE=flags</code>：删 5 条 extmap + 19 条 rtcp-fb</td><td>连播 <b>481 s</b>（<code>ct=477.883</code>），排除</td></tr>
+<tr class="ok"><td>7</td><td>answer 是 <code>a=recvonly</code></td><td><code>MUNGE=full</code>：再把 <code>sendrecv</code> 全改 <code>recvonly</code></td><td>跑到 <b>354 s</b> 仍正常，排除</td></tr>
+<tr class="ok"><td>8</td><td>上行 RTCP（RR/NACK/PLI）惹到网关</td><td>给 native 加 <code>noRtcp</code> 开关全关（consent 保留）</td><td><code>PLI sent</code>=0、<code>RR sent</code>=0，<b>仍在 247 s 冻结</b>，排除</td></tr>
+<tr class="ok"><td>9</td><td>游玩期不轮询 HTTP 被判挂机</td><td>记录网页端所有 <code>/api/</code> 请求</td><td>31 个请求全在开头 16 s，之后零请求，<code>users/@me/status</code> 从未出现，排除</td></tr>
+<tr class="ok"><td>10</td><td>auth 后不发任何 input 帧</td><td>丢弃全部 <code>op:"input"</code>（7 条开播帧 + 心跳）</td><td>连播 <b>481 s</b>，<code>ws-close</code> 为 0，排除</td></tr>
+<tr class="bad"><td>11</td><td>auth 包内容不同</td><td><code>MUNGE=all</code>：把网页端 auth 改写成完全等于自建客户端的形态</td><td>连播 <b>284 s</b>，258 s 节点 <code>ct=254.787</code> 完全正常，<b>排除</b></td></tr>
+</table>
+<div class="warn"><b>11 个协议层假设全部被排除，根因至今未定位。</b>
+但有一条关键事实：冻结期间我们发的 ICE consent <b>仍被网关正常回应</b>
+（<code>#1 ICE consent sent (#97) resp=98 rxStun=108</code>，此时 RTP 已停 12 s），
+说明网关<b>没有丢弃这个会话</b>——UDP 五元组是活的，它是<b>单独停掉了 RTP 推送</b>。
+这排除了「会话被回收 / NAT 超时 / 端口失效」一大类解释。<br><br>
+剩下的候选方向按性价比排：①<b>SRTP 的 ROC / 重放窗口</b>（<code>idx=((roc&lt;&lt;16)|seq)</code>，
+24 bit 序号回绕 65536 包时 ROC 若没加，之后索引全错；按实测码率估算 250 s 正好接近第一次回绕，
+<b>时间尺度吻合最好</b>）②DTLS 指纹（手写 <code>cm_dtls.c</code> vs BoringSSL 的版本/套件/
+<code>use_srtp</code> profile 顺序/证书字段）③网关按 <code>pkg</code>/<code>game_code</code>
+分档（<code>op:result</code> 回的 <code>encoder</code>/<code>host</code> 与冻结时刻的相关性）。<br><br>
+<b>工程上的兜底</b>：每 ~230 s 主动换一次会话，用户侧表现是「画面卡 1~2 秒」，
+比「4 分钟后彻底冻结」好得多。<br><br>
+完整实验记录、每次的实测数字、offer/answer 全文、<code>getStats</code> 采样见
+<code>docs/断流与保活根因分析.md</code>（§7 是 11 行实验表，§8.2 是候选方向）。</div>
 
 <h2>8. 全量接口清单</h2>
 <div class="bar">

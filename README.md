@@ -473,7 +473,7 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 
 ---
 
-## 断流与保活（2026-11-13 真机位实测）
+## 断流与保活（2026-11-13 ~ 11-14 真机位实测）
 
 自己实现 ICE + DTLS-SRTP + RTP 去对接 `gw-*.cg.163.com:6443`，最常见的翻车是
 「跑了几分钟画面静默冻结、WS 还是 open、心跳照样被回显」。这里把四种「断」分开讲清楚，
@@ -484,39 +484,76 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 | 1 | **前端无操作计时器** | 无（纯客户端） | 600 s 不操作 → 弹「由于长时间不操作，已经自动退出」，主动断开 |
 | 2 | **服务端回收机位** | `op:"error"` + `errcode` **403 / 1213** | 弹「由于您太久没回来游戏已关闭…」，**自己重 POST tickets 换机位** |
 | 3 | **服务端正常结束** | `op:"close"` `{code:0, reason:"normal"}` | `onGameStop` + `onClose`，**不弹窗、不重连** |
-| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open → 见下面的 SDP 差异 |
+| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open、consent 仍被回。**根因未定位**，11 个协议层假设已排除，见下 |
 
 第 1 条的 600 s 来自游戏详情的 `no_op_duration1 + no_op_duration2`（实测 `480 + 120`），
 13 分钟实测里精确落在 **602 s**。第 3 条的真实抓包里，`op:"close"` 之前 43 ms
 `games_playing` 已被清空，之后 5 s 同一 token 下冒出另一个 `play_id` 的会话——
 所以它是「礼貌下线」，不是网络故障。
 
-### 第 4 条：一个非浏览器客户端容易缺的三件事
+### 第 4 条：静默停推——我一开始判断错了，这里是更正
 
-网页端**不建 DataChannel、头 29 秒之后 WS 完全静默**，照样连收 10 分钟。它唯一在走的
-周期保活是 **ICE consent（STUN Binding，约 2.5 s 一次）**；并且协商是
-**`sendrecv` + `transport-cc` 双向**。
+第一版这一节写的是「网页端唯一在走的周期保活是 ICE consent，客户端缺的就是它，
+补上就好」。**这个结论是错的。** 2026-11-14 用改写浏览器行为的方式逐条实测，
+下面三件事全部**不成立**：
 
-服务端 offer（2,550 B，`a=ice-lite`）：只有 2 个 m 段（audio opus + video
-H264/VP8/H265/rtx），**没有 `m=application`/SCTP**；每个视频 PT 都带全套
-`ccm fir` / `nack` / `nack pli` / `goog-remb` / `rrtr` / `transport-cc`；
-extmap audio `2`/`9`、video `11`/`12`/`13`。
+| 当时的判断 | 实测方式 | 结果 |
+|---|---|---|
+| 缺会话期 ICE consent | 给客户端补 2.5 s 周期 consent | 网关正常回（`resp` 从 #1 涨到 #109），**仍在 4m19s 冻结** |
+| answer 不回 `a=extmap`/`a=rtcp-fb` | 让 Chrome 从 answer 删掉 5 条 extmap + 19 条 rtcp-fb | 连播 **481 s**，`ct=477.883` |
+| answer 是 `recvonly` | 再把 `sendrecv` 全改 `recvonly` | 跑到 **354 s** 仍正常 |
 
-Chrome 的 answer（2,705 B）：`a=sendrecv`，**逐段回显全部 extmap 与 rtcp-fb**。
+顺着这条线又排除了 8 个假设，合计 **11 个协议层差异全部被排除**：
+DataChannel、WS 心跳、前端 600 s 计时器、服务端 300 s kickout、上行 RTCP
+（1 Hz RR + 2 s PLI + NACK）、游玩期 HTTP 轮询、auth 之后不发 input 帧、
+auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`）。
 
-`getStats()` 20×5 s：`consentRequestsSent` **5 → 40 单调递增**（≈2.5 s 一次），
-`responsesReceived` 6 → 41（网关每次都回），而 `pliCount` / `nackCount` **全程 0**、
-`remote-inbound-rtp` 全程缺失。
+最关键的一次是第 11 条：把网页端的 auth 改写成**完全等于**自建客户端的形态
 
-**也就是说：网关不靠 RTCP 反馈判活，靠的是你还在发 ICE consent。**
-一个「只发一次 STUN 就转 DTLS、answer 回 `recvonly`、不回 extmap/rtcp-fb」的客户端，
-与网页端正好差在这三处。按性价比排：
+```json
+{"op":"auth","data":{"game_code":"…","w":1280,"h":720,
+  "quality":"low","codecs":["h264"],"platform":1}}
+```
 
-1. **会话期每 ~2.5 s 发一次带 MESSAGE-INTEGRITY 的 STUN Binding Request**（改动最小，先做这个）
-2. answer 里回显 `a=extmap:*` / `a=rtcp-fb:*`，并真的发 TWCC（PT=205 FMT=15）
-3. `a=recvonly` → `a=sendrecv`
+网关照收（回了 `op:offer`），然后连播 **284 s**，258 s 节点完全正常。
+**所以「自建客户端发的东西不对」这条思路已经走到头了。**
 
-完整证据、offer/answer 全文、补丁伪代码见 [`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md)。
+### 那到底是什么
+
+**至今没定位。** 但有两条确凿的事实把范围收得很窄：
+
+1. 冻结期间我们发的 ICE consent **仍然被网关正常回应**
+   （`#1 ICE consent sent (#97) resp=98 rxStun=108`，此时 RTP 已停 12 s）。
+   说明网关**没有丢弃这个会话**，UDP 五元组是活的——它是**单独停掉了 RTP 推送**。
+2. 官方网页端在同账号、同 ticket 接口、同 gateway 域名、同游戏会话下，
+   能连续收流 **481 s 以上**且不出现停推。
+
+剩下的候选方向按性价比排（详见
+[`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md) §8.2）：
+
+1. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
+   ROC 若没加，之后所有索引都错。按实测码率估算，250 s 量级正好接近第一次回绕，
+   **时间尺度吻合得最好**。
+2. **DTLS 层指纹**——手写 `cm_dtls.c` vs BoringSSL：版本选择、cipher suite 顺序、
+   `use_srtp` 的 profile 顺序、证书字段。网关有可能按指纹风控。
+3. **网关按 `pkg`/`game_code` 的分档**——`op:result` 回的 `encoder`/`host` 与冻结
+   时刻是否有相关性。
+
+### 给「只想能用」的人的建议
+
+不要去复刻官方客户端的逐字节行为——**按每 ~230 s 主动换一次会话**，当成常规保活手段，
+成本远低于逐位逆向网关的判活逻辑。用户侧表现是「画面卡 1~2 秒」，
+比「4 分钟后彻底冻结」好得多。
+
+### 方法上的一个教训
+
+想验证「X 是原因」，**去掉 X 看是否复现**，比「加上 X 看是否消失」可靠。
+因为「加上 X 之后不断了」可能只是 X 顺手带出了别的效果（比如重连换了新机位）。
+本轮三次假结论都是这么来的。另外，**跑实验前必须确认没有第二个客户端在用同一账号**
+——否则每轮都会被 `games_playing_status` 顶掉，得到的全是假结论。
+
+完整的 11 行实验表、每次的实测数字、offer/answer 全文、`getStats` 采样见
+[`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md)。
 
 ---
 
@@ -529,7 +566,7 @@ Chrome 的 answer（2,705 B）：`a=sendrecv`，**逐段回显全部 extmap 与 
 ├── report.html               单页可视化报告（338 行可搜索接口表 + 真机截图）
 ├── docs/
 │   ├── API文档.md            主文档，14 章，约 2300 行
-│   ├── 断流与保活根因分析.md   SDP / getStats 实测 + 四条「断」的路径与修复清单
+│   ├── 断流与保活根因分析.md   SDP/getStats 实测 + 11 个假设的二分记录 + 四条「断」的路径
 │   ├── 接口清单.csv          338 行
 │   └── img/                  真机截图（已打码）
 ├── sdk/
@@ -587,8 +624,8 @@ Chrome 的 answer（2,705 B）：`a=sendrecv`，**逐段回显全部 extmap 与 
 - **登录链路只验证到「取到 token 前」**：短信/密码两种方式的接口、参数、加密流程都已实测，
   但为了不给测试号发短信、不碰别人的密码，没有真正完成一次登录；后续调用用的 token 是从
   已登录浏览器的 localStorage 复用的。密码加密结果已用 pycryptodome 逐字节交叉验证。
-- **断流一节只到「定位到差异」**：网页端的行为已量化，非浏览器客户端的三个缺口也已定位，
-  但最终哪一条是网关判死的充分条件，需要按修复清单逐条实测确认。
+- **断流一节只到「排除完所有协议差异」**：11 个假设（ICE consent、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位，剩下 SRTP ROC 回绕与 DTLS 指纹两个方向；
+  下一步按候选方向逐个验证（SRTP ROC → DTLS 指纹 → `encoder`/`host` 相关性）。
 - 接口会变。两次快照分别是 2026-11-06 与 2026-11-13；后者相对前者 **ADDED 65 / REMOVED 0**，
   说明线上是纯增量、向后兼容。但新接口的参数语义只做到「能打通」，字段含义未逐个核实。
 

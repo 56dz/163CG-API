@@ -901,9 +901,67 @@ return h["a"].isCloudPc(this.gameCode) ? (r("请重启云电脑以继续游玩")
 | `remote-inbound-rtp` | 全程缺失（网关从不发 RTCP RR） |
 | `outbound-rtp.kind=video.bytesSent` | 恒 0（纯下行） |
 
-**结论**：网关是标准 WebRTC SFU（ice-lite + twcc + remb + rrtr + nack/pli + H265/H264/VP8 + rtx）。它**不靠 RTCP 反馈判活**（网页端 pliCount/nackCount 全 0 也能连收 10 分钟），真正的双向保活是 **ICE consent（STUN Binding，~2.5 s 一次）**。同时网页端协商了 `transport-cc` 双向、m 段是 `sendrecv`。
+**结论**：网关是标准 WebRTC SFU（ice-lite + twcc + remb + rrtr + nack/pli + H265/H264/VP8 + rtx）。它**不靠 RTCP 反馈判活**（网页端 pliCount/nackCount 全 0 也能连收 10 分钟），会话期唯一的周期性双向报文是 **ICE consent（STUN Binding，~2.5 s 一次）**。同时网页端协商了 `transport-cc` 双向、m 段是 `sendrecv`。
 
-因此，一个「只做一次 STUN、之后全靠 UDP 收流、answer 里回 `recvonly`、不回 extmap/rtcp-fb」的客户端，与网页端存在三处可观测差异 —— 这是排查「静默停推」的优先方向（详见 `docs/断流与保活根因分析.md`）。
+#### 8.6.4.1 第 7 轮：11 个假设的二分（2026-11-14，全部排除）
+
+上一小节写的是「一个客户端与网页端存在三处可观测差异，这是排查优先方向」。
+**这三条后来被逐条实测否定**，顺着同一条线又排除了 8 个，合计 11 个假设。
+
+实验方法：全部在**官方网页端**上用 Playwright + `addInitScript` 改写报文完成——把网页端
+改成「自建客户端的样子」，看它是否也复现约 250 s 的静默停推。复现则假设成立，
+照常连播则排除。好处是不用改一行 native 代码，也不受硬件影响；代价是每轮都要新 ticket
+（ttl 24 s），且**必须确认没有第二个客户端在用同一账号**（否则会被 `games_playing_status` 顶掉）。
+
+| # | 假设 | 实验手段 | 结果 |
+|---|---|---|---|
+| 1 | 没建 DataChannel | 网页端本来就不建（offer 无 `m=application`） | 连播 10 min，排除 |
+| 2 | WS 不心跳 | 网页端本来只发 1 次 `0 <ts>` | 连播 10 min，排除 |
+| 3 | 服务端 300 s kickout | 观察 258 / 300 / 360 s | 网页端无异常，排除 |
+| 4 | 前端 600 s 无操作超时 | `gameCutTime.total=1000*(480+120)=600 s` | 网页端 602 s 断（对上了），客户端 250 s 差 2.4 倍，排除 |
+| 5 | 缺会话期 ICE consent | 给 native 补 2.5 s 周期 consent（`cm_ice_consent_tick`） | `resp` 从 #1 涨到 #109、网关全回，**仍在 4m19s 冻结**，排除 |
+| 6 | answer 不回 `a=extmap`/`a=rtcp-fb` | `MUNGE=flags`：删 5 条 extmap + 19 条 rtcp-fb | 连播 **481 s**（`ct=477.883`），排除 |
+| 7 | answer 是 `a=recvonly` | `MUNGE=full`：再把 `sendrecv` 全改 `recvonly` | 跑到 **354 s** 仍正常，排除 |
+| 8 | 上行 RTCP（RR/NACK/PLI）惹到网关 | 给 native 加 `noRtcp` 开关全关（consent 保留） | `PLI sent`=0、`RR sent`=0，**仍在 247 s 冻结**，排除 |
+| 9 | 游玩期不轮询 HTTP 被判挂机 | 记录网页端所有 `/api/` 请求 | 31 个请求全在开头 16 s，之后零请求，`users/@me/status` 从未出现，排除 |
+| 10 | auth 后不发任何 input 帧 | 丢弃全部 `op:"input"`（7 条开播帧 + 心跳） | 连播 **481 s**，`ws-close` 为 0，排除 |
+| 11 | auth 包内容不同（缺 `fps`/`apk_decoder`、platform 4→1、codecs 15→1、quality high→low、w 1476→1280） | `MUNGE=all`：把网页端 auth 改写成完全等于自建客户端的形态 | 连播 **284 s**，258 s 节点 `ct=254.787` 完全正常，排除 |
+
+第 11 条改写后实际发出的 auth（token 打码），网关接受并回了 `op:offer`：
+
+```json
+{"id":"<Date.now()>","op":"auth","data":{
+  "user_id":"…","token":"<token>","game_code":"mrfzzmd",
+  "w":1280,"h":720,"quality":"low","codecs":["h264"],"platform":1}}
+```
+
+**11 个协议层假设全部被排除，根因至今未定位。** 但有一条关键事实把范围收得很窄：
+
+> 冻结期间我们发出的 ICE consent **仍然被网关正常回应**
+> （`#1 ICE consent sent (#97) resp=98 rxStun=108`，此时 RTP 已停 12 s）。
+> 说明网关**没有丢弃这个会话**——UDP 五元组是活的，它是**单独停掉了 RTP 推送**。
+
+这排除了「会话被回收 / NAT 超时 / 端口失效」一大类解释。剩下的候选方向按性价比排：
+
+1. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
+   ROC 若没加，之后所有索引都错。按实测码率（视频 ~125 pkt/s + 音频 ~50 pkt/s）估算，
+   **250 s 正好接近第一次回绕，时间尺度吻合最好**。验证：在 `cm_srtp_unprotect` 里
+   打印 `seq`/`roc`，看冻结前后是否跨过 `seq=0`。
+2. **DTLS 指纹**——手写 `cm_dtls.c` vs BoringSSL：DTLS 1.2/1.3 选择、cipher suite 顺序、
+   `use_srtp` 的 protection profile 顺序、证书字段、`extended_master_secret`。
+   网关有可能按指纹风控。
+3. **网关按 `pkg`/`game_code` 分档**——`op:result` 回
+   `{"container":"…","encoder":"high,None","host":"…"}`，记录 `encoder`/`host` 与冻结时刻的相关性。
+
+**工程上的兜底**：每 ~230 s 主动换一次会话，用户侧表现是「画面卡 1~2 秒」，
+比「4 分钟后彻底冻结」好得多。
+
+完整实验记录、每次的实测数字、offer/answer 全文、`getStats` 采样见
+`docs/断流与保活根因分析.md`（§7 是 11 行实验表，§8.2 是候选方向）。
+
+**一条方法上的教训**：想验证「X 是原因」，**去掉 X 看是否复现**，比「加上 X 看是否消失」
+可靠。因为「加上 X 之后不断了」可能只是 X 顺手带出了别的效果（比如重连换了新机位）。
+本轮三次假结论都是这么来的。
 
 #### 8.6.5 错误码总表
 
@@ -918,7 +976,7 @@ return h["a"].isCloudPc(this.gameCode) ? (r("请重启云电脑以继续游玩")
 | 2004 | `op:"error"` | 设备不支持游玩 |
 | 1002 / 10020 | **前端** `onPostClientError` / `closeWindow` | 「长时间不操作，已经自动退出」 |
 | 1288 | 前端（DataChannel 降级） | `switch_ws_after_x_failure` 次数用尽 → 回落 WS |
-| 静默停推 | 无任何 op | RTP 冻结、WS 仍 open、心跳照回 → 见 8.6.4 |
+| 静默停推 | 无任何 op | RTP 冻结、WS 仍 open、consent 仍被回 → 见 8.6.4 / 8.6.4.1（根因未定位） |
 
 
 ## 9. 悬浮球与画质（真机实测）

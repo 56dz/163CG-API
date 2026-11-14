@@ -366,15 +366,6 @@ class CGAPI:
             self._apply_login(r)
         return r
 
-    def login_qrcode_poll(self, qrcode_id: str) -> dict:
-        r = self.get("api/v1/tokens", qrcode_id=qrcode_id)
-        if r.get("token"):
-            self.token = r["token"]
-            self.uid = str(r.get("user_id") or "")
-            self.encrypt = r.get("encrypt")
-            self.offset = offset_from_encrypt(self.encrypt) if self.encrypt else 0
-        return r
-
     def logout(self) -> Any:
         return self.delete("api/v2/tokens/@current")
 
@@ -878,9 +869,264 @@ class CGAPI:
         """云电脑实例信息（需登录，v2）。"""
         return self.get("api/v2/users/@me/cloud-pc")
 
-    def cloud_pc_config(self) -> Any:
-        """云电脑配置（需登录，v2）。"""
+    def cloud_pc_user_config(self) -> Any:
+        """当前用户的云电脑配置（需登录，v2）。与 cloud_pc_config() 不是同一个端点：
+        后者是 api/v2/cloud-pc/multi-instance-config（多实例规格表），这个是用户自己的配置。"""
         return self.get("api/v2/users/@me/cloud_pc_config")
+
+
+    # ---------------------------------------------- 2026-11-13 快照新增
+    def getRunPagePopup(self, e: str, **params) -> Any:
+        """GET api/v2/games/{e}/run_page_popup"""
+        return self.get(f"api/v2/games/{e}/run_page_popup", **params)
+
+    def getCustomizeSettings(self, e: str, t: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/customize-settings/{e}/{t}"""
+        return self.get(f"api/{ver}/customize-settings/{e}/{t}", **params)
+
+    def postCustomizeSettings(self, ver: str = "v2", body: Any = None) -> Any:
+        """POST api/{ver}/group-customize-settings"""
+        return self.post(f"api/{ver}/group-customize-settings", body)
+
+    def getPendantList(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/pendant_list"""
+        return self.get(f"api/{ver}/pendant_list", **params)
+
+    def getPendants(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/pendants"""
+        return self.get(f"api/{ver}/pendants", **params)
+
+    def getSearchKeywordHints(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/search_keyword_hints"""
+        return self.get(f"api/{ver}/search_keyword_hints", **params)
+
+    def teamUpNotices(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/team_up_notices"""
+        return self.get(f"api/{ver}/team_up_notices", **params)
+
+    def getVersionInfos(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/versions/infos"""
+        return self.get(f"api/{ver}/versions/infos", **params)
+
+    def getGameDownloadConfig(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/game_download_config/{e}?download_scene={t}"""
+        return self.get(f"api/v2/game_download_config/{e}", download_scene=t, **params)
+
+    def getGamesPro(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/games_pro"""
+        return self.get(f"api/{ver}/games_pro", **params)
+
+    def activity_getExtraAward(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/award-history?activity={e}&action={t}"""
+        return self.get(f"api/v2/award-history", activity=e, action=t, **params)
+
+    def getrechargeCoupons(self, e: str, **params) -> Any:
+        """GET api/v2/recharges/{e}/coupons"""
+        return self.get(f"api/v2/recharges/{e}/coupons", **params)
+
+    def reservationActivities(self, e: str, **params) -> Any:
+        """GET api/v2/reservation-activities/{e}"""
+        return self.get(f"api/v2/reservation-activities/{e}", **params)
+
+    def postReservationShown(self, e: str, body: Any = None) -> Any:
+        """POST api/v2/reservation-activities/{e}/shown"""
+        return self.post(f"api/v2/reservation-activities/{e}/shown", body)
+
+    def getMessageSystem(self, e: str, **params) -> Any:
+        """GET api/v2/system_msg_push_msgs?count={t|0}&before_id={e}"""
+        return self.get(f"api/v2/system_msg_push_msgs", before_id=e, **params)
+
+    def setUserStorage(self, e: str, t: str, body: Any = None) -> Any:
+        """POST api/v2/users/@me/storage/{e}/{t}"""
+        return self.post(f"api/v2/users/@me/storage/{e}/{t}", body)
+
+    def getWelfareInfo(self, e: str, **params) -> Any:
+        """GET api/v2/welfare_center/{e}/info"""
+        return self.get(f"api/v2/welfare_center/{e}/info", **params)
+
+    def getWelfareTabs(self, e: str, **params) -> Any:
+        """GET api/v2/welfare_center/{e}/tabs"""
+        return self.get(f"api/v2/welfare_center/{e}/tabs", **params)
+
+    def userBlack(self, ver: str = "v2", body: Any = None) -> Any:
+        """DELETE api/{ver}/block"""
+        return self.delete(f"api/{ver}/block", body)
+
+    def getFSContent(self, t: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/file_sharings/{t}"""
+        return self.get(f"api/{ver}/file_sharings/{t}", **params)
+
+    def getSignDesc(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/sign-desc"""
+        return self.get(f"api/{ver}/sign-desc", **params)
+
+    def openLoginUnbinding(self, e: str, body: Any = None) -> Any:
+        """DELETE api/v2/open-login/{e}/binding"""
+        return self.delete(f"api/v2/open-login/{e}/binding", body)
+
+    def getWechatBindRegister(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/wechat_binding/js_auth_data"""
+        return self.get(f"api/{ver}/wechat_binding/js_auth_data", **params)
+
+    def getUserRoom(self, e: str, **params) -> Any:
+        """GET api/v1/users/{e}/live-room"""
+        return self.get(f"api/v1/users/{e}/live-room", **params)
+
+    def recommendGyMusicSheetList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/community/recommend/gy_music_sheet_list/{e}/{t}"""
+        return self.get(f"api/v2/community/recommend/gy_music_sheet_list/{e}/{t}", **params)
+
+    def getSearchGyMusicSheetList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/community/search_gy_music_sheets/{e}/{t}"""
+        return self.get(f"api/v2/community/search_gy_music_sheets/{e}/{t}", **params)
+
+    def userGyMusicSheetList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/community/user/gy_music_sheet_list/{e}/{t}"""
+        return self.get(f"api/v2/community/user/gy_music_sheet_list/{e}/{t}", **params)
+
+    def userGyMusicSheetScoreList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/community/user/gy_music_sheet_score_list/{e}/{t}"""
+        return self.get(f"api/v2/community/user/gy_music_sheet_score_list/{e}/{t}", **params)
+
+    def userFollowedGyMusicSheetList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/community/user_followed/gy_music_sheet_list/{e}/{t}"""
+        return self.get(f"api/v2/community/user_followed/gy_music_sheet_list/{e}/{t}", **params)
+
+    def userLikeGyMusicSheetList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/community/user_like/gy_music_sheet_list/{e}/{t}"""
+        return self.get(f"api/v2/community/user_like/gy_music_sheet_list/{e}/{t}", **params)
+
+    def getSearchGroupByKey(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/group/search_group_by_key/{e}/{t}"""
+        return self.get(f"api/v2/group/search_group_by_key/{e}/{t}", **params)
+
+    def getUserGroupList(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/group/user_group_list/{e}/{t}"""
+        return self.get(f"api/v2/group/user_group_list/{e}/{t}", **params)
+
+    def getUserGroups(self, e: str, t: str, **params) -> Any:
+        """GET api/v2/group/user_joined_groups/{e}/{t}"""
+        return self.get(f"api/v2/group/user_joined_groups/{e}/{t}", **params)
+
+    def getCommunityArticleList(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/article_list/{t}/{i}"""
+        return self.get(f"api/{ver}/community/article_list/{t}/{i}", **params)
+
+    def getCommunityHotArticle(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/hot/article_list"""
+        return self.get(f"api/{ver}/community/hot/article_list", **params)
+
+    def getCommunityHotTopic(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/mix/hot_article_list"""
+        return self.get(f"api/{ver}/community/mix/hot_article_list", **params)
+
+    def getCommunityRecentReply(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/mix/recent_reply_article_list/{t}/{i}"""
+        return self.get(f"api/{ver}/community/mix/recent_reply_article_list/{t}/{i}", **params)
+
+    def getCommunityRelatedList(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/mix/related"""
+        return self.get(f"api/{ver}/community/mix/related", **params)
+
+    def postRecommendArticle(self, ver: str = "v2", body: Any = None) -> Any:
+        """POST api/{ver}/community/recommend/article"""
+        return self.post(f"api/{ver}/community/recommend/article", body)
+
+    def getCommunityTopic(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/topic"""
+        return self.get(f"api/{ver}/community/topic", **params)
+
+    def getCommunityTopicArticle(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/topic/article_list/{t}/{i}"""
+        return self.get(f"api/{ver}/community/topic/article_list/{t}/{i}", **params)
+
+    def getCommunityUserArticle(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community/user/article_list/{t}/{i}"""
+        return self.get(f"api/{ver}/community/user/article_list/{t}/{i}", **params)
+
+    def getCommunityTopicRecommendByRecommendId(self, t: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community_topic_recommend/{t}"""
+        return self.get(f"api/{ver}/community_topic_recommend/{t}", **params)
+
+    def getCommunityTopicRecommend(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/community_topic_recommends"""
+        return self.get(f"api/{ver}/community_topic_recommends", **params)
+
+    def getClusterGroupRecommendList(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/group/cluster_group_recommend_list/{t}/{i}"""
+        return self.get(f"api/{ver}/group/cluster_group_recommend_list/{t}/{i}", **params)
+
+    def getHotGroupRecommendList(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/group/hot_group_recommend_list/{t}/{i}"""
+        return self.get(f"api/{ver}/group/hot_group_recommend_list/{t}/{i}", **params)
+
+    def getPotentialJoinGroupList(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/group/main_recommend_group"""
+        return self.get(f"api/{ver}/group/main_recommend_group", **params)
+
+    def getTagClusterList(self, t: str, i: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/group/tag_cluster_list/{t}/{i}"""
+        return self.get(f"api/{ver}/group/tag_cluster_list/{t}/{i}", **params)
+
+    def getGyMusicSheetGames(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/gy_music_sheet_games"""
+        return self.get(f"api/{ver}/gy_music_sheet_games", **params)
+
+    def getKolUserRecommends(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/kol_user_recommends"""
+        return self.get(f"api/{ver}/kol_user_recommends", **params)
+
+    def getLiveRooms(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/live-rooms"""
+        return self.get(f"api/{ver}/live-rooms", **params)
+
+    def getLiveRoomMulti(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/live_room_game_multi_player"""
+        return self.get(f"api/{ver}/live_room_game_multi_player", **params)
+
+    def getMultiPlayer(self, t: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/live_room_game_multi_player/{t}"""
+        return self.get(f"api/{ver}/live_room_game_multi_player/{t}", **params)
+
+    def getLiveRoomsRecommend(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/live_rooms_recommend"""
+        return self.get(f"api/{ver}/live_rooms_recommend", **params)
+
+    def getMainLiveRoomsRecommend(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/main_page_live_rooms_recommend"""
+        return self.get(f"api/{ver}/main_page_live_rooms_recommend", **params)
+
+    def getSquareGame(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/square/game/latest"""
+        return self.get(f"api/{ver}/square/game/latest", **params)
+
+    def getSquareMessage(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/square/message"""
+        return self.get(f"api/{ver}/square/message", **params)
+
+    def teamUpUserRecommendations(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/team_up_user_recommendations"""
+        return self.get(f"api/{ver}/team_up_user_recommendations", **params)
+
+    def getUserGuide(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/user_guide"""
+        return self.get(f"api/{ver}/user_guide", **params)
+
+    def getGameDetail(self, egame_code: str, **params) -> Any:
+        """GET api/v1/seo_games/{egame_code}"""
+        return self.get(f"api/v1/seo_games/{egame_code}", **params)
+
+    def getAlipaySignGoods(self, **params) -> Any:
+        """GET api/v2/alipay_sign_goods"""
+        return self.get(f"api/v2/alipay_sign_goods", **params)
+
+    def getUsers(self, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/users"""
+        return self.get(f"api/{ver}/users", **params)
+
+    def getUsersDetail(self, t: str, ver: str = "v2", **params) -> Any:
+        """GET api/{ver}/users/{t}"""
+        return self.get(f"api/{ver}/users/{t}", **params)
 
 
 # ============================================================ 游玩态 WebSocket

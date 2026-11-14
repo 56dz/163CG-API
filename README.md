@@ -5,8 +5,8 @@
 把「首页推荐 → 选游戏 → 申请机位 → 连网关 → WebRTC 收画面 → 触摸操控 → 悬浮球调画质」
 这整条链路拆开、写清楚、并且能跑起来。
 
-**338 条接口**（2026-11-13 重抓，较上一版 **+65 / -0**）· **272 条实测探测（179 通过）**
-· **23 份脱敏响应样本** · **7 张真机截图**
+**338 条接口**（2026-11-13 重抓，较上一版 **+65 路径 / -0**；去重后唯一 `(Method, Path)` 334 条）
+· **272 条实测探测（179 通过）** · **22 份脱敏响应样本** · **8 张真机截图**
 
 > 两次快照：接口抓取自 2026-11-06 与 2026-11-13 两版前端 bundle（3 个主包 + 98 个懒加载 chunk）。
 > 游玩态、悬浮球、SDP、`getStats()` 的实测数据来自 2026-11-13 的真实机位。
@@ -311,14 +311,29 @@ CGAPI.video_screen(screen_w=390, screen_h=844, dpr=3, game_type="pc")   # → {'
 再用「括号配平 + concat 递归展开」解析路径。`diff` 可复现：
 
 ```bash
-git show 997eab3:docs/接口清单.csv > /tmp/old.csv      # 上一版 272 条
-diff <(cut -d, -f2,3 /tmp/old.csv | sort) <(cut -d, -f2,3 docs/接口清单.csv | sort)
-# ADDED 65 / REMOVED 0 / METHOD-CHANGED 10（旧版把 10 条读成 GET，实际是 DELETE/POST/PATCH）
+git show 997eab3:docs/接口清单.csv > /tmp/old.csv      # 上一版 272 行
+# 归一化：v1 / v2 / {ver} 都算同一个路径模板，否则 40 条拼接路径会被误判成「删了旧的加了新的」
+normp() { tr -d '"' | cut -d, -f2 | sed -E 's#^api/(v[12]|\{ver\})/#api/vX/#'; }
+cut -d, -f2,3 /tmp/old.csv      | normp | sort -u > /tmp/o.txt   # 250 条路径模板
+cut -d, -f2,3 docs/接口清单.csv | normp | sort -u > /tmp/n.txt   # 315 条
+diff /tmp/o.txt /tmp/n.txt | grep -c '^>'   # → 65（新增路径）
+diff /tmp/o.txt /tmp/n.txt | grep -c '^<'   # → 0（删除路径）
 ```
 
-那 10 条 Method 修正是：`cloud-mobile-storage`、`cloud-pc-storage`、`community/article`、
-`community/comment`、`community/comment_reply`、`file_sharing/followships`、`live-room`、
+**行数 272 → 338（+66），唯一路径 250 → 315（+65），唯一 `(Method, Path)` 269 → 334（+65）**
+—— 差出来的那几条是同一接口的重复行（`PATCH users/@me` ×2、`GET auth-token` ×2、
+`DELETE community/like` ×3）。
+
+> 若按 `(Method, Path)` 而不按路径 diff，会看到 **74 加 / 9 减**，那 9 条就是下面的 Method 修正。
+
+那 10 条 Method 修正是：`cloud-mobile-storage`、`cloud-pc-storage`、`community/comment`、
+`community/comment_reply`、`community/like`、`file_sharing/followships`、`live-room`、
 `live_room_invite`、`users/@me`、`users/@me/game-playing-histories-hidden/{x}`。
+
+> **两处早期笔误，已更正**：① 清单里曾列 `community/article` DELETE→GET，
+> 实际旧版就有 `POST`+`DELETE` 两条，新版只是**新增**了 `api/{ver}/community/article GET`
+> （`getCommunityArticle`），DELETE 仍然在，不是方法变更；
+> ② 漏掉了 `community/like` 的 `postCommunityLike` POST→DELETE，已补上。
 
 ---
 
@@ -484,7 +499,7 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 | 1 | **前端无操作计时器** | 无（纯客户端） | 600 s 不操作 → 弹「由于长时间不操作，已经自动退出」，主动断开 |
 | 2 | **服务端回收机位** | `op:"error"` + `errcode` **403 / 1213** | 弹「由于您太久没回来游戏已关闭…」，**自己重 POST tickets 换机位** |
 | 3 | **服务端正常结束** | `op:"close"` `{code:0, reason:"normal"}` | `onGameStop` + `onClose`，**不弹窗、不重连** |
-| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open、consent 仍被回。**根因未定位**，12 个协议层假设已排除，见下 |
+| 4 | **静默停推** | 无任何 op | RTP 冻死、WS 仍 open、consent 仍被回。**根因未定位**，13 个假设已排除，见下 |
 
 第 1 条的 600 s 来自游戏详情的 `no_op_duration1 + no_op_duration2`（实测 `480 + 120`），
 13 分钟实测里精确落在 **602 s**。第 3 条的真实抓包里，`op:"close"` 之前 43 ms
@@ -503,7 +518,7 @@ order_paid / coupon / growth_value_changed / has_new_followers …
 | answer 不回 `a=extmap`/`a=rtcp-fb` | 让 Chrome 从 answer 删掉 5 条 extmap + 19 条 rtcp-fb | 连播 **481 s**，`ct=477.883` |
 | answer 是 `recvonly` | 再把 `sendrecv` 全改 `recvonly` | 跑到 **354 s** 仍正常 |
 
-顺着这条线又排除了 8 个假设，合计 **11 个协议层差异全部被排除**（后来又在真机上否定了第 12 条 DTLS cipher 指纹，合计 12）：
+顺着这条线又排除了 8 个假设，合计 **11 个协议层差异全部被排除**（后来又在真机上否定了第 12 条 DTLS cipher 指纹、第 13 条「模拟玩家操作」，合计 13）：
 DataChannel、WS 心跳、前端 600 s 计时器、服务端 300 s kickout、上行 RTCP
 （1 Hz RR + 2 s PLI + NACK）、游玩期 HTTP 轮询、auth 之后不发 input 帧、
 auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`）。
@@ -531,30 +546,54 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 剩下的候选方向按性价比排（详见
 [`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md) §8.2）：
 
-1. **DTLS cipher 指纹——已在真机 A/B 中否定（第 12 条）。** 给客户端加 `chromeFp` 开关，
+1. **官方 SDK 的 `RtcKeepPlaying` 帧（`CmdId=20015`）—— 唯一「机制明确、且尚未排除」**。
+   官方 RTC SDK 除了我们复刻的 JSON 网关，还有第二条通道 `channel 2`
+   （端点 `<gameServerWssUrl>` + `/rtc-sdk`，帧格式是 `'Eg' + cmdId + len + 0x89 0xAB + protobuf`
+   的二进制）。上面有两个和保活直接相关的命令：
+
+   | CmdId | 消息 | 关键字段 |
+   |---|---|---|
+   | 20021 | `RtcKeepaliveCfg` | 字段 1 `kickoutDuration`(ms)、字段 2 `tipsDuration`(ms) |
+   | 20015 | `RtcKeepPlaying` | 字段 1 `gameToken`(string) |
+   | 20014 | `RtcNotPlayingTips` | 服务端下发「太久没回来」提示 |
+
+   官方 `setReady()` 会先发 `setKeepAliveConfig(kg(5), 20000)`，即
+   **`kickout = 300000 ms`（5 分钟）/ `tips = 20000 ms`**；`keepPlaying()`
+   **只在玩家真正操作时发**，不是周期心跳。我们两条都没实现，服务端只能用默认的短 kickout
+   —— 250 s 与「默认 kickout 略小于 300 s」高度吻合（起播冷启动 + 出画 ≈ 40~50 s）。
+   **这是目前唯一能定量解释 250 s 的假设。**
+   卡点：`gameToken` 唯一来源是 `POST /dispatcher/api/paasDispatch` 的
+   `finish_result.sdk_param`（`proto.paas.SdkStartGameParams` 字段 4），该接口需要
+   官方 web 包内嵌的 `appEnv.appKey` 签名，目前拿不到。
+2. **DTLS cipher 指纹——已在真机 A/B 中否定（第 12 条）。** 给客户端加 `chromeFp` 开关，
    ClientHello 从 203B（28 个 OpenSSL 默认套件）变成 177B（14 个 Chrome 序套件，静态 RSA
    全消失，扩展区逐字节不变），握手照常成功，**停推时刻 ≈237 s 与未改时同量级**。
    指纹方向只剩 extension 级（ALPN/supported_versions/use_srtp 列表），但 ALPN
    服务端没选，性价比低。
-2. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
+3. **SRTP 的 ROC / 重放窗口**——`idx = ((roc<<16)|seq)`，24 bit 序号回绕 65536 包时
    ROC 若没加，之后所有索引都错。但真机取到的第一个包 `seq` 已经是 **31394**
    （不是 0），实测包率 **≈80 pkt/s**，算下来第一次回绕要 **427 s**，
    与 230~259 s 的冻结差 1.7 倍，**基本可以排除**。
-3. **网关按 `pkg`/`game_code`/宿主机分档**——`op:result` 回的
-   `{"container":"…,t-04","encoder":"high,None","host":"ahnfs10015"}`，
-   自建客户端在 `t-04/ahnfs10015` 上 230 s 冻结，网页端在 `t-18/ahnfs10007` 上 481 s 未冻结。
-   `encoder` 两边一样，所以判据不在它身上；但 `container`/`host` 值得每轮都记。
+4. **网关按 `pkg`/`game_code`/容器后缀分档**——`op:result` 回的
+   `{"container":"…,t-04","encoder":"high,None","host":"ahnfs10000"}`，
+   自建客户端在 `container` 后缀 `t-04` 上 230 s 冻结，网页端在 `t-18` 上 481 s 未冻结。
+   两者 `encoder` 都是 `high,None`，所以判据不在它身上；`container` 后缀不同，值得每轮都记。
+   **`host` 目前只有一条实测样本（`ahnfs10000`，见 §7.1.1 的真实抓包），
+   两端都是它，因此「host 不同」尚无证据** —— 早期版本这里误写成
+   `ahnfs10015` / `ahnfs10007`，是笔误，已按实测更正。
 
 ### 给「只想能用」的人的建议
 
-不要去复刻官方客户端的逐字节行为。两道防线按顺序上：
+不要去复刻官方客户端的逐字节行为。**只用一道防线**：
 
-1. **停滞自愈（第一道）**：`STALL_RX_MS = 8000` 判定 + `L2` 复用网关重连。
-   真机实测 7 秒内恢复（`stall detected: rx=15071` → 7 s 后 `stall recovered: rx=97`）。
-2. **主动换会话（第二道）**：每 ~230 s 重新 `POST tickets` + 重连。
+**停滞自愈**：`rx` 连续 **8 s** 不增长即判定停推 → 先补关键帧（L1，等 5 s）
+→ 仍不动就**复用同一张 ticket 重连网关**（L2，不重新 `POST tickets`、不换机位）。
+真机实测 4~9 s 恢复、进度不丢（`stall detected: rx=15071` → 7 s 后 `stall recovered: rx=97`）。
 
-用户侧表现是「画面卡 1~2 秒」，比「4 分钟后彻底冻结」好得多，
-成本也远低于逐位逆向网关的判活逻辑。
+> **⚠ 不要用「定期主动换会话」当保活。** 早期版本这里写「每 ~230 s 换一次会话，
+> 用户侧表现是画面卡 1~2 秒」，**实测证明是错的**：每次换机位都会重新拉起对局容器，
+> 游戏从头开始、进度全丢，黑屏 7~9 s、音频恢复 11~19 s。这不是「卡一下」，
+> 是「每 4 分钟重开一局」。该策略最终被设为默认关闭。
 
 ### 方法上的一个教训
 
@@ -563,7 +602,7 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 本轮三次假结论都是这么来的。另外，**跑实验前必须确认没有第二个客户端在用同一账号**
 ——否则每轮都会被 `games_playing_status` 顶掉，得到的全是假结论。
 
-完整的 11 行实验表、每次的实测数字、offer/answer 全文、`getStats` 采样见
+完整的 13 行实验表、每次的实测数字、offer/answer 全文、`getStats` 采样见
 [`docs/断流与保活根因分析.md`](docs/断流与保活根因分析.md)。
 
 ---
@@ -577,13 +616,13 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 ├── report.html               单页可视化报告（338 行可搜索接口表 + 真机截图）
 ├── docs/
 │   ├── API文档.md            主文档，14 章，约 2300 行
-│   ├── 断流与保活根因分析.md   SDP/getStats 实测 + 12 个假设的二分记录 + 四条「断」的路径
+│   ├── 断流与保活根因分析.md   SDP/getStats 实测 + 13 个假设的二分记录 + 四条「断」的路径
 │   ├── 接口清单.csv          338 行
 │   └── img/                  真机截图（已打码）
 ├── sdk/
-│   ├── cgapi.py              SDK：HTTP 全接口 + WS 客户端 + 输入封装，约 1300 行
+│   ├── cgapi.py              SDK：HTTP 全接口 + WS 客户端 + 输入封装，约 1550 行 / 186 个方法
 │   └── _des3.py              纯标准库 3DES-CBC + PKCS7（密码登录用，无第三方依赖）
-└── samples/                  23 份匿名接口的真实响应样本（原始 101 份，脱敏后保留无个人信息的部分）
+└── samples/                  22 份匿名接口的真实响应样本（原始 101 份，脱敏后保留无个人信息的部分）
 ```
 
 想看接口怎么一步步挖出来的，主文档 `docs/API文档.md` 里每章都有源码偏移量和实测报文。
@@ -635,9 +674,16 @@ auth 包内容（`fps` / `apk_decoder` / `platform` / `codecs` / `quality` / `w`
 - **登录链路只验证到「取到 token 前」**：短信/密码两种方式的接口、参数、加密流程都已实测，
   但为了不给测试号发短信、不碰别人的密码，没有真正完成一次登录；后续调用用的 token 是从
   已登录浏览器的 localStorage 复用的。密码加密结果已用 pycryptodome 逐字节交叉验证。
-- **断流一节只到「排除完所有协议差异」**：12 个假设（ICE consent、DTLS cipher 指纹、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位；剩下 DTLS 指纹、`container`/`host` 分档两个方向（SRTP ROC 回绕已按实测 `seq=31394` + 80 pkt/s 算过，需 427 s 才回绕，与 230~259 s 冻结不符，基本排除）。
-- 接口会变。两次快照分别是 2026-11-06 与 2026-11-13；后者相对前者 **ADDED 65 / REMOVED 0**，
+- **断流一节只到「排除完所有协议差异」**：13 个假设（ICE consent、DTLS cipher 指纹、模拟玩家操作、extmap/rtcp-fb、recvonly、上行 RTCP、auth 包、input 帧、HTTP 轮询……）已逐一实测否定，根因仍未定位。目前第一优先是官方 SDK 的 `RtcKeepPlaying`（`CmdId=20015`，唯一能定量解释 250 s 的方向），卡在 `gameToken` 需要 `paasDispatch` 的 `appKey` 签名；其次是 DTLS extension 级指纹与 `container` 后缀分档（SRTP ROC 回绕已按实测 `seq=31394` + 80 pkt/s 算过，需 427 s 才回绕，与 230~259 s 冻结不符，基本排除）。
+- 接口会变。两次快照分别是 2026-11-06 与 2026-11-13；后者相对前者 **+65 路径 / -0**，
   说明线上是纯增量、向后兼容。但新接口的参数语义只做到「能打通」，字段含义未逐个核实。
+- **`sdk/cgapi.py` 已跟上 2026-11-13 的快照**：186 个方法，本次新增的 65 条路径全部封装
+  （自动生成，只做 URL/参数拼装与 docstring 标注，**参数语义未逐个实测**）。
+  路径里的 `{ver}` 统一暴露为 `ver="v2"` 关键字参数，需要 v1 时传 `ver="v1"`。
+- **第 1–11 条实验用的 Playwright 脚本没有随仓库提交**（原计划放 `work/`，但那个目录
+  从未 `git add`）。第 7 节表格保留了每轮的手段与实测数字，需要复跑时按 §6 的步骤重写；
+  第 12、13 条改的是 native 侧开关，实现在 PenCG 仓库
+  （`native/csrc/cgmedia/cm_dtls.c` 的 `chromeFp`、`src/dev-autostart.js` 的 `DEV_AUTOTAP`）。
 
 ---
 
